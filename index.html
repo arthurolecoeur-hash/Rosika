@@ -1421,6 +1421,42 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .lab i .lgm{width:90%;height:90%}
 .seal .lgm{width:64%;height:64%;margin:auto;color:#fff4e8}
 .seal{display:grid;place-items:center}
+
+.num{z-index:4;background:rgb(0 0 0 / .45);padding:1px 5px;border-radius:5px;letter-spacing:.02em}
+.deck.nx{animation:none}
+.deck.nx .tilt2{animation:nxin .28s cubic-bezier(.2,.8,.3,1) both}
+@keyframes nxin{from{transform:translate(4px,3px) rotate(1.5deg) scale(.98)}to{transform:none}}
+.opbar #opEp{background:linear-gradient(135deg,#c18bff,#7c5cff);color:#fff;border:0}
+.mall{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:14px 0;padding:14px 16px;border-radius:16px;background:linear-gradient(90deg,rgb(46 230 197 / .12),rgb(124 156 255 / .1));box-shadow:inset 0 0 0 1px rgb(46 230 197 / .35)}
+.mall span{display:flex;align-items:center;gap:8px;font-weight:700}.mall .ico{width:18px;height:18px}
+.sumtop{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;margin:4px 0 14px}
+.sumtop h2{margin:0;font-family:var(--display);font-size:clamp(30px,5vw,48px);line-height:1}
+.sumtop small{color:var(--mute);font-size:13px}
+.sgold{background:#f5c518;color:#1d1300;font-weight:800;font-size:13px;padding:6px 14px;border-radius:999px;box-shadow:0 0 20px -4px #f5c518}
+.spill{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600}
+.sum.sm{grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px 10px;width:min(1180px,100%)}
+.sum.sm .card{padding:5px;gap:4px;border-radius:10px}
+.sum.sm .card .ch .nm{font-size:10px}
+.sum.sm .card .badge{width:17px;height:17px;font-size:9px}
+.sum.sm .card .uv{font-size:8px}
+.sum.sm .card .st{font-size:8px;padding:0}
+.sum.sm .card .num{font-size:8px;left:4px;bottom:4px}
+.sum.sm .new{left:50%;transform:translateX(-50%);top:24px;font-size:9px;border-radius:999px;padding:2px 8px;background:#fff;color:#111;box-shadow:0 2px 6px rgb(0 0 0 / .5);z-index:6}
+.sum.sm .w{animation-duration:.4s}
+.sum.sm .dupn{font-size:11px;top:-6px;right:-4px}
+@media (max-width:600px){.sum.sm{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 6px}.sum.sm .card .uv{display:none}}
+
+.sum.sm .card{aspect-ratio:auto}
+.sum.sm .card .art{flex:none;aspect-ratio:1.55/1}
+.sum.sm .card .uv{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sum.sm .new{top:20px}
+
+.sum.sm .w{padding-top:2px}
+.nwt{position:absolute;top:-9px;left:50%;transform:translateX(-50%);z-index:7;background:#fff;color:#111;font-size:10px;font-weight:800;padding:2px 9px;border-radius:999px;box-shadow:0 2px 8px rgb(0 0 0 / .6);white-space:nowrap;pointer-events:none}
+.sum.sm{row-gap:18px}
+@media (max-width:600px){.sum.sm{grid-template-columns:repeat(3,minmax(0,1fr))}.sum.sm .card .num{font-size:7px;padding:0 3px}}
+
+.opstage{flex:1 0 auto;justify-content:safe center}
 </style>
 
 <nav><div class="in">
@@ -1497,10 +1533,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
       </div>
       <div class="row" style="gap:8px">
         <button class="recy" id="sellAll">Recycler les doublons</button>
-        <label class="recy imp">Importer des images<input type="file" id="impFiles" accept="image/*" multiple></label>
-        <label class="recy imp">Importer un dossier<input type="file" id="impDir" accept="image/*" multiple webkitdirectory></label>
       </div>
-      <p class="imphint">Nomme tes fichiers comme les persos (« Darth Vader.jpg », « Batman.png », « Cyclops (Scott Summers).webp ») ou par numéro (« 0033.jpg »). Tu peux aussi glisser-déposer des images sur la page.</p>
     </div>
     <div class="uni" id="uni"></div>
   </section>
@@ -1513,7 +1546,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
     <div class="frow cm-albums asort" hidden><span class="lbl">Trier</span><div class="seg light" id="aSort"><button data-s="size" aria-pressed="false">Plus de cartes</button><button data-s="prog" aria-pressed="true">Plus avancés</button><button data-s="az" aria-pressed="false">A → Z</button></div></div>
     <div class="frow">
       <label class="sel">Univers<select id="fU"><option value="all">Tous</option><option value="mv">Marvel</option><option value="dc">DC</option><option value="sw">Star Wars</option><option value="di">Disney & Pixar</option><option value="dw">DreamWorks</option><option value="hp">Harry Potter</option><option value="lo">Le Seigneur des anneaux</option><option value="jv">Jeux vidéo</option><option value="fg">Jeux de combat</option><option value="tf">Transformers & Tortues Ninja</option></select></label>
-      <label class="sel cm-cards">Cartes<select id="fO"><option value="all">Toutes</option><option value="own">Possédées</option><option value="miss">Manquantes</option><option value="dup">Doublons</option><option value="wish">Envies</option><option value="img">Avec image</option></select></label>
+      <label class="sel cm-cards">Cartes<select id="fO"><option value="all">Toutes</option><option value="own">Possédées</option><option value="miss">Manquantes</option><option value="dup">Doublons</option><option value="wish">Envies</option></select></label>
       <label class="sel cm-cards">Album<select id="fA"><option value="all">Tous</option></select></label>
       <label class="sel cm-cards">Tri<select id="fS"><option value="num">Numéro</option><option value="name">Nom</option><option value="qty">Quantité</option><option value="pow">POW</option><option value="recent">Récentes</option></select></label>
     </div>
@@ -1837,8 +1870,8 @@ function loadArt(b){if(AB[b])return AB[b];return AB[b]=fetch("art/a"+b+".json").
   document.querySelectorAll("img[data-art]").forEach(im=>{const u=AU[im.dataset.art];if(u){im.onload=()=>im.classList.remove("ld");im.src=u;im.removeAttribute("data-art")}})}).catch(()=>{delete AB[b]})}
 function preloadArt(ids){const bs=[...new Set(ids.map(id=>SHEET[id]).filter(v=>v!==undefined).map(v=>v/ABN|0))];
   return Promise.all(bs.map(loadArt)).then(()=>Promise.all([...new Set(ids)].filter(id=>AU[id]).map(id=>{const i=new Image();i.src=AU[id];return i.decode?i.decode().catch(()=>{}):0})))}
-function artHTML(c,sm){if(IMG[c.id])return `<img class="ai" alt="" decoding="async" src="${IMG[c.id]}">`;const v=SHEET[c.id];if(v===undefined)return "";const u=AU[c.id];if(u)return `<img class="ai" alt="" decoding="async" src="${u}">`;loadArt(v/ABN|0);return `<img class="ai ld" alt="" decoding="async" data-art="${esc(c.id)}">`}
-const hasArt=id=>!!(IMG[id]||SHEET[id]!==undefined);
+function artHTML(c,sm){const v=SHEET[c.id];if(v===undefined)return "";const u=AU[c.id];if(u)return `<img class="ai" alt="" decoding="async" src="${u}">`;loadArt(v/ABN|0);return `<img class="ai ld" alt="" decoding="async" data-art="${esc(c.id)}">`}
+const hasArt=id=>SHEET[id]!==undefined;
 function cardHTML(c,o={}){
   const img=IMG[c.id],tag=o.tag||"div";
   return `<${tag} class="card ${c.r} ${o.cls||""}" data-id="${esc(c.id)}" aria-label="${esc(c.n)}">
@@ -2320,21 +2353,23 @@ function thumbsHTML(){
 }
 function infoHTML(c){return OP.up?`<div class="rr">${RN[c.r]}</div><h3>${esc(c.s)}</h3><div class="ff">${FR[c.f]}${c.alt?" · "+esc(c.alt):""}</div>`:""}
 function barTxt(){const tot=OP.cards.length;return OP.up?(OP.i<tot-1?"Touche la carte pour la suivante":"Touche la carte pour voir le récap"):"Touche la carte pour la retourner"}
-function stageCard(first){
+function stageCard(first,nx){
   const c=OP.cards[OP.i],tot=OP.cards.length,hint=["r","e","l","m","d"].includes(c.r)?c.r:"";
   $("#opCount").innerHTML=`${OP.i+1}<small>/${tot}</small>`;
-  $("#opStage").innerHTML=`<div class="deck${OP.i===tot-1?" last":""}${first?" first":""}" id="deck">
+  $("#opStage").innerHTML=`<div class="deck${OP.i===tot-1?" last":""}${first?" first":""}${nx?" nx":""}" id="deck">
     <div class="tilt2" id="tilt2"><div class="fc${OP.up?" up":""}" id="fc"><div class="cb ${hint}"><i>${LGM}</i><b>ROSIKA</b></div>${cardHTML(c,{noWish:true})}</div></div>
   </div>
   <div class="cinfo ${c.r}" id="cinfo">${infoHTML(c)}</div>
   ${thumbsHTML()}
-  <div class="opbar"><span id="barT">${barTxt()}</span><button id="opAll">Tout révéler</button></div>`;
+  <div class="opbar"><span id="barT">${barTxt()}</span>${toEpic()>=0?`<button id="opEp">Révéler jusqu'à Épique</button>`:""}<button id="opAll">Tout révéler</button></div>`;
   const dk=$("#deck"),tl=$("#tilt2");
   dk.onclick=advance;
   dk.onpointermove=e=>{if(e.pointerType!=="mouse")return;const r=dk.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;tl.style.transform=`rotateY(${x*18}deg) rotateX(${-y*18}deg)`;dk.style.setProperty("--gx",(x+.5)*100+"%");dk.style.setProperty("--gy",(y+.5)*100+"%");dk.style.setProperty("--go",".9")};
   dk.onpointerleave=()=>{tl.style.transform="";dk.style.setProperty("--go","0")};
   $("#opAll").onclick=e=>{e.stopPropagation();stageSum()};
+  const ep=$("#opEp");if(ep)ep.onclick=e=>{e.stopPropagation();const j=toEpic();if(j<0||OP.lock)return;OP.i=j;OP.up=false;OP.charged=false;stageCard(false,true);OP.lock=true;setTimeout(()=>{OP.lock=false;advance()},380)};
 }
+function toEpic(){if(!OP||OP.done)return -1;const st=OP.i+(OP.up?1:0);for(let j=st;j<OP.cards.length;j++)if(["e","l","m","d"].includes(OP.cards[j].r))return j>st?j:-1;return -1}
 function advance(){
   if(OP.lock)return;const c=OP.cards[OP.i];
   if(!OP.up){
@@ -2345,8 +2380,9 @@ function advance(){
   if(OP.i<OP.cards.length-1){
     const dk=$("#deck");if(RMOT()){OP.i++;OP.up=false;stageCard();return}
     OP.lock=true;
-    dk.animate([{transform:"none",opacity:1},{transform:"translate(-55vw,-30px) rotate(-16deg)",opacity:0}],{duration:360,easing:"cubic-bezier(.5,0,.75,0)",fill:"forwards"});
-    setTimeout(()=>{OP.lock=false;OP.i++;OP.up=false;stageCard()},300);
+    const tl=$("#tilt2"),ci=$("#cinfo");if(ci)ci.style.opacity="0";
+    tl.animate([{transform:"none",opacity:1},{transform:"translate(62vw,-40px) rotate(18deg)",opacity:0}],{duration:380,easing:"cubic-bezier(.5,0,.75,0)",fill:"forwards"});
+    setTimeout(()=>{OP.lock=false;OP.i++;OP.up=false;stageCard(false,true)},320);
   }else stageSum();
 }
 function reveal(){
@@ -2391,8 +2427,9 @@ function stageSum(){
   $("#opCount").innerHTML=`Récap <small>· ${OP.cards.length} cartes · ${nN} nouvelle${nN>1?"s":""}</small>`;
   const P=OP.P,rn=Math.min(OP.n,Math.max(1,maxN(P))),again=costN(P,rn),cnt={};OP.cards.forEach(c=>cnt[c.r]=(cnt[c.r]||0)+1);
   const big=OP.cards.length>20,gm={},grp=[];idx.forEach(j=>{const id=OP.cards[j].id;if(gm[id])gm[id].n++,gm[id].nw=gm[id].nw||OP.isNew[j];else grp.push(gm[id]={j,n:1,nw:OP.isNew[j]})});
-  $("#opStage").innerHTML=`<div class="sumh">${ORD_R.filter(k=>cnt[k]).map(k=>`<span class="rc ${k}" style="color:var(--${k})">${cnt[k]} ${RN[k]}</span>`).join("")}${nN&&nN<OP.cards.length?`<button id="onlyNew" aria-pressed="false">Nouvelles seulement</button>`:""}</div>
-  <div class="sum">${grp.map((g,k)=>{const j=g.j,c=OP.cards[j];return `<div class="w${g.nw?" isn":""}" style="animation-delay:${big?0:Math.min(k,20)*55}ms${big?";animation:none":""}"><button data-id="${esc(c.id)}">${cardHTML(c,{isNew:g.nw})}</button>${g.n>1?`<span class="dupn">×${g.n}</span>`:""}</div>`}).join("")}</div>
+  const sm=OP.cards.length>10,dupN=OP.cards.length-nN,dupV=OP.cards.reduce((a,c,j)=>a+(OP.isNew[j]?0:SELL[c.r]),0),PN=P.daily?theme().n:P.n;
+  $("#opStage").innerHTML=`<div class="sumtop">${OP.gold?`<span class="sgold">Un booster doré dans le lot</span>`:""}<h2>${esc(PN)}</h2><small class="mono">${OP.n} booster${OP.n>1?"s":""} · ${OP.cards.length} cartes</small><span class="spill">${nN} nouvelle${nN>1?"s":""} carte${nN>1?"s":""}${dupN?`, ${dupN} doublon${dupN>1?"s":""} (+${nf(dupV)} ◆ si recyclés)`:""}</span></div><div class="sumh">${ORD_R.filter(k=>cnt[k]).map(k=>`<span class="rc ${k}" style="color:var(--${k})">${cnt[k]} ${RN[k]}</span>`).join("")}${nN&&nN<OP.cards.length?`<button id="onlyNew" aria-pressed="false">Nouvelles seulement</button>`:""}</div>
+  <div class="sum${sm?" sm":""}">${grp.map((g,k)=>{const j=g.j,c=OP.cards[j];return `<div class="w${g.nw?" isn":""}" style="animation-delay:${big?0:Math.min(k,20)*55}ms${big?";animation:none":""}"><button data-id="${esc(c.id)}">${cardHTML(c,{isNew:g.nw&&!sm})}</button>${g.nw&&sm?`<span class="nwt">Nouveau</span>`:""}${g.n>1?`<span class="dupn">×${g.n}</span>`:""}</div>`}).join("")}</div>
   <div class="row" style="justify-content:center">
     <button class="opgo" id="opAgain" ${again.ok?"":"disabled"}>Rouvrir${rn>1?" ×"+rn:""} <small>${esc(again.txt)}</small></button>
     <button class="sec" id="opDone">Retour aux boosters</button>
@@ -2474,8 +2511,8 @@ const MPOOL_D=[
  {id:"w2",k:"wish",goal:2,t:"Ajoute 2 persos à tes envies",g:20},
  {id:"x2",k:"x2",goal:1,t:"Ouvre 2 boosters d'un coup (×2)",g:40},
  {id:"dp",k:"dailyp",goal:1,t:"Ouvre le pack du jour",g:25},
- {id:"i1",k:"img",goal:1,t:"Personnalise l'image d'une carte",g:30},
- {id:"mx",k:"mix",goal:2,t:"Ouvre 2 boosters Mix Héros",g:30}
+ {id:"ar1",k:"arw",goal:1,t:"Gagne un combat dans l'Arène",g:40},
+ {id:"mx",k:"mix",goal:2,t:"Ouvre 2 boosters Mix",g:30}
 ];
 const MPOOL_W=[
  {id:"o25",k:"open",goal:25,t:"Ouvre 25 boosters",g:150,base:1},
@@ -2484,7 +2521,7 @@ const MPOOL_W=[
  {id:"l3",k:"legend",goal:3,t:"Obtiens 3 Légendaires ou mieux",g:350},
  {id:"e8",k:"epic",goal:8,t:"Obtiens 8 Épiques ou mieux",g:200},
  {id:"n50",k:"newc",goal:50,t:"Découvre 50 nouveaux persos",g:220},
- {id:"i5",k:"img",goal:5,t:"Personnalise 5 images",g:200},
+ {id:"ar5",k:"arw",goal:5,t:"Gagne 5 combats dans l'Arène",g:220},
  {id:"s30",k:"sell",goal:30,t:"Vends 30 doublons",g:150},
  {id:"wmv",k:"u_mv",goal:10,t:"Ouvre 10 boosters de l'univers Marvel",g:160},
  {id:"wdc",k:"u_dc",goal:8,t:"Ouvre 8 boosters de l'univers DC",g:160},
@@ -2522,13 +2559,14 @@ function streakState(){
   const cont=S.streak.last===ys||(S.streak.last===y2&&!S.streak.miss);
   return{done:false,n:cont?S.streak.n%7:0,next:cont?S.streak.n%7+1:1,usedMiss:S.streak.last===y2};
 }
-function claimStreak(){
+function claimStreakQuiet(){claimStreak(1)}
+function claimStreak(quiet){
   const s=streakState();if(s.done)return;
   const n=s.next,g=STREAK[n-1];S.coins+=g;S.st.logins++;
   if(n===1)S.streak.miss=false;if(s.usedMiss)S.streak.miss=true;
   S.streak.n=n;S.streak.last=today();
   let extra="";if(n===7){S.forceGold=true;S.st.streak7++;extra=" + booster doré"}
-  save();renderAll();toast(`Jour ${n} · +${g} ◆${extra}`);
+  if(quiet!==1){save();renderAll();toast(`Jour ${n} · +${g} ◆${extra}`)}
 }
 function albumList(){return ALBUMS}
 const ownedN=()=>{let n=0;for(const id in S.own)if(S.own[id])n++;return n};
@@ -2600,6 +2638,7 @@ function renderMis(){
     <div><span class="msi">${ico("flame")}</span><b class="mono">${cur}/7</b><small>série de connexion</small></div>
     <div><span class="msi">${ico("trophy")}</span><b class="mono">${nGot}/${ACH.length}</b><small>succès</small></div>
   </div>
+  ${(()=>{const nC=claimable().length+(s.done?0:1);return nC>1?`<div class="mall"><span>${ico("gift")} ${nC} récompenses à réclamer</span><button class="cta sm" id="bAll">Tout réclamer</button></div>`:""})()}
   <section class="mbox streak">
     <div class="mhead"><div><div class="eye">Connexion</div><h3>Série de 7 jours</h3></div>${s.done?`<span class="pillok">${ico("check")} Réclamé aujourd'hui</span>`:`<button class="cta sm" id="bStreak">Réclamer le jour ${s.next} · +${STREAK[s.next-1]} ◆</button>`}</div>
     <div class="days">${days}</div>
@@ -2614,7 +2653,7 @@ function renderMis(){
       <div class="seg light" id="achSeg"><button data-f="all" aria-pressed="${ACHF==="all"}">Tous</button><button data-f="todo" aria-pressed="${ACHF==="todo"}">À faire</button><button data-f="done" aria-pressed="${ACHF==="done"}">Obtenus</button></div></div>
     <div class="agrid">${list.map(a=>{const v=a.v(),ok=!!S.ach[a.id];return `<div class="ach${ok?" ok":""}"><span class="aic">${ico(ok?"trophy":"lock")}</span><div><b>${esc(a.t)}</b><p>${esc(a.d)}</p><div class="mbar"><i style="width:${Math.min(100,v/a.g*100)}%"></i></div><small class="mono">${nf(Math.min(v,a.g))}/${nf(a.g)} · +${nf(a.r)} ◆</small></div></div>`}).join("")}</div>
   </section>`;
-  const bs=$("#bStreak");if(bs)bs.onclick=claimStreak;
+  const bs=$("#bStreak");if(bs)bs.onclick=claimStreak;const ba=$("#bAll");if(ba)ba.onclick=claimAll;
   $("#misBody").querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>claimMis(b.dataset.c));
   $("#achSeg").querySelectorAll("button").forEach(b=>b.onclick=()=>{ACHF=b.dataset.f;renderMis()});
 }
@@ -2635,13 +2674,18 @@ function renderAlbums(){
 $("#cMode").onclick=e=>{const b=e.target.closest("button");if(!b)return;CMODE=b.dataset.m;$("#cMode").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));renderColl()};
 $("#aSort").onclick=e=>{const b=e.target.closest("button");if(!b)return;ASORT=b.dataset.s;$("#aSort").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));renderColl()};
 $("#grid").addEventListener("click",e=>{const b=e.target.closest("[data-alb]");if(!b)return;const a=ALBUMS.find(x=>x.n===b.dataset.alb);if(a)openPersos({t:a.n,pool:a.pool,alb:a})});
-function claimMis(key){
+function claimable(){const out=[];for(const[sc,L,st]of[["d",misD(),S.mis],["w",misW(),S.wk]]){L.forEach(m=>{if(!st.claimed.includes(m.id)&&(st[m.k]||0)>=m.goal)out.push(sc+":"+m.id)})}return out}
+function claimAll(){const s0=streakState();let g=0,n=0,extra=[];if(!s0.done){const c0=S.coins;claimStreakQuiet();g+=S.coins-c0;n++}
+  for(const k of claimable()){const c0=S.coins;claimMis(k,1);g+=S.coins-c0;n++}
+  for(const[sc,L,st]of[["d",misD(),S.mis],["w",misW(),S.wk]])if(!st.bonus&&L.every(m=>st.claimed.includes(m.id))){claimMis(sc+":bonus",1);n++;extra.push(sc==="d"?"+1 booster":"+1 coffret")}
+  save();renderAll();toast(`${n} récompense${n>1?"s":""} · +${nf(g)} ◆${extra.length?" · "+extra.join(" · "):""}`)}
+function claimMis(key,quiet){
   const i=key.indexOf(":"),sc=key.slice(0,i),k=key.slice(i+1);
   if(sc==="alb"){const a=albumList().find(x=>x.n===k);if(!a||S.albums[k]||!a.pool.every(c=>S.own[c.id]))return;S.albums[k]=1;S.coins+=a.g;toast(`Album « ${k} » · +${a.g} ◆`)}
   else{const L=sc==="d"?misD():misW(),st=sc==="d"?S.mis:S.wk;
-    if(k==="bonus"){if(st.bonus||!L.every(m=>st.claimed.includes(m.id)))return;st.bonus=true;if(sc==="d"){S.stock++;toast("+1 booster gratuit")}else{S.freeBox++;toast("Coffret offert ajouté en boutique")}}
-    else{const m=L.find(x=>x.id===k);if(!m||st.claimed.includes(k)||(st[m.k]||0)<m.goal)return;st.claimed.push(k);S.coins+=m.g;toast("+"+m.g+" ◆")}}
-  save();renderAll();
+    if(k==="bonus"){if(st.bonus||!L.every(m=>st.claimed.includes(m.id)))return;st.bonus=true;if(sc==="d"){S.stock++;quiet||toast("+1 booster gratuit")}else{S.freeBox++;quiet||toast("Coffret offert ajouté en boutique")}}
+    else{const m=L.find(x=>x.id===k);if(!m||st.claimed.includes(k)||(st[m.k]||0)<m.goal)return;st.claimed.push(k);S.coins+=m.g;quiet||toast("+"+m.g+" ◆")}}
+  if(!quiet){save();renderAll()}
 }
 let popOpen=false;
 function renderPop(){const p=$("#pop");if(!p||!popOpen)return;const full=S.stock>=MAXS,left=S.stockT+CD-Date.now(),w=full?100:Math.max(0,Math.min(100,(1-left/CD)*100));
@@ -2686,10 +2730,6 @@ function openZoom(id,flipped){
     </div></div>
   </div></div></div>
   <p class="hint">Bouge la souris ou le doigt pour l'incliner · touche la carte pour la retourner</p>
-  <div class="acts">
-    <label class="file">Changer l'image<input type="file" id="fileIn" accept="image/*"></label>
-    <button class="btn" id="rmImg" ${IMG[id]?"":"disabled"}>Retirer l'image</button>
-  </div>
   <div class="acts" style="margin-top:8px">
     <button class="btn${S.wish[id]?" on":""}" id="wishB">${S.wish[id]?"♥ Dans tes envies":"♡ Ajouter aux envies"}</button>
     <button class="btn" id="sell1" ${q>1?"":"disabled"}>Vendre 1 · ${SELL[c.r]} ◆</button>
@@ -2700,8 +2740,8 @@ function openZoom(id,flipped){
   tilt.addEventListener("pointermove",mv);tilt.addEventListener("pointerleave",()=>tilt.style.transform="");
   fl.onclick=()=>fl.classList.toggle("back");
   const isBack=()=>fl.classList.contains("back");
-  $("#fileIn").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const had=!!IMG[id];putImg(id,await resize(f));if(!had){track("img",1);save()}renderAll();openZoom(id);toast("Image mise à jour")}catch(err){toast("Image illisible, essaie un JPG ou PNG")}};
-  $("#rmImg").onclick=()=>{delImg(id);renderAll();openZoom(id,isBack())};
+  if(0)$("#fileIn").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const had=!!IMG[id];putImg(id,await resize(f));if(!had){track("img",1);save()}renderAll();openZoom(id);toast("Image mise à jour")}catch(err){toast("Image illisible, essaie un JPG ou PNG")}};
+  if(0)$("#rmImg").onclick=()=>{delImg(id);renderAll();openZoom(id,isBack())};
   $("#wishB").onclick=()=>{if(S.wish[id])delete S.wish[id];else{S.wish[id]=1;track("wish",1)}save();renderAll();openZoom(id,isBack())};
   $("#sell1").onclick=()=>{if(S.own[id]>1){S.own[id]--;S.coins+=SELL[c.r];track("sell",1);save();renderAll();openZoom(id,isBack())}};
   $("#zClose").onclick=()=>$("#zoom").close();
@@ -2767,12 +2807,12 @@ async function importFiles(list){
   <button class="btn" id="close">Fermer</button>`;
   $("#close").onclick=()=>$("#dlg").close();
 }
-for(const s of["#impFiles","#impDir"])$(s).onchange=e=>{importFiles(e.target.files);e.target.value=""};
+if(0)for(const s of["#impFiles","#impDir"])$(s).onchange=e=>{importFiles(e.target.files);e.target.value=""};
 let dragN=0;
-addEventListener("dragenter",e=>{if(![...e.dataTransfer.types].includes("Files"))return;e.preventDefault();if(++dragN===1){const d=document.createElement("div");d.className="drop";d.id="drop";d.textContent="Dépose tes images ici";document.body.append(d)}});
+addEventListener("dragenter",e=>{if(1)return;e.preventDefault();if(++dragN===1){const d=document.createElement("div");d.className="drop";d.id="drop";d.textContent="Dépose tes images ici";document.body.append(d)}});
 addEventListener("dragover",e=>{if([...e.dataTransfer.types].includes("Files"))e.preventDefault()});
 addEventListener("dragleave",()=>{if(--dragN<=0){dragN=0;$("#drop")?.remove()}});
-addEventListener("drop",e=>{if(!e.dataTransfer.files.length)return;e.preventDefault();dragN=0;$("#drop")?.remove();importFiles(e.dataTransfer.files)});
+addEventListener("drop",e=>{if(1)return;e.preventDefault();dragN=0;$("#drop")?.remove();importFiles(e.dataTransfer.files)});
 $("#sellAll").onclick=()=>{let g=0,n=0;for(const id in S.own){const x=MK.ownFree(id);if(x>0){g+=x*SELL[BY[id].r];n+=x;S.own[id]-=x}}S.coins+=g;track("sell",n);save();renderAll();toast("+"+nf(g)+" ◆")};
 let qT=0;$("#q").oninput=()=>{clearTimeout(qT);qT=setTimeout(()=>{resetLim();renderColl()},140)};
 $("#fA").innerHTML=`<option value="all">Tous</option>`+["mv","dc","sw","di","dw","hp","lo","jv","fg","tf"].map(f=>`<optgroup label="${FR[f]}">${ALBUMS.filter(a=>a.f===f).map(a=>`<option value="${esc(a.n)}">${esc(a.n)}</option>`).join("")}</optgroup>`).join("")+`<option value="none">Hors album</option>`;
@@ -3048,7 +3088,7 @@ const AR=(()=>{
       if(res>0){dc=30;if(a.fw!==today()){a.fw=today();dc+=100;first=true}}else if(!res)dc=10;else if(!quit)dc=5}
     else if(res>0)dc=5;
     S.coins+=dc;a.hist=[{t:Date.now(),o:o.n,r:res,dt,s:B.sc.slice(),rk:B.ranked},...(a.hist||[])].slice(0,15);
-    S.st.arw=(S.st.arw||0)+(res>0?1:0);save();renderTop();checkAch();push();
+    if(res>0)track("arw",1);save();renderTop();checkAch();push();
     const L=lg(a.tr),el=$("#arB");
     if(quit){const rk=B.ranked;close();renderAll();return toast(rk?`Abandon · ${dt} 🏆`:"Combat abandonné")}
     el.insertAdjacentHTML("beforeend",`<div class="arend ${res>0?"arV":res<0?"arD":"arN0"}"><div class="arendc">
