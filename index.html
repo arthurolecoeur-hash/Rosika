@@ -1640,6 +1640,20 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .gem .gmw,.pill .gmw{width:1.15em;height:1.15em;animation:gmsh 3.2s ease-in-out infinite}
 @keyframes gmsh{0%,80%,100%{filter:none;transform:none}88%{filter:brightness(1.6) drop-shadow(0 0 6px #ff5fa8);transform:rotate(-8deg) scale(1.12)}}
 .gem,.gem2{color:inherit}
+
+.ghost.c,.rn.c{--g1:#f4f6fb;--g2:#7d8293;--g3:#d7dbe6}
+.ghost.u{--g1:#b8f7d8;--g2:#1f8a5a;--g3:#6fe3b0}
+.ghost.r{--g1:#d6e6ff;--g2:#2a66d8;--g3:#7fb2ff}
+.ghost.e{--g1:#f2dcff;--g2:#8a3be0;--g3:#ff8ad8}
+.ghost.l{--g1:#fff7cc;--g2:#f5c518;--g3:#c48a00}
+.ghost.m{--g1:#ff4d6d;--g2:#f5a623;--g3:#4c8dff}
+.ghost.d{--g1:#ffffff;--g2:#ffd34d;--g3:#9fdcff}
+.ghost{border:2px solid transparent!important;background:linear-gradient(#0b0b10,#0b0b10) padding-box,conic-gradient(from var(--ang),color-mix(in srgb,var(--g1) 80%,transparent),color-mix(in srgb,var(--g2) 80%,transparent),color-mix(in srgb,var(--g3) 80%,transparent),color-mix(in srgb,var(--g2) 80%,transparent),color-mix(in srgb,var(--g1) 80%,transparent)) border-box!important;animation:rspin 5s linear infinite}
+.ghost.m{background:linear-gradient(#0b0b10,#0b0b10) padding-box,conic-gradient(from var(--ang),#ff4d6d,#f5a623,#3ecf8e,#4c8dff,#b25cff,#ff4d6d) border-box!important}
+.ghost .rn{background:linear-gradient(90deg,var(--g1),var(--g2),var(--g3),var(--g1));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent!important;text-shadow:none!important;filter:drop-shadow(0 1px 3px #000);animation:rnmove 3s linear infinite;font-size:12px}
+.ghost.m .rn{background-image:linear-gradient(90deg,#ff4d6d,#f5a623,#3ecf8e,#4c8dff,#b25cff,#ff4d6d)}
+@keyframes rnmove{to{background-position:300% 0}}
+@media (prefers-reduced-motion:reduce){.ghost,.ghost .rn{animation:none}}
 </style>
 
 <nav><div class="in">
