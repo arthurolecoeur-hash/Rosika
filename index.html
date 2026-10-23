@@ -1591,6 +1591,49 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .arpips span{width:38px;height:26px;font-size:14px}
 .arpips em{display:none}
 @media (max-width:600px){.arfield{width:calc(100% - 20px)}.arslot.arW{transform:scale(1.04)}}
+
+.twwrap{display:grid;grid-template-columns:300px 1fr;gap:22px;padding:22px;border-radius:24px;background:radial-gradient(70% 90% at 0% 100%,rgb(124 92 255 / .2),transparent 60%),radial-gradient(60% 60% at 100% 0%,rgb(255 224 138 / .08),transparent 60%),var(--panel);box-shadow:inset 0 0 0 1px rgb(255 255 255 / .07)}
+.twtower{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 10px}
+.twtower::before{content:"";position:absolute;top:40px;bottom:30px;left:50%;width:76%;transform:translateX(-50%);background:repeating-linear-gradient(0deg,#ffffff05 0 22px,#ffffff0a 22px 23px),linear-gradient(90deg,#1a1630,#231d40 50%,#1a1630);border-radius:6px;box-shadow:inset 0 0 0 1px #ffffff10;z-index:0}
+.twspire{position:relative;z-index:1;width:0;height:0;border-left:44px solid transparent;border-right:44px solid transparent;border-bottom:44px solid #2c2452;filter:drop-shadow(0 -4px 12px #7c5cff66)}
+.twspire i{position:absolute;left:-4px;top:-14px;width:8px;height:14px;background:#ffe08a;border-radius:2px;box-shadow:0 0 12px #ffe08a;animation:twflag 1.6s ease-in-out infinite alternate}
+@keyframes twflag{to{transform:skewY(-12deg);filter:brightness(1.3)}}
+.twf{position:relative;z-index:1;width:88%;display:grid;grid-template-columns:34px 1fr 32px;align-items:center;gap:8px;padding:7px 10px;border-radius:10px;background:#120f22;box-shadow:inset 0 0 0 1px #ffffff12,0 2px 0 #0006;font-size:12px;transition:transform .2s}
+.twn{font-family:var(--mono);font-weight:800;color:var(--mute)}
+.twt{color:#c9c3e6;font-weight:600}
+.twg{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:#ffffff0a;color:var(--mute);font-size:14px}
+.twg.box{color:#c18bff;background:#c18bff1a}.twg.pre{color:#ffe08a;background:#ffe08a1f;box-shadow:0 0 10px -2px #ffe08a}
+.twf.bs{background:linear-gradient(90deg,#2a1020,#120f22);box-shadow:inset 0 0 0 1px #ff4d6d44,0 2px 0 #0006}.twf.bs .twt{color:#ff9aaa}
+.twf.b10{box-shadow:inset 0 0 0 1px #ffe08a66,0 0 18px -6px #ffe08a}.twf.b10 .twt{color:#ffe08a}
+.twf.cl{opacity:.55}.twf.cl .twg{color:#5ef0a0;background:#5ef0a01a}.twf.cl .twt{color:#5ef0a0}
+.twf.cu{width:100%;padding:12px 12px;background:linear-gradient(90deg,#ffe08a26,#7c5cff26);box-shadow:inset 0 0 0 1.5px #ffe08a,0 0 26px -6px #ffe08a;font-size:14px;animation:twpulse 2s ease-in-out infinite}
+.twf.cu .twn{color:#ffe08a;font-size:16px}.twf.cu .twt{color:#fff;font-family:var(--display)}
+@keyframes twpulse{50%{box-shadow:inset 0 0 0 1.5px #ffe08a,0 0 34px -4px #ffe08a}}
+.twme{position:absolute;left:-16px;font-style:normal;color:#ffe08a;font-size:12px;animation:twme 1s ease-in-out infinite alternate}
+@keyframes twme{to{transform:translateX(4px)}}
+.twbase{position:relative;z-index:1;width:100%;margin-top:4px;padding:8px;border-radius:10px;text-align:center;font-size:11px;color:var(--mute);background:#0c0a18;box-shadow:inset 0 0 0 1px #ffffff12}
+.twmain{display:flex;flex-direction:column;gap:14px;min-width:0}
+.twhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.twhead small{flex-basis:100%;font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-size:11px}
+.twhead h3{margin:0;font-family:var(--display);font-size:clamp(36px,5vw,56px);line-height:1}
+.twdiff{font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;color:var(--dc);background:color-mix(in srgb,var(--dc) 14%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--dc) 45%,transparent)}
+.twkpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.twkpis div{padding:10px;border-radius:14px;background:#ffffff07;box-shadow:inset 0 0 0 1px #ffffff0c;text-align:center}
+.twkpis b{display:block;font-family:var(--display);font-size:24px}.twkpis small{font-size:11px;color:var(--mute)}
+.twrewbig{display:flex;gap:14px;align-items:center;padding:14px 16px;border-radius:16px;background:linear-gradient(90deg,#ffe08a1a,#ffffff05);box-shadow:inset 0 0 0 1px #ffe08a44}
+.twrewbig>span{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:24px;background:linear-gradient(135deg,#ffe08a,#f5a623);color:#1d1300;box-shadow:0 6px 20px -8px #f5a623}
+.twrewbig.box{background:linear-gradient(90deg,#c18bff1f,#ffffff05);box-shadow:inset 0 0 0 1px #c18bff55}.twrewbig.box>span{background:linear-gradient(135deg,#e2c6ff,#8a3be0);color:#fff}
+.twrewbig.pre>span{background:linear-gradient(135deg,#fff,#ffd34d 50%,#c48a00);animation:twpulse 2s infinite}
+.twrewbig small{display:block;color:var(--mute);font-size:11px}.twrewbig b{font-size:17px;font-family:var(--display)}.twrewbig em{display:block;font-style:normal;color:#5ef0a0;font-weight:700;font-size:13px}
+.twenemy{padding:12px;border-radius:16px;background:#0000002e;box-shadow:inset 0 0 0 1px #ff4d6d22}
+.twenh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;flex-wrap:wrap}
+.twenh small{font-family:var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#ff9aaa;font-size:10px}.twenh span{font-size:11px;color:var(--mute)}
+.twcta{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.twrules span.box{color:#c18bff}.twrules span.pre{color:#ffe08a}
+@media (max-width:860px){.twwrap{grid-template-columns:1fr}.twtower{order:2;max-width:360px;margin:0 auto;width:100%}}
+@media (max-width:600px){.twwrap{padding:14px}.twkpis b{font-size:20px}.twcta .arbtn{width:100%}}
+
+.twtower{align-self:start}
 </style>
 
 <nav><div class="in">
@@ -3302,15 +3345,23 @@ const AR=(()=>{
       :`<div class="arlgs">${LG.map(l=>`<div class="arlgc${l===L?" arCur":""}" style="--lc:${l[2]}">${emblem(l[0],48)}<b>${l[1]}</b><small class="mono">${nf(l[0])} 🏆</small></div>`).join("")}</div>`}
     </section>`:""}`}
   function modeTabs(){return `<div class="armodes"><button data-armode="rk" aria-pressed="${MODE==="rk"}"><b>⚔ Classé</b><small>Trophées et ligues</small></button><button data-armode="tw" aria-pressed="${MODE==="tw"}"><b>▲ Tour</b><small>Étage ${A().tw} · récompenses</small></button></div>`}
-  function towerHTML(){const a=A(),f=a.tw,td=towerDeck(f),bo=towerBonus(f),rw=towerRew(f);
-    const lad=[];for(let k=f+9;k>=Math.max(1,f-2);k--){const r=towerRew(k);lad.push(`<div class="twst${k<f?" done":k===f?" cur":""}${isBoss(k)?" boss":""}"><span class="mono">${k}</span><b>${k<f?"✓ Franchi":k===f?"À battre":isBoss(k)?"Gardien":"Étage"}</b><em class="${r.k}">${r.i} ${r.t}</em></div>`)}
-    return `<section class="twhero"><div class="twl"><small>La Tour</small><h3>Étage ${f}${isBoss(f)?` <span class="twboss">Gardien</span>`:""}</h3>
-      <p class="armut" style="margin:4px 0 0">Record : étage ${a.twBest||0} · chaque étage est plus dur que le précédent.${bo?` Bonus adverse : +${bo} par manche.`:""}</p>
-      <div class="twrew"><span>${rw.i}</span><div><small>Récompense de cet étage</small><b>${rw.t} + ${10+f*2} ◆</b></div></div>
-      <button class="arbtn arPri arBig" data-arg="tw">▲ Combattre l'étage ${f}</button>
-      <div class="twrules"><span>✦ Chaque étage : 1 booster</span><span>▣ Tous les 5 : 1 Coffret</span><span>✺ Tous les 10 : 1 Prestige</span></div></div>
-      <div class="twr"><small>Équipe adverse</small><div class="twdeck">${td.map(id=>cardHTML(BY[id],{noWish:true})).join("")}</div>
-      <div class="twlad">${lad.join("")}</div></div></section>`}
+  function towerHTML(){const a=A(),f=a.tw,td=towerDeck(f),bo=towerBonus(f),rw=towerRew(f),my=deck();
+    const es=td.reduce((x,id)=>x+score(BY[id]),0)+bo*15,ms=Math.max(1,my.reduce((x,id)=>x+score(BY[id]),0)),q=es/ms;
+    const D=q<.85?["Facile","#5ef0a0"]:q<1.05?["Équilibré","#ffe08a"]:q<1.25?["Difficile","#ff9a4d"]:["Très difficile","#ff5a6e"];
+    const to5=5-((f-1)%5),to10=10-((f-1)%10);
+    const fl=[];for(let k=f+6;k>=Math.max(1,f-3);k--){const r=towerRew(k),cl=k<f,cu=k===f,bs=isBoss(k);
+      fl.push(`<div class="twf${cl?" cl":""}${cu?" cu":""}${bs?" bs":""}${k%10===0?" b10":""}"><span class="twn">${k}</span><span class="twt">${cu?"Tu es ici":cl?"Franchi":bs?(k%10===0?"Grand gardien":"Gardien"):"Étage"}</span><span class="twg ${r.k}" title="${r.t}">${cl?"✓":r.i}</span>${cu?`<i class="twme">▶</i>`:""}</div>`)}
+    return `<section class="twwrap">
+      <div class="twtower"><div class="twspire"><i></i></div>${fl.join("")}<div class="twbase">Base · ${a.twBest||0} étage${(a.twBest||0)>1?"s":""} franchi${(a.twBest||0)>1?"s":""}</div></div>
+      <div class="twmain">
+        <div class="twhead"><small>La Tour</small><h3>Étage ${f}</h3>${isBoss(f)?`<span class="twboss">${f%10===0?"Grand gardien":"Gardien"}</span>`:""}<span class="twdiff" style="--dc:${D[1]}">● ${D[0]}</span></div>
+        <div class="twkpis"><div><b>${a.twBest||0}</b><small>Record</small></div><div><b>${to5===5&&f%5===0?0:to5}</b><small>avant un Coffret</small></div><div><b>${to10}</b><small>avant un Prestige</small></div></div>
+        <div class="twrewbig ${rw.k}"><span>${rw.i}</span><div><small>Récompense de l'étage ${f}</small><b>${rw.t}</b><em>+ ${10+f*2} ◆</em></div></div>
+        <div class="twenemy"><div class="twenh"><small>Équipe adverse</small><span class="mono">Puissance ${es}${bo?` · bonus +${bo}/manche`:""}</span></div>
+          <div class="twdeck">${td.map(id=>cardHTML(BY[id],{noWish:true})).join("")}</div></div>
+        <div class="twcta"><button class="arbtn arPri arBig" data-arg="tw">▲ Combattre l'étage ${f}</button><span class="armut" style="margin:0">Défaite = tu peux réessayer, sans pénalité.</span></div>
+        <div class="twrules"><span class="stock">✦ Chaque étage : 1 booster</span><span class="box">▣ Tous les 5 : 1 Coffret</span><span class="pre">✺ Tous les 10 : 1 Prestige</span></div>
+      </div></section>`}
   function editor(){EDIT=deck().slice();EQ="";paintEd()}
   function paintEd(){let el=$("#arEd");if(!el){el=document.createElement("div");el.id="arEd";el.className="ared";document.body.append(el)}
     const q=EQ.trim().toLowerCase(),list=owned().filter(c=>!q||(c.n+" "+FR[c.f]).toLowerCase().includes(q)).sort((a,b)=>score(b)-score(a)).slice(0,90);
