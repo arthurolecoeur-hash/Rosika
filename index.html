@@ -1457,6 +1457,10 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 @media (max-width:600px){.sum.sm{grid-template-columns:repeat(3,minmax(0,1fr))}.sum.sm .card .num{font-size:7px;padding:0 3px}}
 
 .opstage{flex:1 0 auto;justify-content:safe center}
+
+.cell>button:hover .card,.cell>button:hover .card:not(.tilting){transform:none!important;box-shadow:none}
+.cell .card .art::after,.cell:hover .card .art::after{display:none!important}
+.cell .card .gl{display:none}
 </style>
 
 <nav><div class="in">
@@ -2060,7 +2064,7 @@ function packHTML(P){
     ${tag}<span class="cnt">${P.k} cartes</span><span class="holo"></span>${PFX[P.id]?`<span class="fx">${PFX[P.id]}</span>`:""}</div></div>`;
 }
 let hvC=null,hvF=0,hvE=null;
-document.addEventListener("pointermove",e=>{if(e.pointerType!=="mouse")return;hvE=e;if(hvF)return;hvF=requestAnimationFrame(()=>{hvF=0;const ev=hvE,c=ev.target.closest&&ev.target.closest(".cell .card,.lgrid .card,.sum .card,.fan .card");
+document.addEventListener("pointermove",e=>{if(e.pointerType!=="mouse")return;hvE=e;if(hvF)return;hvF=requestAnimationFrame(()=>{hvF=0;const ev=hvE,c=ev.target.closest&&ev.target.closest(".lgrid .card,.sum .card,.fan .card");
   if(hvC&&hvC!==c){hvC.style.removeProperty("--rx");hvC.style.removeProperty("--ry");hvC.style.setProperty("--go","0");hvC.classList.remove("tilting");hvC=null}
   if(!c)return;hvC=c;c.classList.add("tilting");const r=c.getBoundingClientRect(),x=(ev.clientX-r.left)/r.width-.5,y=(ev.clientY-r.top)/r.height-.5;
   c.style.setProperty("--ry",(x*14).toFixed(1)+"deg");c.style.setProperty("--rx",(-y*14).toFixed(1)+"deg");c.style.setProperty("--gx",((x+.5)*100).toFixed(0)+"%");c.style.setProperty("--gy",((y+.5)*100).toFixed(0)+"%");c.style.setProperty("--go",".85")})},{passive:true});
