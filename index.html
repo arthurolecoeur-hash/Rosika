@@ -1500,6 +1500,44 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .card .st span{color:#e8ecf8!important}
 .card .st .sA{color:#ffb199!important}.card .st .sD{color:#a9d8ff!important}.card .st .sV{color:#ffe58a!important}
 .card.d .st span,.card.m .st span{color:#fff!important}
+
+.armodes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.armodes button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:14px 18px;border-radius:18px;border:0;background:var(--panel);color:var(--fg);box-shadow:inset 0 0 0 1px rgb(255 255 255 / .07);cursor:pointer;text-align:left;transition:box-shadow .2s,background-color .2s}
+.armodes button b{font-family:var(--display);font-size:18px}.armodes button small{color:var(--mute);font-size:12px}
+.armodes button[aria-pressed="true"]{background:linear-gradient(135deg,rgb(255 224 138 / .14),rgb(124 92 255 / .12));box-shadow:inset 0 0 0 1.5px #ffe08a}
+.twhero{display:grid;grid-template-columns:1fr 1.2fr;gap:22px;padding:22px;border-radius:22px;background:radial-gradient(80% 120% at 0% 0%,rgb(124 92 255 / .18),transparent 60%),var(--panel);box-shadow:inset 0 0 0 1px rgb(255 255 255 / .07)}
+.twl{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.twl>small,.twr>small{font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-size:11px}
+.twl h3{margin:0;font-family:var(--display);font-size:clamp(34px,5vw,52px);line-height:1;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.twboss{font-size:14px;padding:5px 10px;border-radius:999px;background:linear-gradient(90deg,#ff4d6d,#f5a623);color:#fff}
+.twrew{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:#ffffff08;box-shadow:inset 0 0 0 1px rgb(255 224 138 / .35);text-align:left}
+.twrew>span{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:20px;background:linear-gradient(135deg,#ffe08a,#f5a623);color:#1d1300}
+.twrew small{display:block;color:var(--mute);font-size:11px}.twrew b{font-size:15px}
+.arendc .twrew{margin:14px auto 4px;width:max-content;max-width:100%}
+.twrules{display:flex;flex-wrap:wrap;gap:6px}.twrules span{font-size:12px;padding:5px 10px;border-radius:999px;background:#ffffff0a;color:var(--mute)}
+.twr{display:flex;flex-direction:column;gap:10px;min-width:0}
+.twdeck{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.twdeck .card{font-size:10px;padding:4px;gap:3px}.twdeck .card .uv{display:none}.twdeck .card .st{font-size:8px}
+.twlad{display:flex;flex-direction:column;gap:4px;max-height:300px;overflow:auto;padding-right:4px}
+.twst{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;padding:8px 12px;border-radius:12px;background:#ffffff06;font-size:13px}
+.twst .mono{color:var(--mute);font-weight:700}
+.twst em{font-style:normal;font-size:12px;color:var(--mute)}
+.twst em.box{color:#c18bff}.twst em.pre{color:#ffe08a;font-weight:700}
+.twst.boss{background:linear-gradient(90deg,rgb(255 77 109 / .12),#ffffff06)}
+.twst.cur{box-shadow:inset 0 0 0 1.5px #ffe08a;background:rgb(255 224 138 / .08)}.twst.cur .mono{color:#ffe08a}
+.twst.done{opacity:.5}.twst.done b{color:#5ef0a0}
+@media (max-width:860px){.twhero{grid-template-columns:1fr}}
+@media (max-width:600px){.twdeck .card .ch .nm,.twdeck .card .st{display:none}.armodes button{padding:10px 12px}.armodes button b{font-size:15px}}
+@keyframes rspin{to{--ang:360deg}}
+.card.c,.card.u,.card.r,.card.e,.card.l{animation:rspin 5s linear infinite}
+.card.c{--frame:conic-gradient(from var(--ang),#f4f6fb,#8a90a2,#d7dbe6,#6c7284,#f4f6fb)}
+.card.u{--frame:conic-gradient(from var(--ang),#b8f7d8,#1f8a5a,#6fe3b0,#0f5c3a,#b8f7d8)}
+.card.r{--frame:conic-gradient(from var(--ang),#d6e6ff,#2a66d8,#7fb2ff,#163e8f,#d6e6ff)}
+.card.e{--frame:conic-gradient(from var(--ang),#f2dcff,#8a3be0,#ff8ad8,#5a1fb0,#f2dcff)}
+.card.l{--frame:conic-gradient(from var(--ang),#fff7cc,#f5c518,#9a6a00,#ffe58a,#c48a00,#fff7cc)}
+@media (prefers-reduced-motion:reduce){.card.c,.card.u,.card.r,.card.e,.card.l{animation:none}}
+
+.card.m,.card.d{animation-play-state:running}
 </style>
 
 <nav><div class="in">
@@ -1627,16 +1665,16 @@ const FR={mv:"Marvel",dc:"DC",sw:"Star Wars",di:"Disney & Pixar",dw:"DreamWorks"
 const RN={c:"Commune",u:"Peu commune",r:"Rare",e:"Épique",l:"Légendaire",m:"Mythique",d:"Divin"},RL={c:"C",u:"U",r:"R",e:"É",l:"L",m:"M",d:"D"};
 const ORD=["d","m","l","e","r","u","c"];
 const BASEW={c:52,u:26,r:15,e:5.8,l:.6,m:.05,d:.005},SELL={c:5,u:10,r:20,e:60,l:250,m:900,d:5000};
-const PWR={c:[18,44],u:[32,56],r:[45,68],e:[58,80],l:[72,92],m:[88,98],d:[99,100]};
+const PWR={c:[10,32],u:[26,46],r:[40,60],e:[55,73],l:[69,84],m:[81,92],d:[92,98]};
 const TIER=[["m",.0136],["l",.055],["e",.15],["r",.33],["u",.6],["c",1.01]];
 const CD=10*60*1000,MAXS=10,PITY_GOLD=10,PITY_MYT=1000;
 const hash=s=>{let h=2166136261;for(const ch of s){h^=ch.codePointAt(0);h=Math.imul(h,16777619)}return h>>>0};
 const CARDS=[];
-const PROF=[[10,-4,-6],[-6,11,-5],[-5,-6,11],[5,5,-10],[-8,4,4],[6,-9,3],[0,0,0],[3,-2,-1]];
+const PROF=[[20,-6,-14],[-12,22,-10],[-10,-12,22],[12,12,-24],[-18,9,9],[16,-18,2],[4,4,-8],[8,-14,6],[-6,-4,10],[0,0,0]];
 for(const f of["mv","dc","sw","di","dw","hp","lo","jv","fg","tf"]){const L=DATA[f].split("|").filter(Boolean),RC={},RI={};L.forEach(x=>{const r=x.split("@")[1];RC[r]=(RC[r]||0)+1});
   L.forEach((x,i)=>{const[n,r]=x.split("@"),h=hash(f+n),[a,b]=PWR[r],m=n.match(/^(.*?)\s*\((.*)\)$/),ri=RI[r]=(RI[r]||0)+1;
   const fr=((h%1000)/1000)*.55+((ri-1)/Math.max(1,RC[r]-1))*.45,base=Math.round(b-(b-a)*fr),pf=PROF[(h>>>11)%PROF.length],mx=r==="d"?100:99;
-  const st=pf.map((o,k)=>Math.max(5,Math.min(mx,base+o+((h>>>(14+k*5))%7)-3)));
+  const st=pf.map((o,k)=>Math.max(3,Math.min(mx,base+o+((h>>>(14+k*5))%9)-4)));
   const ovr=Math.round((st[0]+st[1]+st[2])/3);
   CARDS.push({id:f+":"+n,n,s:m?m[1]:n,alt:m?m[2]:"",f,r,rank:i,atk:st[0],def:st[1],vit:st[2],ovr,pow:ovr})})}
 CARDS.sort((x,y)=>ORD.indexOf(x.r)-ORD.indexOf(y.r)||x.rank-y.rank||x.f.localeCompare(y.f));
@@ -2119,6 +2157,7 @@ function priceTxt(P){
   if(P.daily)return S.daily===today()?"Disponible demain":"Gratuit";
   if(P.g==="free")return S.stock>0?"1 booster gratuit":FREE_PRICE+" ◆";
   if(P.id==="box"&&S.freeBox)return "Offert";
+  if(P.id==="pre"&&S.freePre)return "Offert";
   const d=evDisc(P);return (d?"−"+Math.round(d*100)+" % · ":"")+P.price+" ◆";
 }
 function canOpen(P){if(!P.pool().length)return false;
@@ -2126,6 +2165,7 @@ function canOpen(P){if(!P.pool().length)return false;
   if(P.until&&Date.now()>P.until)return false;
   if(P.g==="free")return S.stock>0||S.coins>=FREE_PRICE;
   if(P.id==="box"&&S.freeBox)return true;
+  if(P.id==="pre"&&S.freePre)return true;
   return S.coins>=P.price;
 }
 
@@ -2251,12 +2291,14 @@ function costN(P,n){
   if(P.until&&Date.now()>P.until)return{ok:false,txt:"Terminé"};
   if(P.g==="free"){const f=Math.min(S.stock,n),pay=(n-f)*FREE_PRICE;return{ok:S.coins>=pay,txt:pay?(f?f+" gratuit + ":"")+pay+" ◆":"Gratuit · "+(S.stock-f)+" restant"+(S.stock-f>1?"s":"")}}
   if(P.id==="box"&&S.freeBox){const f=Math.min(S.freeBox,n),pay=(n-f)*P.price;return{ok:S.coins>=pay,txt:pay?f+" offert + "+pay+" ◆":"Offert"}}
+  if(P.id==="pre"&&S.freePre){const f=Math.min(S.freePre,n),pay=(n-f)*P.price;return{ok:S.coins>=pay,txt:pay?f+" offert + "+pay+" ◆":"Offert"}}
   const pay=P.price*n;return{ok:S.coins>=pay,txt:pay+" ◆"};
 }
 function payOne(P){
   if(P.daily)S.daily=today();
   else if(P.g==="free"){if(S.stock>0){if(S.stock===MAXS)S.stockT=Date.now();S.stock--}else S.coins-=FREE_PRICE}
   else if(P.id==="box"&&S.freeBox>0)S.freeBox--;
+  else if(P.id==="pre"&&S.freePre>0)S.freePre--;
   else S.coins-=P.price;
 }
 const POWRANK=Object.fromEntries(CARDS.slice().sort((a,b)=>b.pow-a.pow).map((c,i)=>[c.id,i+1]));
@@ -2591,7 +2633,7 @@ const msToMonday=()=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate
 const dur=ms=>{const m=Math.max(0,Math.floor(ms/6e4)),j=Math.floor(m/1440),h=Math.floor(m%1440/60),mi=m%60;return j?`${j} j ${h} h`:`${h} h ${String(mi).padStart(2,"0")} min`};
 function ensureState(){
   S.st=Object.assign({opens:0,sold:0,fiche:0,img:0,divine:0,streak7:0,logins:0},S.st||{});
-  S.ach=S.ach||{};S.albums=S.albums||{};S.freeBox=S.freeBox||0;S.forceGold=!!S.forceGold;
+  S.ach=S.ach||{};S.albums=S.albums||{};S.freeBox=S.freeBox||0;S.freePre=S.freePre||0;S.forceGold=!!S.forceGold;
   const t=today();
   if(S.mis.d!==t)S.mis={d:t,open:0,fiche:0,sell:0,img:0,claimed:[],bonus:false};
   S.mis.claimed=S.mis.claimed||[];
@@ -3067,7 +3109,18 @@ const AR=(()=>{
   const LG=[[0,"Bronze","#c98a5a"],[400,"Argent","#c9d2e0"],[800,"Or","#f5c518"],[1200,"Platine","#5ee0d0"],[1600,"Diamant","#7ab8ff"],[2000,"Maître","#c18bff"],[2600,"Divin","#ffe08a"]];
   const lg=t=>{let r=LG[0];for(const x of LG)if(t>=x[0])r=x;return r};
   const nextLg=t=>LG.find(x=>x[0]>t);
-  const A=()=>{if(!S.arena)S.arena={tr:0,w:0,l:0,dr:0,deck:[],best:0,fw:"",streak:0,hist:[]};return S.arena};
+  const A=()=>{if(!S.arena)S.arena={tr:0,w:0,l:0,dr:0,deck:[],best:0,fw:"",streak:0,hist:[]};if(!S.arena.tw)S.arena.tw=1;return S.arena};
+  let MODE="rk";
+  const RS=["c","u","r","e","l","m","d"];
+  function srnd(seed){let x=seed>>>0||1;return()=>{x=(x*1664525+1013904223)>>>0;return x/4294967296}}
+  const towerBonus=f=>f>48?Math.round((f-48)*1.5):0;
+  const isBoss=f=>f%5===0;
+  function towerDeck(f){const R=srnd(f*9973+17),t=Math.min(6,f/8),out=[];
+    for(let i=0;i<5;i++){let k=Math.round(t+(R()-.5)*1.6);if(isBoss(f)&&i===0)k++;k=Math.max(0,Math.min(6,k));
+      const pool=CARDS.filter(c=>c.r===RS[k]&&hasArt(c.id)&&!out.includes(c.id));out.push(pool[Math.floor(R()*pool.length)].id)}
+    return out}
+  function towerRew(f){return f%10===0?{k:"pre",t:"1 booster Prestige",i:"✺"}:f%5===0?{k:"box",t:"1 Coffret (20 cartes)",i:"▣"}:{k:"stock",t:"1 booster gratuit",i:"✦"}}
+  function giveRew(r){if(r.k==="pre")S.freePre=(S.freePre||0)+1;else if(r.k==="box")S.freeBox=(S.freeBox||0)+1;else S.stock++}
   const score=c=>c.atk+c.def+c.vit+RB[c.r]*3;
   const owned=()=>CARDS.filter(c=>S.own[c.id]);
   const autoDeck=()=>owned().sort((a,b)=>score(b)-score(a)).slice(0,5).map(c=>c.id);
@@ -3093,11 +3146,13 @@ const AR=(()=>{
     const tr=Math.max(0,a.tr+Math.round((Math.random()-.5)*120));
     return{id:"bot",n:BOTN[Math.floor(Math.random()*BOTN.length)]+"#"+(1000+Math.floor(Math.random()*9000)),tr:ranked?tr:a.tr,bot:true,deck:botDeck(my,ranked?tr:Math.max(0,a.tr-150))}}
 
-  function start(ranked){const my=deck();if(my.length<5)return toast("Il te faut au moins 5 cartes pour combattre");
-    const o=findOpp(ranked);B={ranked,opp:o,my,od:o.deck,mh:my.slice(),oh:o.deck.slice(),rounds:shuffle(["atk","def","vit",...shuffle(["atk","def","vit"]).slice(0,2)]),i:0,sc:[0,0],busy:false,log:[]};
+  function start(mode){const my=deck();if(my.length<5)return toast("Il te faut au moins 5 cartes pour combattre");
+    const ranked=mode==="rk",tower=mode==="tw",a=A();
+    const o=tower?{id:"tower",n:(isBoss(a.tw)?"Gardien · ":"")+"Étage "+a.tw,tr:0,bot:true,deck:towerDeck(a.tw)}:findOpp(ranked);
+    B={mode,ranked,tower,floor:tower?a.tw:0,ob:tower?towerBonus(a.tw):0,opp:o,my,od:o.deck,mh:my.slice(),oh:o.deck.slice(),rounds:shuffle(["atk","def","vit",...shuffle(["atk","def","vit"]).slice(0,2)]),i:0,sc:[0,0],busy:false,log:[]};
     preloadArt([...my,...o.deck]);paintB();document.body.classList.add("arlock")}
-  function aiPick(st){const h=B.oh,v=h.map(id=>val(BY[id],st,B.od)),x=Math.random();
-    if(x<.55){let b=0;v.forEach((y,i)=>{if(y>v[b])b=i});return h[b]}
+  function aiPick(st){const h=B.oh,v=h.map(id=>val(BY[id],st,B.od)),x=Math.random(),sm=B.tower?Math.min(.9,.45+B.floor/80):.55;
+    if(x<sm){let b=0;v.forEach((y,i)=>{if(y>v[b])b=i});return h[b]}
     if(x<.75&&h.length>1){let w=0;v.forEach((y,i)=>{if(y<v[w])w=i});return h[w]}
     return h[Math.floor(Math.random()*h.length)]}
 
@@ -3117,13 +3172,13 @@ const AR=(()=>{
   function play(id){if(!B||B.busy||!B.mh.includes(id))return;B.busy=true;const st=B.rounds[B.i],oid=aiPick(st);
     B.mh.splice(B.mh.indexOf(id),1);B.oh.splice(B.oh.indexOf(oid),1);
     const mc=BY[id],oc=BY[oid],me1=Math.floor(Math.random()*7),op1=Math.floor(Math.random()*7);
-    const mv=val(mc,st,B.my)+me1,ov=val(oc,st,B.od)+op1,res=mv>ov?1:mv<ov?-1:0;
+    const mv=val(mc,st,B.my)+me1,ov=val(oc,st,B.od)+op1+(B.ob||0),res=mv>ov?1:mv<ov?-1:0;
     $("#arSm").innerHTML=cardMini(id,"arIn");$("#arSo").innerHTML=`<div class="arflip">${cardMini(oid,"arIn")}</div>`;
     document.querySelectorAll(".armhand .arpick").forEach(b=>{if(b.dataset.arp===id){b.classList.add("arU");b.disabled=true;const v=b.querySelector(".arv");if(v)v.remove()}});
-    const det=(c,ids,e)=>`${baseV(c,st)}<i>+${RB[c.r]} rareté</i>${synB(ids,c)?`<i>+${synB(ids,c)} synergie</i>`:""}<i>+${e} chance</i>`;
+    const det=(c,ids,e,bo)=>`${baseV(c,st)}<i>+${RB[c.r]} rareté</i>${synB(ids,c)?`<i>+${synB(ids,c)} synergie</i>`:""}<i>+${e} chance</i>${bo?`<i>+${bo} étage</i>`:""}`;
     try{SND.flip()}catch(_){}
     setTimeout(()=>{$("#arRes").innerHTML=`<span class="arN arNo">${ov}</span><span class="arN arNm">${mv}</span>`;
-      const dd=$("#arDet");if(dd)dd.innerHTML=`<span><em>Toi</em> ${det(mc,B.my,me1)}</span><span><em>${esc(B.opp.n.split("#")[0])}</em> ${det(oc,B.od,op1)}</span>`;
+      const dd=$("#arDet");if(dd)dd.innerHTML=`<span><em>Toi</em> ${det(mc,B.my,me1)}</span><span><em>${esc(B.opp.n.split("#")[0])}</em> ${det(oc,B.od,op1,B.ob)}</span>`;
       countUp($("#arRes .arNm"),mv);countUp($("#arRes .arNo"),ov)},650);
     setTimeout(()=>{const W=$(res>=0?"#arSm":"#arSo"),Lz=$(res>=0?"#arSo":"#arSm");
       if(res){W.classList.add("arW");Lz.classList.add("arL");const r=W.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,res>0?["#ffd34d","#fff","#3ecf8e"]:["#ff4d6d","#fff"],res>0?50:24,5);try{res>0?SND.coin():SND.tick()}catch(_){}}
@@ -3138,17 +3193,25 @@ const AR=(()=>{
     if(B.ranked){const diff=o.tr-a.tr;if(res>0){dt=Math.max(18,Math.min(45,Math.round(30+diff/25)));a.w++;a.streak=(a.streak||0)+1;if(a.streak>=3)dt+=5}else if(res<0){dt=-Math.max(10,Math.min(32,Math.round(20-diff/25)));a.l++;a.streak=0}else{a.dr=(a.dr||0)+1}
       a.tr=Math.max(0,a.tr+dt);a.best=Math.max(a.best||0,a.tr);
       if(res>0){dc=30;if(a.fw!==today()){a.fw=today();dc+=100;first=true}}else if(!res)dc=10;else if(!quit)dc=5}
+    else if(B.tower){if(res>0){B.rew=towerRew(B.floor);giveRew(B.rew);dc=10+B.floor*2;a.tw=B.floor+1;a.twBest=Math.max(a.twBest||0,B.floor);track("tower",1)}}
     else if(res>0)dc=5;
-    S.coins+=dc;a.hist=[{t:Date.now(),o:o.n,r:res,dt,s:B.sc.slice(),rk:B.ranked},...(a.hist||[])].slice(0,15);
+    S.coins+=dc;a.hist=[{t:Date.now(),o:o.n,r:res,dt,s:B.sc.slice(),rk:B.ranked,tw:B.tower?B.floor:0},...(a.hist||[])].slice(0,15);
     if(res>0)track("arw",1);save();renderTop();checkAch();push();
     const L=lg(a.tr),el=$("#arB");
     if(quit){const rk=B.ranked;close();renderAll();return toast(rk?`Abandon · ${dt} 🏆`:"Combat abandonné")}
+    if(B.tower){el.insertAdjacentHTML("beforeend",`<div class="arend ${res>0?"arV":"arD"}"><div class="arendc">
+      <small>Tour · Étage ${B.floor}</small><h2>${res>0?"Étage franchi !":res<0?"Défaite":"Égalité"}</h2>
+      <div class="arendsc">${B.sc[0]} – ${B.sc[1]}</div>
+      ${res>0?`<div class="twrew"><span>${B.rew.i}</span><div><small>Récompense</small><b>${B.rew.t}</b></div></div><div class="arendg"><span class="arUp">+${dc} ◆</span></div>`:`<p class="armut">Réessaie autant que tu veux : l'étage ne change pas.</p>`}
+      <div class="arendb"><button class="arbtn arPri" data-arag="tw">${res>0?"Étage "+(B.floor+1)+" →":"Réessayer"}</button><button class="arbtn" data-arx>Retour</button></div></div></div>`);
+      if(res>0){const r=el.getBoundingClientRect();for(let i=0;i<4;i++)setTimeout(()=>burst(Math.random()*r.width,r.height*.35,["#ffd34d","#fff","#3ecf8e","#7ab8ff"],50,7),i*220)}
+      renderAll();return}
     el.insertAdjacentHTML("beforeend",`<div class="arend ${res>0?"arV":res<0?"arD":"arN0"}"><div class="arendc">
       <small>${B.ranked?"Combat classé":"Entraînement"}</small><h2>${res>0?"Victoire":res<0?"Défaite":"Égalité"}</h2>
       <div class="arendsc">${B.sc[0]} – ${B.sc[1]}</div>
       <div class="arendg">${B.ranked?`<span class="${dt>=0?"arUp":"arDn"}">${dt>=0?"+":""}${dt} 🏆</span>`:""}${dc?`<span class="arUp">+${dc} ◆${first?" · 1re victoire du jour":""}</span>`:""}</div>
       ${B.ranked?`<p style="color:${L[2]}">${L[1]} · ${nf(a.tr)} 🏆</p>`:""}
-      <div class="arendb"><button class="arbtn arPri" data-arag="${B.ranked?1:0}">Rejouer</button><button class="arbtn" data-arx>Retour</button></div></div></div>`);
+      <div class="arendb"><button class="arbtn arPri" data-arag="${B.ranked?"rk":"tr"}">Rejouer</button><button class="arbtn" data-arx>Retour</button></div></div></div>`);
     if(res>0){const r=el.getBoundingClientRect();for(let i=0;i<4;i++)setTimeout(()=>burst(Math.random()*r.width,r.height*.35,["#ffd34d","#fff","#3ecf8e","#7ab8ff"],50,7),i*220)}}
   function close(){const el=$("#arB");if(el)el.remove();B=null;document.body.classList.remove("arlock");paint()}
 
@@ -3162,21 +3225,31 @@ const AR=(()=>{
   function emblem(t,sz=64){const L=lg(t);return `<svg class="arem" width="${sz}" height="${sz}" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g${sz}${L[1]}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".45" stop-color="${L[2]}"/><stop offset="1" stop-color="#111"/></linearGradient></defs><path d="M32 3 56 12v20c0 14-10 24-24 29C18 56 8 46 8 32V12z" fill="url(#g${sz}${L[1]})" stroke="${L[2]}" stroke-width="2"/><path d="M32 16l4.5 9.5 10.5 1.2-7.8 7 2.2 10.3L32 38.8 22.6 44l2.2-10.3-7.8-7 10.5-1.2z" fill="#0b0b12" opacity=".75"/></svg>`}
   function paint(){const el=$("#arBody");if(!el)return;const a=A(),L=lg(a.tr),nx=nextLg(a.tr),d=deck(),f=fcount(d),prev=L[0],pr=nx?Math.round((a.tr-prev)/(nx[0]-prev)*100):100;
     const rows=LB.filter(x=>typeof x.tr==="number");const myRank=rows.findIndex(x=>x.id===me)+1;
-    el.innerHTML=`<section class="arhero">
+    el.innerHTML=`${modeTabs()}${MODE==="tw"?towerHTML():`<section class="arhero">
       <div class="arleague" style="--lc:${L[2]}">${emblem(a.tr,88)}<div><small>Ligue</small><h3>${L[1]}</h3><b class="mono">${nf(a.tr)} 🏆</b>
         <div class="arbar"><i style="width:${pr}%"></i></div><small>${nx?`${nx[0]-a.tr} 🏆 avant ${nx[1]}`:"Ligue maximale"}${myRank?` · ${myRank}e au classement`:""}</small></div></div>
       <div class="arstats"><div><b>${a.w}</b><small>Victoires</small></div><div><b>${a.l}</b><small>Défaites</small></div><div><b>${a.streak||0}</b><small>Série</small></div><div><b>${nf(a.best||0)}</b><small>Record</small></div></div>
-      <div class="arcta"><button class="arbtn arPri arBig" data-arg="1">⚔ Combat classé</button><button class="arbtn" data-arg="0">Entraînement</button><small>${a.fw===today()?"1re victoire du jour obtenue":"1re victoire du jour : +100 ◆"}</small></div></section>
+      <div class="arcta"><button class="arbtn arPri arBig" data-arg="1">⚔ Combat classé</button><button class="arbtn" data-arg="0">Entraînement</button><small>${a.fw===today()?"1re victoire du jour obtenue":"1re victoire du jour : +100 ◆"}</small></div></section>`}
     <section class="arteam"><div class="arth"><div><h2>Mon équipe</h2><small>Puissance d'équipe <b class="mono">${teamPow(d)}</b>${Object.entries(f).filter(([,n])=>n>=3).map(([k,n])=>` · <span class="arSyn">Synergie ${FR[k]} ×${n} (+${n>=5?10:n>=4?7:4})</span>`).join("")}</small></div>
       <div class="arthb"><button class="arbtn" data-are>Modifier</button><button class="arbtn" data-ara>Auto</button></div></div>
       <div class="arteamg">${d.length?d.map(id=>`<div class="arts">${cardHTML(BY[id],{noWish:true})}</div>`).join(""):`<p class="armut">Ouvre des boosters pour former ton équipe.</p>`}</div>
       <div class="arhow"><div><b>1</b><p><strong>Forme ton équipe</strong>5 cartes de ta collection. « Auto » prend les plus fortes.</p></div><div><b>2</b><p><strong>Joue une carte par manche</strong>Chaque manche compare une stat : ⚔ Attaque, 🛡 Défense ou ⚡ Vitesse. Ta carte affronte celle de l'adversaire : la plus grosse valeur gagne.</p></div><div><b>3</b><p><strong>Gagne 3 manches</strong>Victoire = trophées 🏆 et ◆. Garde tes meilleures cartes pour la bonne stat !</p></div></div>
       <p class="armut">Bonus : rareté (+3 à +26), même univers ×3/×4/×5 (+4/+7/+10), et un peu de chance (+0 à +6).</p></section>
-    <section class="arlow"><div class="artabs"><button data-art="lb" aria-pressed="${TABL==="lb"}">Classement</button><button data-art="hi" aria-pressed="${TABL==="hi"}">Historique</button><button data-art="lg" aria-pressed="${TABL==="lg"}">Ligues</button></div>
+    ${MODE==="rk"?`<section class="arlow"><div class="artabs"><button data-art="lb" aria-pressed="${TABL==="lb"}">Classement</button><button data-art="hi" aria-pressed="${TABL==="hi"}">Historique</button><button data-art="lg" aria-pressed="${TABL==="lg"}">Ligues</button></div>
       ${TABL==="lb"?(db?`<div class="arlb">${rows.length?rows.slice(0,100).map((x,i)=>{const l=lg(x.tr);return `<div class="arrow${x.id===me?" arMe":""}"><span class="arRk mono">${i+1}</span>${emblem(x.tr,26)}<span class="arPn">${esc(x.id===me?"Toi":(NAMES[x.id]||x.n||"Joueur"))}</span><span class="arLg" style="color:${l[2]}">${l[1]}</span><span class="arWl mono">${x.w||0}V · ${x.l||0}D</span><b class="mono">${nf(x.tr)} 🏆</b></div>`}).join(""):`<p class="armut">Personne encore. Lance un combat classé !</p>`}</div>`:`<p class="armut">Le classement en ligne demande d'ouvrir le jeu connecté à claude.ai. Tu peux quand même combattre des bots.</p>`)
-      :TABL==="hi"?`<div class="arlb">${(a.hist||[]).length?a.hist.map(h=>`<div class="arrow"><span class="arRs ${h.r>0?"rW":h.r<0?"rL":"rD"}">${h.r>0?"V":h.r<0?"D":"N"}</span><span class="arPn">${esc(h.o)}</span><span class="arWl mono">${h.s[0]}–${h.s[1]}</span><span class="arLg">${h.rk?"Classé":"Entraînement"}</span><b class="mono ${h.dt>=0?"arUp":"arDn"}">${h.rk?(h.dt>=0?"+":"")+h.dt+" 🏆":""}</b></div>`).join(""):`<p class="armut">Aucun combat pour l'instant.</p>`}</div>`
+      :TABL==="hi"?`<div class="arlb">${(a.hist||[]).length?a.hist.map(h=>`<div class="arrow"><span class="arRs ${h.r>0?"rW":h.r<0?"rL":"rD"}">${h.r>0?"V":h.r<0?"D":"N"}</span><span class="arPn">${esc(h.o)}</span><span class="arWl mono">${h.s[0]}–${h.s[1]}</span><span class="arLg">${h.tw?"Tour · étage "+h.tw:h.rk?"Classé":"Entraînement"}</span><b class="mono ${h.dt>=0?"arUp":"arDn"}">${h.rk?(h.dt>=0?"+":"")+h.dt+" 🏆":""}</b></div>`).join(""):`<p class="armut">Aucun combat pour l'instant.</p>`}</div>`
       :`<div class="arlgs">${LG.map(l=>`<div class="arlgc${l===L?" arCur":""}" style="--lc:${l[2]}">${emblem(l[0],48)}<b>${l[1]}</b><small class="mono">${nf(l[0])} 🏆</small></div>`).join("")}</div>`}
-    </section>`}
+    </section>`:""}`}
+  function modeTabs(){return `<div class="armodes"><button data-armode="rk" aria-pressed="${MODE==="rk"}"><b>⚔ Classé</b><small>Trophées et ligues</small></button><button data-armode="tw" aria-pressed="${MODE==="tw"}"><b>▲ Tour</b><small>Étage ${A().tw} · récompenses</small></button></div>`}
+  function towerHTML(){const a=A(),f=a.tw,td=towerDeck(f),bo=towerBonus(f),rw=towerRew(f);
+    const lad=[];for(let k=f+9;k>=Math.max(1,f-2);k--){const r=towerRew(k);lad.push(`<div class="twst${k<f?" done":k===f?" cur":""}${isBoss(k)?" boss":""}"><span class="mono">${k}</span><b>${k<f?"✓ Franchi":k===f?"À battre":isBoss(k)?"Gardien":"Étage"}</b><em class="${r.k}">${r.i} ${r.t}</em></div>`)}
+    return `<section class="twhero"><div class="twl"><small>La Tour</small><h3>Étage ${f}${isBoss(f)?` <span class="twboss">Gardien</span>`:""}</h3>
+      <p class="armut" style="margin:4px 0 0">Record : étage ${a.twBest||0} · chaque étage est plus dur que le précédent.${bo?` Bonus adverse : +${bo} par manche.`:""}</p>
+      <div class="twrew"><span>${rw.i}</span><div><small>Récompense de cet étage</small><b>${rw.t} + ${10+f*2} ◆</b></div></div>
+      <button class="arbtn arPri arBig" data-arg="tw">▲ Combattre l'étage ${f}</button>
+      <div class="twrules"><span>✦ Chaque étage : 1 booster</span><span>▣ Tous les 5 : 1 Coffret</span><span>✺ Tous les 10 : 1 Prestige</span></div></div>
+      <div class="twr"><small>Équipe adverse</small><div class="twdeck">${td.map(id=>cardHTML(BY[id],{noWish:true})).join("")}</div>
+      <div class="twlad">${lad.join("")}</div></div></section>`}
   function editor(){EDIT=deck().slice();EQ="";paintEd()}
   function paintEd(){let el=$("#arEd");if(!el){el=document.createElement("div");el.id="arEd";el.className="ared";document.body.append(el)}
     const q=EQ.trim().toLowerCase(),list=owned().filter(c=>!q||(c.n+" "+FR[c.f]).toLowerCase().includes(q)).sort((a,b)=>score(b)-score(a)).slice(0,90);
@@ -3186,10 +3259,10 @@ const AR=(()=>{
       <div class="aredg">${list.map(c=>`<button class="${EDIT.includes(c.id)?"arOn":""}" data-ars="${esc(c.id)}">${cardHTML(c,{noWish:true})}<span class="arSc mono">${score(c)}</span></button>`).join("")}</div>
       <footer><button class="arbtn" data-ara2>Auto</button><button class="arbtn arPri" data-arok ${EDIT.length===5?"":"disabled"}>Valider l'équipe</button></footer></div>`;
     const i=$("#arEq");if(i&&document.activeElement!==i&&EQ){i.focus();i.setSelectionRange(EQ.length,EQ.length)}}
-  document.addEventListener("click",e=>{const t=e.target.closest("[data-arg],[data-are],[data-ara],[data-art],[data-arp],[data-arq],[data-arag],[data-arx],[data-arex],[data-ard],[data-ars],[data-ara2],[data-arok]");if(!t)return;const d=t.dataset;
-    if(d.arg!==undefined)start(d.arg==="1");else if(d.are!==undefined)editor();else if(d.ara!==undefined){A().deck=autoDeck();save();push();paint();toast("Équipe optimisée")}
+  document.addEventListener("click",e=>{const t=e.target.closest("[data-arg],[data-armode],[data-are],[data-ara],[data-art],[data-arp],[data-arq],[data-arag],[data-arx],[data-arex],[data-ard],[data-ars],[data-ara2],[data-arok]");if(!t)return;const d=t.dataset;
+    if(d.arg!==undefined)start(d.arg==="1"?"rk":d.arg==="tw"?"tw":"tr");else if(d.armode){MODE=d.armode;paint()}else if(d.are!==undefined)editor();else if(d.ara!==undefined){A().deck=autoDeck();save();push();paint();toast("Équipe optimisée")}
     else if(d.art){TABL=d.art;paint()}else if(d.arp){play(d.arp)}else if(d.arq!==undefined){if(B&&!B.busy&&!$(".arend"))end(true)}
-    else if(d.arag!==undefined){const r=d.arag==="1";close();start(r)}else if(d.arx!==undefined)close();
+    else if(d.arag!==undefined){const r=d.arag;close();start(r)}else if(d.arx!==undefined)close();
     else if(d.arex!==undefined){EDIT=null;$("#arEd").remove()}else if(d.ard){EDIT.splice(EDIT.indexOf(d.ard),1);paintEd()}
     else if(d.ars){const k=EDIT.indexOf(d.ars);if(k>=0)EDIT.splice(k,1);else if(EDIT.length<5)EDIT.push(d.ars);else toast("Équipe complète : retire une carte");paintEd()}
     else if(d.ara2!==undefined){EDIT=autoDeck();paintEd()}else if(d.arok!==undefined&&EDIT.length===5){A().deck=EDIT.slice();EDIT=null;$("#arEd").remove();save();push();paint();toast("Équipe enregistrée")}});
