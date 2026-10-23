@@ -1495,6 +1495,11 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 @media (max-width:600px){.arfield{grid-template-columns:1fr 128px 1fr}.arslot{width:100%}.arvs{min-width:0}#arDet{white-space:normal;font-size:8.5px}#arDet span{display:block}}
 
 .arhint{margin-bottom:12px}
+
+.card .st{justify-content:space-between;gap:2px}
+.card .st span{color:#e8ecf8!important}
+.card .st .sA{color:#ffb199!important}.card .st .sD{color:#a9d8ff!important}.card .st .sV{color:#ffe58a!important}
+.card.d .st span,.card.m .st span{color:#fff!important}
 </style>
 
 <nav><div class="in">
@@ -1586,7 +1591,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
       <label class="sel">Univers<select id="fU"><option value="all">Tous</option><option value="mv">Marvel</option><option value="dc">DC</option><option value="sw">Star Wars</option><option value="di">Disney & Pixar</option><option value="dw">DreamWorks</option><option value="hp">Harry Potter</option><option value="lo">Le Seigneur des anneaux</option><option value="jv">Jeux vidéo</option><option value="fg">Jeux de combat</option><option value="tf">Transformers & Tortues Ninja</option></select></label>
       <label class="sel cm-cards">Cartes<select id="fO"><option value="all">Toutes</option><option value="own">Possédées</option><option value="miss">Manquantes</option><option value="dup">Doublons</option><option value="wish">Envies</option></select></label>
       <label class="sel cm-cards">Album<select id="fA"><option value="all">Tous</option></select></label>
-      <label class="sel cm-cards">Tri<select id="fS"><option value="num">Numéro</option><option value="name">Nom</option><option value="qty">Quantité</option><option value="pow">POW</option><option value="recent">Récentes</option></select></label>
+      <label class="sel cm-cards">Tri<select id="fS"><option value="num">Numéro</option><option value="name">Nom</option><option value="qty">Quantité</option><option value="pow">Note</option><option value="recent">Récentes</option></select></label>
     </div>
   </div>
   <div class="count" id="cnt"></div>
@@ -1627,8 +1632,13 @@ const TIER=[["m",.0136],["l",.055],["e",.15],["r",.33],["u",.6],["c",1.01]];
 const CD=10*60*1000,MAXS=10,PITY_GOLD=10,PITY_MYT=1000;
 const hash=s=>{let h=2166136261;for(const ch of s){h^=ch.codePointAt(0);h=Math.imul(h,16777619)}return h>>>0};
 const CARDS=[];
-for(const f of["mv","dc","sw","di","dw","hp","lo","jv","fg","tf"]){const L=DATA[f].split("|").filter(Boolean);L.forEach((x,i)=>{const[n,r]=x.split("@"),h=hash(f+n),[a,b]=PWR[r],m=n.match(/^(.*?)\s*\((.*)\)$/);
-  CARDS.push({id:f+":"+n,n,s:m?m[1]:n,alt:m?m[2]:"",f,r,rank:i,pow:a+h%(b-a+1),aura:a+(h>>>8)%(b-a+1)})})}
+const PROF=[[10,-4,-6],[-6,11,-5],[-5,-6,11],[5,5,-10],[-8,4,4],[6,-9,3],[0,0,0],[3,-2,-1]];
+for(const f of["mv","dc","sw","di","dw","hp","lo","jv","fg","tf"]){const L=DATA[f].split("|").filter(Boolean),RC={},RI={};L.forEach(x=>{const r=x.split("@")[1];RC[r]=(RC[r]||0)+1});
+  L.forEach((x,i)=>{const[n,r]=x.split("@"),h=hash(f+n),[a,b]=PWR[r],m=n.match(/^(.*?)\s*\((.*)\)$/),ri=RI[r]=(RI[r]||0)+1;
+  const fr=((h%1000)/1000)*.55+((ri-1)/Math.max(1,RC[r]-1))*.45,base=Math.round(b-(b-a)*fr),pf=PROF[(h>>>11)%PROF.length],mx=r==="d"?100:99;
+  const st=pf.map((o,k)=>Math.max(5,Math.min(mx,base+o+((h>>>(14+k*5))%7)-3)));
+  const ovr=Math.round((st[0]+st[1]+st[2])/3);
+  CARDS.push({id:f+":"+n,n,s:m?m[1]:n,alt:m?m[2]:"",f,r,rank:i,atk:st[0],def:st[1],vit:st[2],ovr,pow:ovr})})}
 CARDS.sort((x,y)=>ORD.indexOf(x.r)-ORD.indexOf(y.r)||x.rank-y.rank||x.f.localeCompare(y.f));
 CARDS.forEach((c,i)=>c.no=i+1);
 const N=CARDS.length,BY=Object.fromEntries(CARDS.map(c=>[c.id,c]));
@@ -1916,7 +1926,7 @@ function cardHTML(c,o={}){
   <div class="ch"><span class="nm">${esc(c.s)}</span><span class="badge">${RL[c.r]}</span></div>
   <div class="art ${c.f}">${hasArt(c.id)?artHTML(c):`<span class="mn">${esc(ini(c.s))}</span>`}<span class="num">${pad(c.no)}/${N}</span></div>
   <div class="uv">${FR[c.f]}${c.alt?" · "+esc(c.alt):""}</div>
-  <div class="st"><span>POW ${c.pow}</span><span>AURA ${c.aura}</span></div>
+  <div class="st"><span class="sA" title="Attaque">⚔ ${c.atk}</span><span class="sD" title="Défense">🛡 ${c.def}</span><span class="sV" title="Vitesse">⚡ ${c.vit}</span></div>
   ${o.isNew?`<span class="new">Nouveau</span>`:""}${S.wish[c.id]&&!o.noWish?`<span class="wish">♥</span>`:""}<span class="gl" aria-hidden="true"></span></${tag}>`;
 }
 function ghostHTML(c){return `<button class="ghost ${c.r}" data-id="${esc(c.id)}" aria-label="Carte ${c.no} manquante">${hasArt(c.id)?`<span class="gs">${artHTML(c,1)}</span>`:""}<span class="q">?</span><span class="mono">${pad(c.no)}</span><span class="rn">${RN[c.r]}</span></button>`}
@@ -2451,7 +2461,7 @@ function showSplash(c){
   sp.className="splash "+c.r;
   sp.innerHTML=`<span class="lab">${RN[c.r].toUpperCase()}</span>
   <div class="sr">${cardHTML(c,{noWish:true})}<div class="tx"><small>Univers</small><h2>${FR[c.f]}</h2></div></div>
-  <div class="top"><small>Puissance</small><b>Top ${top.toFixed(1).replace(".",",")} %</b><small>POW ${c.pow} · ${rk}e sur ${N}</small></div>
+  <div class="top"><small>Classement</small><b>Top ${top.toFixed(1).replace(".",",")} %</b><small>Note ${c.ovr} · ${rk}e sur ${N}</small></div>
   <span class="skip">Toucher pour continuer</span>`;
   sp.hidden=false;
   setTimeout(()=>{const r=sp.querySelector('.sr .card');if(r){const[x,y]=mid(r);burst(x,y,RCOL[c.r],60,7)}},350);
@@ -2518,7 +2528,7 @@ function renderColl(){
   const q=$("#q").value.trim().toLowerCase(),fu=$("#fU").value,fo=$("#fO").value,fs=$("#fS").value,fa=$("#fA").value;
   let list=CARDS.filter(c=>(RF==="all"||c.r===RF)&&(fu==="all"||c.f===fu)&&(fa==="all"||(fa==="none"?!ALB_OF[c.id]:ALB_OF[c.id]===fa))&&(!q||c.n.toLowerCase().includes(q)||FR[c.f].toLowerCase().includes(q)));
   list=list.filter(c=>{const o=S.own[c.id]||0;return fo==="all"||(fo==="own"&&o)||(fo==="miss"&&!o)||(fo==="dup"&&o>1)||(fo==="wish"&&S.wish[c.id])||(fo==="img"&&IMG[c.id])});
-  const cmp={num:(a,b)=>a.no-b.no,name:(a,b)=>a.n.localeCompare(b.n),qty:(a,b)=>(S.own[b.id]||0)-(S.own[a.id]||0)||a.no-b.no,pow:(a,b)=>b.pow-a.pow,recent:(a,b)=>(S.since[b.id]||"").localeCompare(S.since[a.id]||"")||a.no-b.no}[fs];
+  const cmp={num:(a,b)=>a.no-b.no,name:(a,b)=>a.n.localeCompare(b.n),qty:(a,b)=>(S.own[b.id]||0)-(S.own[a.id]||0)||a.no-b.no,pow:(a,b)=>b.ovr-a.ovr,recent:(a,b)=>(S.since[b.id]||"").localeCompare(S.since[a.id]||"")||a.no-b.no}[fs];
   list.sort(cmp);
   $("#cnt").textContent=list.length+" cartes";
   $("#grid").innerHTML=list.length?list.slice(0,CLIM).map(c=>{const q=S.own[c.id]||0;if(!q)return `<div class="cell">${ghostHTML(c)}</div>`;
@@ -2756,8 +2766,10 @@ function openZoom(id,flipped){
       <h4>${esc(c.s)}</h4>
       <div class="fr">${FR[c.f]}${c.alt?" · "+esc(c.alt):""}</div>
       <div class="g">
-        <div><small>POW</small><b class="mono">${c.pow}</b></div>
-        <div><small>AURA</small><b class="mono">${c.aura}</b></div>
+        <div><small>Note</small><b class="mono">${c.ovr}</b></div>
+        <div><small>⚔ Attaque</small><b class="mono">${c.atk}</b></div>
+        <div><small>🛡 Défense</small><b class="mono">${c.def}</b></div>
+        <div><small>⚡ Vitesse</small><b class="mono">${c.vit}</b></div>
         <div><small>Exemplaires</small><b class="mono">${q}</b></div>
         <div><small>Tu l'as depuis</small><b>${q&&S.since[id]?longFR(S.since[id]):"—"}</b></div>
         <div><small>Valeur</small><b class="mono">${nf(SELL[c.r])} ◆</b></div>
@@ -3056,14 +3068,14 @@ const AR=(()=>{
   const lg=t=>{let r=LG[0];for(const x of LG)if(t>=x[0])r=x;return r};
   const nextLg=t=>LG.find(x=>x[0]>t);
   const A=()=>{if(!S.arena)S.arena={tr:0,w:0,l:0,dr:0,deck:[],best:0,fw:"",streak:0,hist:[]};return S.arena};
-  const score=c=>c.pow+c.aura+RB[c.r]*2;
+  const score=c=>c.atk+c.def+c.vit+RB[c.r]*3;
   const owned=()=>CARDS.filter(c=>S.own[c.id]);
   const autoDeck=()=>owned().sort((a,b)=>score(b)-score(a)).slice(0,5).map(c=>c.id);
   function deck(){const a=A();const d=(a.deck||[]).filter(id=>S.own[id]&&BY[id]);for(const id of autoDeck())if(d.length<5&&!d.includes(id))d.push(id);return d.slice(0,5)}
   const fcount=ids=>{const f={};ids.forEach(id=>{const c=BY[id];if(c)f[c.f]=(f[c.f]||0)+1});return f};
   const synB=(ids,c)=>{const n=fcount(ids)[c.f]||0;return n>=5?10:n>=4?7:n>=3?4:0};
-  const SN={pow:"Puissance",aura:"Aura",mix:"Fusion"},SI={pow:"⚔",aura:"✦",mix:"◈"};
-  const baseV=(c,st)=>st==="mix"?Math.round((c.pow+c.aura)/2):c[st];
+  const SN={atk:"Attaque",def:"Défense",vit:"Vitesse"},SI={atk:"⚔",def:"🛡",vit:"⚡"};
+  const baseV=(c,st)=>c[st];
   const val=(c,st,ids)=>baseV(c,st)+RB[c.r]+synB(ids,c);
   const teamPow=ids=>ids.reduce((s,id)=>s+(BY[id]?score(BY[id]):0),0);
   const BOTN=["Nova","Kaze","Mira","Blaze","Orion","Luna","Zed","Kira","Axel","Nyx","Rook","Vega","Sora","Ivy","Jinx","Atlas","Echo","Rex"];
@@ -3082,7 +3094,7 @@ const AR=(()=>{
     return{id:"bot",n:BOTN[Math.floor(Math.random()*BOTN.length)]+"#"+(1000+Math.floor(Math.random()*9000)),tr:ranked?tr:a.tr,bot:true,deck:botDeck(my,ranked?tr:Math.max(0,a.tr-150))}}
 
   function start(ranked){const my=deck();if(my.length<5)return toast("Il te faut au moins 5 cartes pour combattre");
-    const o=findOpp(ranked);B={ranked,opp:o,my,od:o.deck,mh:my.slice(),oh:o.deck.slice(),rounds:shuffle(["pow","aura","mix","pow","aura"]),i:0,sc:[0,0],busy:false,log:[]};
+    const o=findOpp(ranked);B={ranked,opp:o,my,od:o.deck,mh:my.slice(),oh:o.deck.slice(),rounds:shuffle(["atk","def","vit",...shuffle(["atk","def","vit"]).slice(0,2)]),i:0,sc:[0,0],busy:false,log:[]};
     preloadArt([...my,...o.deck]);paintB();document.body.classList.add("arlock")}
   function aiPick(st){const h=B.oh,v=h.map(id=>val(BY[id],st,B.od)),x=Math.random();
     if(x<.55){let b=0;v.forEach((y,i)=>{if(y>v[b])b=i});return h[b]}
@@ -3099,7 +3111,7 @@ const AR=(()=>{
     <div class="arlab">Équipe adverse · elle joue une de ces cartes à chaque manche</div>
     <div class="arohand">${B.od.map(id=>`<div class="arsl${B.oh.includes(id)?"":" arU"}">${cardMini(id)}</div>`).join("")}</div>
     <div class="arrounds">${B.rounds.map((r,i)=>`<span class="${i<B.i?(B.log[i]===1?"rW":B.log[i]===-1?"rL":"rD"):i===B.i?"rCur":""}">${SI[r]} ${SN[r]}</span>`).join("")}</div>
-    <div class="arfield"><div class="arside"><small>${esc(o.n.split("#")[0])}</small><div class="arslot" id="arSo"></div></div><div class="arvs"><small>Manche ${Math.min(B.i+1,5)}/5</small><b>${st?SI[st]+" "+SN[st]:""}</b><span class="arrule">${st==="mix"?"moyenne Puissance + Aura":"la plus grosse valeur gagne"}</span><span id="arRes"></span><span id="arVer"></span><span id="arDet"></span></div><div class="arside"><small>Toi</small><div class="arslot" id="arSm"></div></div></div>
+    <div class="arfield"><div class="arside"><small>${esc(o.n.split("#")[0])}</small><div class="arslot" id="arSo"></div></div><div class="arvs"><small>Manche ${Math.min(B.i+1,5)}/5</small><b>${st?SI[st]+" "+SN[st]:""}</b><span class="arrule">la plus grosse valeur gagne</span><span id="arRes"></span><span id="arVer"></span><span id="arDet"></span></div><div class="arside"><small>Toi</small><div class="arslot" id="arSm"></div></div></div>
     <p class="arhint">${st?`<b>Ta main :</b> clique une carte. Le chiffre jaune = sa valeur pour cette manche (${SI[st]} ${SN[st]}).`:""}</p>
     <div class="armhand">${(()=>{const best=st?Math.max(...B.mh.map(x=>val(BY[x],st,B.my))):0;return B.my.map(id=>{const used=!B.mh.includes(id),c=BY[id],v=st&&!used?val(c,st,B.my):0;return `<button class="arpick${used?" arU":""}${v&&v===best?" arBest":""}" data-arp="${esc(id)}" ${used?"disabled":""}>${cardMini(id)}${st&&!used?`<span class="arv">${SI[st]} ${v}</span>`:used?`<span class="arv arUsed">jouée</span>`:""}</button>`}).join("")})()}</div>`}
   function play(id){if(!B||B.busy||!B.mh.includes(id))return;B.busy=true;const st=B.rounds[B.i],oid=aiPick(st);
@@ -3158,7 +3170,7 @@ const AR=(()=>{
     <section class="arteam"><div class="arth"><div><h2>Mon équipe</h2><small>Puissance d'équipe <b class="mono">${teamPow(d)}</b>${Object.entries(f).filter(([,n])=>n>=3).map(([k,n])=>` · <span class="arSyn">Synergie ${FR[k]} ×${n} (+${n>=5?10:n>=4?7:4})</span>`).join("")}</small></div>
       <div class="arthb"><button class="arbtn" data-are>Modifier</button><button class="arbtn" data-ara>Auto</button></div></div>
       <div class="arteamg">${d.length?d.map(id=>`<div class="arts">${cardHTML(BY[id],{noWish:true})}</div>`).join(""):`<p class="armut">Ouvre des boosters pour former ton équipe.</p>`}</div>
-      <div class="arhow"><div><b>1</b><p><strong>Forme ton équipe</strong>5 cartes de ta collection. « Auto » prend les plus fortes.</p></div><div><b>2</b><p><strong>Joue une carte par manche</strong>Chaque manche compare une stat : ⚔ Puissance, ✦ Aura ou ◈ Fusion (la moyenne). Ta carte affronte celle de l'adversaire : la plus grosse valeur gagne.</p></div><div><b>3</b><p><strong>Gagne 3 manches</strong>Victoire = trophées 🏆 et ◆. Garde tes meilleures cartes pour la bonne stat !</p></div></div>
+      <div class="arhow"><div><b>1</b><p><strong>Forme ton équipe</strong>5 cartes de ta collection. « Auto » prend les plus fortes.</p></div><div><b>2</b><p><strong>Joue une carte par manche</strong>Chaque manche compare une stat : ⚔ Attaque, 🛡 Défense ou ⚡ Vitesse. Ta carte affronte celle de l'adversaire : la plus grosse valeur gagne.</p></div><div><b>3</b><p><strong>Gagne 3 manches</strong>Victoire = trophées 🏆 et ◆. Garde tes meilleures cartes pour la bonne stat !</p></div></div>
       <p class="armut">Bonus : rareté (+3 à +26), même univers ×3/×4/×5 (+4/+7/+10), et un peu de chance (+0 à +6).</p></section>
     <section class="arlow"><div class="artabs"><button data-art="lb" aria-pressed="${TABL==="lb"}">Classement</button><button data-art="hi" aria-pressed="${TABL==="hi"}">Historique</button><button data-art="lg" aria-pressed="${TABL==="lg"}">Ligues</button></div>
       ${TABL==="lb"?(db?`<div class="arlb">${rows.length?rows.slice(0,100).map((x,i)=>{const l=lg(x.tr);return `<div class="arrow${x.id===me?" arMe":""}"><span class="arRk mono">${i+1}</span>${emblem(x.tr,26)}<span class="arPn">${esc(x.id===me?"Toi":(NAMES[x.id]||x.n||"Joueur"))}</span><span class="arLg" style="color:${l[2]}">${l[1]}</span><span class="arWl mono">${x.w||0}V · ${x.l||0}D</span><b class="mono">${nf(x.tr)} 🏆</b></div>`}).join(""):`<p class="armut">Personne encore. Lance un combat classé !</p>`}</div>`:`<p class="armut">Le classement en ligne demande d'ouvrir le jeu connecté à claude.ai. Tu peux quand même combattre des bots.</p>`)
