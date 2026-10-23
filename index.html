@@ -1461,6 +1461,40 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .cell>button:hover .card,.cell>button:hover .card:not(.tilting){transform:none!important;box-shadow:none}
 .cell .card .art::after,.cell:hover .card .art::after{display:none!important}
 .cell .card .gl{display:none}
+
+.arsc{flex-wrap:wrap;justify-content:center;row-gap:0}
+.arsc>div{display:flex;flex-direction:column;align-items:center;line-height:1}
+.arsc>div small{font-family:var(--ui);font-size:11px;font-weight:600;color:var(--mute);margin-top:4px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.arsc em{flex-basis:100%;text-align:center;font-style:normal;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-top:4px;font-weight:600}
+.arlab{font-size:11px;color:var(--mute);font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;margin-bottom:-4px}
+.arside{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+.arside>small{font-weight:700;font-size:12px;color:var(--mute)}
+.arside:last-child>small{color:#ffe08a}
+.arrule{font-size:11px;color:var(--mute)}
+#arVer{font-family:var(--display);font-weight:800;font-size:20px;min-height:26px;animation:arin .4s cubic-bezier(.2,.9,.3,1.2) both}
+#arVer:empty{animation:none}
+#arVer.vW{color:#5ef0a0}#arVer.vL{color:#ff7a8f}#arVer.vD{color:#9fdcff}
+#arRes{gap:10px;align-items:baseline}#arRes .arNo::after{content:"vs";font-size:14px;color:var(--mute);margin-left:10px;font-weight:600}
+.arpick.arBest .arv{background:linear-gradient(90deg,#ffe08a,#5ef0a0);box-shadow:0 0 14px -2px #5ef0a0}
+.arv.arUsed{background:#2a2f40;color:var(--mute)}
+.arhint b{color:var(--fg)}
+.arhow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.arhow>div{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:16px;background:#ffffff07;box-shadow:inset 0 0 0 1px #ffffff10}
+.arhow b{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffe08a,#f5a623);color:#1d1300;font-family:var(--display)}
+.arhow p{margin:0;font-size:13px;color:var(--mute);line-height:1.45}
+.arhow strong{display:block;color:var(--fg);font-size:14px;margin-bottom:3px}
+@media (max-width:760px){.arhow{grid-template-columns:1fr}}
+@media (max-width:600px){#arVer{font-size:15px}.arrule{display:none}.arlab{font-size:9px}}
+
+#arDet{display:flex;flex-direction:column;gap:3px;font-family:var(--mono);font-size:11px;color:var(--fg);min-height:30px}
+#arDet i{font-style:normal;color:var(--mute);margin-left:5px}
+#arDet em{font-style:normal;font-weight:700;color:#ffe08a;margin-right:4px}
+#arDet span:last-child em{color:#ff7a8f}
+@media (max-width:600px){#arDet{font-size:9px}#arDet i{margin-left:3px}}
+
+@media (max-width:600px){.arfield{grid-template-columns:1fr 128px 1fr}.arslot{width:100%}.arvs{min-width:0}#arDet{white-space:normal;font-size:8.5px}#arDet span{display:block}}
+
+.arhint{margin-bottom:12px}
 </style>
 
 <nav><div class="in">
@@ -3060,28 +3094,30 @@ const AR=(()=>{
     const st=B.rounds[B.i],o=B.opp,L=lg(o.tr);
     el.innerHTML=`<div class="arbg"></div>
     <header class="arh"><button class="arq" data-arq>✕ Abandonner</button>
-      <div class="arsc"><span class="arsM">${B.sc[0]}</span><i>–</i><span class="arsO">${B.sc[1]}</span></div>
+      <div class="arsc"><div><span class="arsM">${B.sc[0]}</span><small>Toi</small></div><i>–</i><div><span class="arsO">${B.sc[1]}</span><small>${esc(o.n.split("#")[0])}</small></div><em>Premier à 3 manches</em></div>
       <div class="aro"><b>${esc(o.n)}</b><small style="color:${L[2]}">${L[1]} · ${nf(o.tr)} 🏆</small></div></header>
+    <div class="arlab">Équipe adverse · elle joue une de ces cartes à chaque manche</div>
     <div class="arohand">${B.od.map(id=>`<div class="arsl${B.oh.includes(id)?"":" arU"}">${cardMini(id)}</div>`).join("")}</div>
     <div class="arrounds">${B.rounds.map((r,i)=>`<span class="${i<B.i?(B.log[i]===1?"rW":B.log[i]===-1?"rL":"rD"):i===B.i?"rCur":""}">${SI[r]} ${SN[r]}</span>`).join("")}</div>
-    <div class="arfield"><div class="arslot" id="arSo"></div><div class="arvs"><small>Manche ${Math.min(B.i+1,5)}/5</small><b>${st?SI[st]+" "+SN[st]:""}</b><span id="arRes"></span></div><div class="arslot" id="arSm"></div></div>
-    <p class="arhint">${st?`Choisis une carte. Manche jugée sur <b>${SN[st]}</b>.`:""}</p>
-    <div class="armhand">${B.my.map(id=>{const used=!B.mh.includes(id),c=BY[id];return `<button class="arpick${used?" arU":""}" data-arp="${esc(id)}" ${used?"disabled":""}>${cardMini(id)}${st&&!used?`<span class="arv">${SI[st]} ${val(c,st,B.my)}</span>`:""}</button>`}).join("")}</div>`}
+    <div class="arfield"><div class="arside"><small>${esc(o.n.split("#")[0])}</small><div class="arslot" id="arSo"></div></div><div class="arvs"><small>Manche ${Math.min(B.i+1,5)}/5</small><b>${st?SI[st]+" "+SN[st]:""}</b><span class="arrule">${st==="mix"?"moyenne Puissance + Aura":"la plus grosse valeur gagne"}</span><span id="arRes"></span><span id="arVer"></span><span id="arDet"></span></div><div class="arside"><small>Toi</small><div class="arslot" id="arSm"></div></div></div>
+    <p class="arhint">${st?`<b>Ta main :</b> clique une carte. Le chiffre jaune = sa valeur pour cette manche (${SI[st]} ${SN[st]}).`:""}</p>
+    <div class="armhand">${(()=>{const best=st?Math.max(...B.mh.map(x=>val(BY[x],st,B.my))):0;return B.my.map(id=>{const used=!B.mh.includes(id),c=BY[id],v=st&&!used?val(c,st,B.my):0;return `<button class="arpick${used?" arU":""}${v&&v===best?" arBest":""}" data-arp="${esc(id)}" ${used?"disabled":""}>${cardMini(id)}${st&&!used?`<span class="arv">${SI[st]} ${v}</span>`:used?`<span class="arv arUsed">jouée</span>`:""}</button>`}).join("")})()}</div>`}
   function play(id){if(!B||B.busy||!B.mh.includes(id))return;B.busy=true;const st=B.rounds[B.i],oid=aiPick(st);
     B.mh.splice(B.mh.indexOf(id),1);B.oh.splice(B.oh.indexOf(oid),1);
     const mc=BY[id],oc=BY[oid],me1=Math.floor(Math.random()*7),op1=Math.floor(Math.random()*7);
     const mv=val(mc,st,B.my)+me1,ov=val(oc,st,B.od)+op1,res=mv>ov?1:mv<ov?-1:0;
     $("#arSm").innerHTML=cardMini(id,"arIn");$("#arSo").innerHTML=`<div class="arflip">${cardMini(oid,"arIn")}</div>`;
     document.querySelectorAll(".armhand .arpick").forEach(b=>{if(b.dataset.arp===id){b.classList.add("arU");b.disabled=true;const v=b.querySelector(".arv");if(v)v.remove()}});
-    const det=(c,ids,e)=>`${baseV(c,st)}<i>+${RB[c.r]} rareté</i>${synB(ids,c)?`<i>+${synB(ids,c)} synergie</i>`:""}<i>+${e} élan</i>`;
+    const det=(c,ids,e)=>`${baseV(c,st)}<i>+${RB[c.r]} rareté</i>${synB(ids,c)?`<i>+${synB(ids,c)} synergie</i>`:""}<i>+${e} chance</i>`;
     try{SND.flip()}catch(_){}
     setTimeout(()=>{$("#arRes").innerHTML=`<span class="arN arNo">${ov}</span><span class="arN arNm">${mv}</span>`;
-      $("#arSo").insertAdjacentHTML("beforeend",`<div class="ardet">${det(oc,B.od,op1)}</div>`);$("#arSm").insertAdjacentHTML("beforeend",`<div class="ardet">${det(mc,B.my,me1)}</div>`);
+      const dd=$("#arDet");if(dd)dd.innerHTML=`<span><em>Toi</em> ${det(mc,B.my,me1)}</span><span><em>${esc(B.opp.n.split("#")[0])}</em> ${det(oc,B.od,op1)}</span>`;
       countUp($("#arRes .arNm"),mv);countUp($("#arRes .arNo"),ov)},650);
     setTimeout(()=>{const W=$(res>=0?"#arSm":"#arSo"),Lz=$(res>=0?"#arSo":"#arSm");
       if(res){W.classList.add("arW");Lz.classList.add("arL");const r=W.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,res>0?["#ffd34d","#fff","#3ecf8e"]:["#ff4d6d","#fff"],res>0?50:24,5);try{res>0?SND.coin():SND.tick()}catch(_){}}
       else{$("#arSm").classList.add("arT");$("#arSo").classList.add("arT")}
       if(res>0)B.sc[0]++;else if(res<0)B.sc[1]++;B.log[B.i]=res;
+      const vr=$("#arVer");if(vr){vr.className=res>0?"vW":res<0?"vL":"vD";vr.textContent=res>0?"Manche gagnée !":res<0?"Manche perdue":"Égalité"}
       $(".arsc .arsM").textContent=B.sc[0];$(".arsc .arsO").textContent=B.sc[1];},1500);
     setTimeout(()=>{B.i++;B.busy=false;const done=B.sc[0]>=3||B.sc[1]>=3||B.i>=5||(B.sc[0]+(5-B.i)<B.sc[1])||(B.sc[1]+(5-B.i)<B.sc[0]);if(done)end();else paintB()},2900)}
   function countUp(el,to){if(!el)return;const t0=performance.now();const f=t=>{const k=Math.min(1,(t-t0)/600);el.textContent=Math.round(to*k);if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
@@ -3122,7 +3158,8 @@ const AR=(()=>{
     <section class="arteam"><div class="arth"><div><h2>Mon équipe</h2><small>Puissance d'équipe <b class="mono">${teamPow(d)}</b>${Object.entries(f).filter(([,n])=>n>=3).map(([k,n])=>` · <span class="arSyn">Synergie ${FR[k]} ×${n} (+${n>=5?10:n>=4?7:4})</span>`).join("")}</small></div>
       <div class="arthb"><button class="arbtn" data-are>Modifier</button><button class="arbtn" data-ara>Auto</button></div></div>
       <div class="arteamg">${d.length?d.map(id=>`<div class="arts">${cardHTML(BY[id],{noWish:true})}</div>`).join(""):`<p class="armut">Ouvre des boosters pour former ton équipe.</p>`}</div>
-      <p class="armut">Chaque combat se joue en 5 manches (Puissance, Aura ou Fusion). Bonus de rareté, +4/+7/+10 avec 3/4/5 cartes du même univers, et un peu d'élan aléatoire.</p></section>
+      <div class="arhow"><div><b>1</b><p><strong>Forme ton équipe</strong>5 cartes de ta collection. « Auto » prend les plus fortes.</p></div><div><b>2</b><p><strong>Joue une carte par manche</strong>Chaque manche compare une stat : ⚔ Puissance, ✦ Aura ou ◈ Fusion (la moyenne). Ta carte affronte celle de l'adversaire : la plus grosse valeur gagne.</p></div><div><b>3</b><p><strong>Gagne 3 manches</strong>Victoire = trophées 🏆 et ◆. Garde tes meilleures cartes pour la bonne stat !</p></div></div>
+      <p class="armut">Bonus : rareté (+3 à +26), même univers ×3/×4/×5 (+4/+7/+10), et un peu de chance (+0 à +6).</p></section>
     <section class="arlow"><div class="artabs"><button data-art="lb" aria-pressed="${TABL==="lb"}">Classement</button><button data-art="hi" aria-pressed="${TABL==="hi"}">Historique</button><button data-art="lg" aria-pressed="${TABL==="lg"}">Ligues</button></div>
       ${TABL==="lb"?(db?`<div class="arlb">${rows.length?rows.slice(0,100).map((x,i)=>{const l=lg(x.tr);return `<div class="arrow${x.id===me?" arMe":""}"><span class="arRk mono">${i+1}</span>${emblem(x.tr,26)}<span class="arPn">${esc(x.id===me?"Toi":(NAMES[x.id]||x.n||"Joueur"))}</span><span class="arLg" style="color:${l[2]}">${l[1]}</span><span class="arWl mono">${x.w||0}V · ${x.l||0}D</span><b class="mono">${nf(x.tr)} 🏆</b></div>`}).join(""):`<p class="armut">Personne encore. Lance un combat classé !</p>`}</div>`:`<p class="armut">Le classement en ligne demande d'ouvrir le jeu connecté à claude.ai. Tu peux quand même combattre des bots.</p>`)
       :TABL==="hi"?`<div class="arlb">${(a.hist||[]).length?a.hist.map(h=>`<div class="arrow"><span class="arRs ${h.r>0?"rW":h.r<0?"rL":"rD"}">${h.r>0?"V":h.r<0?"D":"N"}</span><span class="arPn">${esc(h.o)}</span><span class="arWl mono">${h.s[0]}–${h.s[1]}</span><span class="arLg">${h.rk?"Classé":"Entraînement"}</span><b class="mono ${h.dt>=0?"arUp":"arDn"}">${h.rk?(h.dt>=0?"+":"")+h.dt+" 🏆":""}</b></div>`).join(""):`<p class="armut">Aucun combat pour l'instant.</p>`}</div>`
