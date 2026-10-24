@@ -1703,6 +1703,15 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .cuttx p{margin:0;color:#e9e4ff;font-size:clamp(13px,1.8vw,17px);letter-spacing:.06em;text-shadow:0 2px 8px #000}
 .cutskip{position:absolute;right:16px;bottom:calc(11vh + 10px);z-index:5;font-size:11px;color:#ffffff80;font-family:var(--mono)}
 @media (max-width:600px){.cutcard{top:42%}.cuttx{bottom:12.5vh}}
+
+.cutvid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.cutv .cuttx{z-index:5}
+
+.cutv .cutbar{height:14vh}
+.cutv .cuttx{bottom:1.6vh}
+.cutv .cuttx h2{font-size:clamp(26px,5.2vh,56px);margin:3px 0 1px}
+.cutv .cuttx small{font-size:10px}
+.cutv .cutskip{bottom:calc(14vh + 10px)}
 </style>
 
 <nav><div class="in">
@@ -2617,7 +2626,7 @@ function thumbsHTML(){
 }
 function infoHTML(c){return OP.up?`<div class="rr">${RN[c.r]}</div><h3>${esc(c.s)}</h3><div class="ff">${FR[c.f]}${c.alt?" · "+esc(c.alt):""}</div>`:""}
 function barTxt(){const tot=OP.cards.length;return OP.up?(OP.i<tot-1?"Touche la carte pour la suivante":"Touche la carte pour voir le récap"):"Touche la carte pour la retourner"}
-function stageCard(first,nx){
+function stageCard(first,nx){try{if(typeof CUT!=="undefined")OP.cards.forEach(x=>{if(x.r==="d")CUT.preload(x.id)})}catch(_){}
   const c=OP.cards[OP.i],tot=OP.cards.length,hint=["r","e","l","m","d"].includes(c.r)?c.r:"";
   $("#opCount").innerHTML=`${OP.i+1}<small>/${tot}</small>`;
   $("#opStage").innerHTML=`<div class="deck${OP.i===tot-1?" last":""}${first?" first":""}${nx?" nx":""}" id="deck">
@@ -3593,7 +3602,23 @@ const CUT=(()=>{
       vign(g,W,H,.7)},
     sfx(){sx("warp")}}
   };
-  function play(c,done){const sc=SC[c.id];if(!sc){done();return}
+  const VID={"mv:Spider-Man (Peter Parker)":"spider","mv:Iron Man (Anthony 'Tony' Stark)":"iron","dc:Batman (Bruce Wayne)":"bat","dc:Superman (Clark Kent)":"sup","sw:Darth Vader":"vader","sw:Luke Skywalker":"luke"};
+  const pre={};function preload(id){const k=VID[id];if(!k||pre[k])return;const v=document.createElement("video");v.muted=true;v.playsInline=true;v.preload="auto";vsrc(v,k);try{v.load()}catch(_){}pre[k]=v}
+  function vsrc(v,k){v.innerHTML=`<source src="cut/${k}.webm" type="video/webm"><source src="cut/${k}.mp4" type="video/mp4">`}
+  function playVid(c,done){const sc=SC[c.id],k=VID[c.id];
+    const ov=document.createElement("div");ov.className="cut cutv";ov.style.setProperty("--cc",sc.col);ov.style.setProperty("--cc2",sc.col2);
+    ov.innerHTML=`<i class="cutbar t"></i><i class="cutbar b"></i><div class="cuttx"><small>Divin</small><h2>${esc(c.s)}</h2><p>${esc(sc.sub)}</p></div><span class="cutskip">Toucher pour passer</span>`;
+    const v=pre[k]||document.createElement("video");v.className="cutvid";v.muted=true;v.playsInline=true;v.setAttribute("playsinline","");if(!pre[k])vsrc(v,k);ov.prepend(v);
+    document.body.append(ov);document.body.classList.add("arlock");let ended=false,started=false,tt=0;const t0=performance.now();
+    const fin=()=>{if(ended)return;ended=true;clearTimeout(tt);clearInterval(iv);ov.classList.add("out");setTimeout(()=>{ov.remove();document.body.classList.remove("arlock");done()},420)};
+    const iv=setInterval(()=>{const t=v.currentTime||0;if(t>sc.cardAt+.4)ov.classList.add("txin");if(t>sc.cardAt&&!ov.classList.contains("cin")){ov.classList.add("cin");try{SND.fx("hit")}catch(_){}}},80);
+    v.onended=fin;v.onerror=()=>{if(!started){clearInterval(iv);ov.remove();document.body.classList.remove("arlock");playCanvas(c,done)}};
+    v.onplaying=()=>{if(!started){started=true;sc.sfx&&sc.sfx()}};
+    ov.addEventListener("click",()=>{if(performance.now()-t0>600)fin()});
+    try{v.currentTime=0;const pr=v.play();if(pr&&pr.catch)pr.catch(()=>{})}catch(_){}
+    tt=setTimeout(()=>{if(!started){clearInterval(iv);v.pause();ov.remove();document.body.classList.remove("arlock");playCanvas(c,done)}},3000)}
+  function play(c,done){if(VID[c.id]&&!window.__noVid)return playVid(c,done);return playCanvas(c,done)}
+  function playCanvas(c,done){const sc=SC[c.id];if(!sc){done();return}
     const ov=document.createElement("div");ov.className="cut cut-"+sc.mode;ov.style.setProperty("--cc",sc.col);ov.style.setProperty("--cc2",sc.col2);
     ov.innerHTML=`<canvas></canvas><i class="cutbar t"></i><i class="cutbar b"></i><div class="cutcard"><div class="cutimg" style="background-image:url('${AU[c.id]||""}')"></div><i class="cutsh"></i></div><div class="cuttx"><small>Divin</small><h2>${esc(c.s)}</h2><p>${esc(sc.sub)}</p></div><span class="cutskip">Toucher pour passer</span>`;
     document.body.append(ov);document.body.classList.add("arlock");
@@ -3609,5 +3634,5 @@ const CUT=(()=>{
       if(t>sc.cardAt+.5&&!ov.classList.contains("txin"))ov.classList.add("txin");
       if(t>=sc.dur)return fin();raf=requestAnimationFrame(fr)};
     raf=requestAnimationFrame(fr)}
-  return{play,has:id=>!!SC[id]}})();
+  return{play,preload,has:id=>!!SC[id]}})();
 </script>
