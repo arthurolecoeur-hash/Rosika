@@ -1654,6 +1654,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .ghost.m .rn{background-image:linear-gradient(90deg,#ff4d6d,#f5a623,#3ecf8e,#4c8dff,#b25cff,#ff4d6d)}
 @keyframes rnmove{to{background-position:300% 0}}
 @media (prefers-reduced-motion:reduce){.ghost,.ghost .rn{animation:none}}
+
+.deck.charge .fc .card,.deck:not(.pop) .fc:not(.up) .card{visibility:hidden}
 </style>
 
 <nav><div class="in">
@@ -2579,7 +2581,6 @@ function toEpic(){if(!OP||OP.done)return -1;const st=OP.i+(OP.up?1:0);for(let j=
 function advance(){
   if(OP.lock)return;const c=OP.cards[OP.i];
   if(!OP.up){
-    if(["e","l","m","d"].includes(c.r)&&!OP.splashed[OP.i]){OP.splashed[OP.i]=1;showSplash(c);return}
     reveal();return;
   }
   const rs=$("#deck .rays");if(rs)rs.remove();
@@ -2611,10 +2612,11 @@ function reveal(){
     const th=$("#thumbs");if(th)th.outerHTML=thumbsHTML();
     const bt=$("#barT");if(bt)bt.textContent=barTxt();
     OP.lock=false;
+    if(["e","l","m","d"].includes(c.r)&&!OP.splashed[OP.i]&&!RMOT()){OP.splashed[OP.i]=1;OP.lock=true;setTimeout(()=>showSplash(c,()=>{OP.lock=false}),450)}
   },520);
 }
 let splT;
-function showSplash(c){
+function showSplash(c,after){
   const sp=$("#splash"),rk=POWRANK[c.id],top=(rk/N*100);
   sp.className="splash "+c.r;
   sp.innerHTML=`<span class="lab">${RN[c.r].toUpperCase()}</span>
@@ -2623,7 +2625,7 @@ function showSplash(c){
   <span class="skip">Toucher pour continuer</span>`;
   sp.hidden=false;
   setTimeout(()=>{const r=sp.querySelector('.sr .card');if(r){const[x,y]=mid(r);burst(x,y,RCOL[c.r],60,7)}},350);
-  const done=()=>{clearTimeout(splT);if(sp.hidden)return;sp.hidden=true;setTimeout(reveal,40)};
+  const done=()=>{clearTimeout(splT);if(sp.hidden)return;sp.hidden=true;if(after)after()};
   sp.onclick=done;splT=setTimeout(done,2600);
 }
 function stageSum(){
