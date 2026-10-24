@@ -3631,7 +3631,7 @@ const CUT=(()=>{
     const v=pre[k]||document.createElement("video");v.className="cutvid";v.muted=true;v.playsInline=true;v.setAttribute("playsinline","");if(!pre[k])vsrc(v,k);ov.prepend(v);
     document.body.append(ov);document.body.classList.add("arlock");let ended=false,started=false,tt=0;const t0=performance.now();
     const fin=()=>{if(ended)return;ended=true;clearTimeout(tt);clearInterval(iv);ov.classList.add("out");setTimeout(()=>{ov.remove();document.body.classList.remove("arlock");done()},420)};
-    const iv=setInterval(()=>{const t=v.currentTime||0;if(t>sc.cardAt+.4)ov.classList.add("txin");if(t>sc.cardAt&&!ov.classList.contains("cin")){ov.classList.add("cin");try{SND.fx("hit")}catch(_){}}},80);
+    const CA={spider:2.8,iron:3.4,bat:3.4,sup:3.2,vader:3.2,luke:3.5}[k]||sc.cardAt;const iv=setInterval(()=>{const t=v.currentTime||0;if(t>CA+.4)ov.classList.add("txin");if(t>CA&&!ov.classList.contains("cin")){ov.classList.add("cin");try{SND.fx("hit")}catch(_){}}},80);
     v.onended=fin;v.onerror=()=>{if(!started){clearInterval(iv);ov.remove();document.body.classList.remove("arlock");playCanvas(c,done)}};
     v.onplaying=()=>{if(!started){started=true;sc.sfx&&sc.sfx()}};
     ov.addEventListener("click",()=>{if(performance.now()-t0>600)fin()});
