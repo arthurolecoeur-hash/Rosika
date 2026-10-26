@@ -1727,6 +1727,10 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .cgi i{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:11px;background:#ffe08a;color:#1d1300;z-index:3;box-shadow:0 0 14px #ffe08a}
 .cgs{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mute)}
 @media (max-width:600px){.cgg{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+.cinfo{height:80px;min-height:80px;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;overflow:hidden;width:min(92vw,520px)}
+.cinfo h3{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.15}
+.cinfo .ff{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 </style>
 
 <nav><div class="in">
@@ -2607,7 +2611,7 @@ function commitTear(){
   track("open",OP.n);{const u=UNI[P.id];if(u)track("u_"+u,OP.n);if(P.id==="mix")track("mix",OP.n);if(OP.n>1)track("x2",1);if(P.daily)track("dailyp",1);if(P.g==="shop")track("shop",OP.n);const cnt=r=>cards.filter(c=>r.includes(c.r)).length,ep=cnt("elm"),ra=cnt("relm"),my=cnt("m"),nw=isNew.filter(Boolean).length;if(ep)track("epic",ep);if(ra)track("rare",ra);if(my)track("myth",my);if(nw)track("newc",nw)}{const lg=cards.filter(c=>c.r==="l"||c.r==="m"||c.r==="d").length;if(lg)track("legend",lg);for(let b=0;b<OP.n;b++){if(cards.slice(b*P.k,(b+1)*P.k).filter(c=>c.r==="m").length>=2)S.st.divine=1}}save();
   Object.assign(OP,{cards,isNew,gold,i:0,up:false,splashed:{},done:false});
   const art=preloadArt(cards.map(c=>c.id)),go=f=>{let d=0;const t=setTimeout(()=>{if(!d){d=1;f()}},3500);art.then(()=>{if(!d){d=1;clearTimeout(t);f()}})};
-  const nextStage=first=>OP.n>=4?stageSum():stageCard(first);
+  const nextStage=first=>stageCard(first);
   if(god)$("#opTitle").textContent=OP.pn+" · GOD PACK";else if(gold)$("#opTitle").textContent=OP.pn+" · Booster doré";
   $("#op").classList.toggle("godmode",god);
   opPill();
@@ -2659,7 +2663,7 @@ function stageCard(first,nx){try{if(typeof CUT!=="undefined")OP.cards.forEach(x=
   dk.onclick=advance;
   dk.onpointermove=e=>{if(e.pointerType!=="mouse")return;const r=dk.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;tl.style.transform=`rotateY(${x*18}deg) rotateX(${-y*18}deg)`;dk.style.setProperty("--gx",(x+.5)*100+"%");dk.style.setProperty("--gy",(y+.5)*100+"%");dk.style.setProperty("--go",".9")};
   dk.onpointerleave=()=>{tl.style.transform="";dk.style.setProperty("--go","0")};
-  $("#opAll").onclick=e=>{e.stopPropagation();stageSum()};
+  $("#opAll").onclick=e=>{e.stopPropagation();if(!OP.lock)sumGo()};
   const ep=$("#opEp");if(ep)ep.onclick=e=>{e.stopPropagation();const j=toEpic();if(j<0||OP.lock)return;OP.i=j;OP.up=false;OP.charged=false;stageCard(false,true);OP.lock=true;setTimeout(()=>{OP.lock=false;advance()},380)};
 }
 function toEpic(){if(!OP||OP.done)return -1;const st=OP.i+(OP.up?1:0);for(let j=st;j<OP.cards.length;j++)if(["e","l","m","d"].includes(OP.cards[j].r))return j>st?j:-1;return -1}
@@ -2714,6 +2718,7 @@ function showSplash(c,after){
   const done=()=>{clearTimeout(splT);if(sp.hidden)return;sp.hidden=true;if(after)after()};
   sp.onclick=done;splT=setTimeout(done,2600);
 }
+function sumGo(){const ds=OP.cards.map((c,i)=>[c,i]).filter(([c,i])=>c.r==="d"&&!(OP.cuts&&OP.cuts[i])&&!(i<OP.i||(i===OP.i&&OP.up)));if(ds.length&&!RMOT()&&typeof CUT!=="undefined"&&CUT.has(ds[0][0].id)){const[c,i]=ds[0];(OP.cuts=OP.cuts||{})[i]=1;OP.lock=true;CUT.play(c,()=>{OP.lock=false;sumGo()});return}stageSum()}
 function stageSum(){
   OP.i=OP.cards.length-1;OP.up=true;OP.done=true;
   const RK={c:0,u:1,r:2,e:3,l:4,m:5,d:6},idx=OP.cards.map((c,j)=>j).sort((a,b)=>RK[OP.cards[b].r]-RK[OP.cards[a].r]||a-b);
@@ -3068,7 +3073,7 @@ addEventListener("keydown",e=>{if(e.key==="Escape"&&popOpen)togglePop(false);
   const sp=$("#splash");
   if(e.key===" "||e.key==="Enter"){e.preventDefault();if(sp&&!sp.hidden){sp.click();return}if(OP.done){const a=$("#opAgain");if(a&&!a.disabled)a.click();return}if($("#deck"))advance();else if(canTear())autoTear();}
   else if(e.key==="Escape"){if(!OP.busy&&(!OP.torn||OP.done))closeOp()}
-  else if((e.key==="a"||e.key==="A")&&OP.cards&&$("#deck")){stageSum()}
+  else if((e.key==="a"||e.key==="A")&&OP.cards&&$("#deck")&&!OP.lock){sumGo()}
   else if(/^[1-3]$/.test(e.key)&&!OP.torn){const b=document.querySelectorAll(".mult button")[+e.key-1];if(b&&!b.disabled)b.click()}});
 const nrm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/['’`]/g,"").replace(/[_\-.]+/g," ").replace(/[^a-z0-9() ]/g," ").replace(/\s+/g," ").trim();
 let IDX=null;
