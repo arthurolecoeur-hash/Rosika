@@ -2638,7 +2638,7 @@ const SVGI={swords:'<path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19
  search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>'
 };
 const ico=(k,c="")=>`<svg class="ico ${c}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SVGI[k]||SVGI.star}</svg>`;
-const MICON={open:"gift",fiche:"eye",sell:"coin",epic:"sparkle",rare:"star",newc:"cards",u_mv:"layers",u_dc:"layers",u_sw:"layers",wish:"heart",x2:"layers",dailyp:"cal",img:"image",mix:"star",legend:"crown",myth:"crown",shop:"bag"};
+const MICON={dup:"cards",theme:"layers",arp:"swords",arw:"swords",tower:"bolt",mkbuy:"bag",spend:"coin",album:"book",u_di:"layers",u_dw:"layers",u_hp:"layers",u_lo:"layers",u_jv:"layers",u_fg:"layers",u_tf:"layers",open:"gift",fiche:"eye",sell:"coin",epic:"sparkle",rare:"star",newc:"cards",u_mv:"layers",u_dc:"layers",u_sw:"layers",wish:"heart",x2:"layers",dailyp:"cal",img:"image",mix:"star",legend:"crown",myth:"crown",shop:"bag"};
 let LP=null;
 function openPersos(o){
   LP={t:o.t,pool:o.pool.slice().sort((a,b)=>a.no-b.no),alb:o.alb||null,f:"all",q:"",lim:{}};
@@ -2667,7 +2667,7 @@ $("#lgrid").onclick=e=>{const m=e.target.closest(".plmore");if(m){LP.lim[m.datas
 $("#listClose").onclick=()=>$("#list").close();
 $("#plQ").oninput=()=>{LP.q=$("#plQ").value.trim();drawList()};
 $("#plF").onclick=e=>{const b=e.target.closest("button");if(!b)return;LP.f=b.dataset.f;$("#plF").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));drawList()};
-function unlockAlbum(a){if(!a||S.albums[a.n]||!a.pool.every(c=>S.own[c.id]))return;S.albums[a.n]=1;S.coins+=a.g;save();renderAll();toast(`Album « ${a.n} » débloqué · +${a.g} ◆`);try{const r=$("#list").open?$("#plAct").getBoundingClientRect():null;if(r)burst(r.left+r.width/2,r.top+r.height/2,["#ffd34d","#fff","#c18bff"],50,5)}catch(_){}}
+function unlockAlbum(a){if(!a||S.albums[a.n]||!a.pool.every(c=>S.own[c.id]))return;S.albums[a.n]=1;track("album",1);S.coins+=a.g;save();renderAll();toast(`Album « ${a.n} » débloqué · +${a.g} ◆`);try{const r=$("#list").open?$("#plAct").getBoundingClientRect():null;if(r)burst(r.left+r.width/2,r.top+r.height/2,["#ffd34d","#fff","#c18bff"],50,5)}catch(_){}}
 
 function renderProf(){
   const nGot=ACH.filter(a=>S.ach[a.id]).length,st=[
@@ -2707,7 +2707,7 @@ function payOne(P){
   if(P.id==="box"&&S.freeBox>0){S.freeBox--;return}
   if(P.id==="pre"&&S.freePre>0){S.freePre--;return}
   if(S.bons>0){S.bons--;return}
-  S.coins-=P.g==="free"?FREE_PRICE:P.price;
+  const x=P.g==="free"?FREE_PRICE:P.price;S.coins-=x;track("spend",x);
 }
 const POWRANK=Object.fromEntries(CARDS.slice().sort((a,b)=>b.pow-a.pow).map((c,i)=>[c.id,i+1]));
 let OP=null;
@@ -2809,7 +2809,7 @@ function commitTear(){
   const seen={},isNew=cards.map(c=>{const v=!before[c.id]&&!seen[c.id];seen[c.id]=1;return v});
   cards.forEach(c=>{S.own[c.id]=(S.own[c.id]||0)+1;if(!S.since[c.id])S.since[c.id]=today()});
   OP.god=god;
-  track("open",OP.n);{const u=UNI[P.id];if(u)track("u_"+u,OP.n);if(P.id==="mix")track("mix",OP.n);if(OP.n>1)track("x2",1);if(P.daily)track("dailyp",1);if(P.g==="shop")track("shop",OP.n);const cnt=r=>cards.filter(c=>r.includes(c.r)).length,ep=cnt("elm"),ra=cnt("relm"),my=cnt("m"),nw=isNew.filter(Boolean).length;if(ep)track("epic",ep);if(ra)track("rare",ra);if(my)track("myth",my);if(nw)track("newc",nw)}{const lg=cards.filter(c=>c.r==="l"||c.r==="m"||c.r==="d").length;if(lg)track("legend",lg);for(let b=0;b<OP.n;b++){if(cards.slice(b*P.k,(b+1)*P.k).filter(c=>c.r==="m").length>=2)S.st.divine=1}}save();
+  track("open",OP.n);{const u=UNI[P.id];if(u)track("u_"+u,OP.n);if(P.id==="mix")track("mix",OP.n);if(OP.n>1)track("x2",1);if(P.daily)track("dailyp",1);if(P.g==="shop")track("shop",OP.n);if(THP.includes(P.id))track("theme",OP.n);const cnt=r=>cards.filter(c=>r.includes(c.r)).length,ep=cnt("elmd"),ra=cnt("relmd"),my=cnt("md"),nw=isNew.filter(Boolean).length;if(ep)track("epic",ep);if(ra)track("rare",ra);if(my)track("myth",my);if(nw)track("newc",nw);if(cards.length-nw>0)track("dup",cards.length-nw)}{const lg=cards.filter(c=>c.r==="l"||c.r==="m"||c.r==="d").length;if(lg)track("legend",lg);for(let b=0;b<OP.n;b++){if(cards.slice(b*P.k,(b+1)*P.k).filter(c=>c.r==="m").length>=2)S.st.divine=1}}save();
   Object.assign(OP,{cards,isNew,gold,i:0,up:false,splashed:{},done:false});
   const art=preloadArt(cards.map(c=>c.id)),go=f=>{let d=0;const t=setTimeout(()=>{if(!d){d=1;f()}},3500);art.then(()=>{if(!d){d=1;clearTimeout(t);f()}})};
   const nextStage=first=>stageCard(first);
@@ -2995,48 +2995,96 @@ function renderView(v){if(v==="boost"){renderHero();renderChips();renderPacks()}
 function renderAll(){if(raQ)return;raQ=requestAnimationFrame(renderNow)}
 
 const STREAK0=[20,30,40,50,60,80,100],STREAK=[];STREAK0.forEach((v,i)=>Object.defineProperty(STREAK,i,{get(){return v*(evIs("str2")?2:1)},enumerable:true}));STREAK.length=7;
-const UNI={mv:"mv",avg:"mv",xm:"mv",spd:"mv",cos:"mv",dc:"dc",gth:"dc",jla:"dc",sw:"sw",cln:"sw",drk:"sw"};
+const UNI={mv:"mv",avg:"mv",xm:"mv",spd:"mv",cos:"mv",dc:"dc",gth:"dc",jla:"dc",sw:"sw",cln:"sw",drk:"sw",dis:"di",pix:"di",udw:"dw",uhp:"hp",ulo:"lo",ujv:"jv",ufg:"fg",utf:"tf"},THP=["avg","xm","spd","cos","gth","jla","cln","drk"];
 const MPOOL_D=[
  {id:"o3",k:"open",goal:3,t:"Ouvre 3 boosters",g:30,base:1},
  {id:"o5",k:"open",goal:5,t:"Ouvre 5 boosters",g:50,base:1},
  {id:"o8",k:"open",goal:8,t:"Ouvre 8 boosters",g:80,base:1},
+ {id:"o12",k:"open",goal:12,t:"Ouvre 12 boosters",g:110,base:1},
  {id:"f3",k:"fiche",goal:3,t:"Consulte 3 fiches de persos",g:20},
+ {id:"f8",k:"fiche",goal:8,t:"Consulte 8 fiches de persos",g:35},
  {id:"s3",k:"sell",goal:3,t:"Vends 3 doublons",g:30},
  {id:"s10",k:"sell",goal:10,t:"Vends 10 doublons",g:60},
  {id:"e1",k:"epic",goal:1,t:"Obtiens une Épique ou mieux",g:40},
+ {id:"e3",k:"epic",goal:3,t:"Obtiens 3 Épiques ou mieux",g:90},
  {id:"r5",k:"rare",goal:5,t:"Obtiens 5 Rares ou mieux",g:35},
+ {id:"r12",k:"rare",goal:12,t:"Obtiens 12 Rares ou mieux",g:75},
+ {id:"ld",k:"legend",goal:1,t:"Obtiens une Légendaire ou mieux",g:130},
  {id:"n5",k:"newc",goal:5,t:"Découvre 5 nouveaux persos",g:35},
  {id:"n12",k:"newc",goal:12,t:"Découvre 12 nouveaux persos",g:70},
+ {id:"dup5",k:"dup",goal:5,t:"Obtiens 5 doublons",g:30},
+ {id:"dup15",k:"dup",goal:15,t:"Obtiens 15 doublons",g:60},
  {id:"umv",k:"u_mv",goal:2,t:"Ouvre 2 boosters de l'univers Marvel",g:35},
  {id:"udc",k:"u_dc",goal:2,t:"Ouvre 2 boosters de l'univers DC",g:35},
  {id:"usw",k:"u_sw",goal:2,t:"Ouvre 2 boosters Star Wars",g:35},
+ {id:"udi",k:"u_di",goal:2,t:"Ouvre 2 boosters Disney ou Pixar",g:35},
+ {id:"udw",k:"u_dw",goal:2,t:"Ouvre 2 boosters DreamWorks",g:35},
+ {id:"uhp",k:"u_hp",goal:2,t:"Ouvre 2 boosters Harry Potter",g:35},
+ {id:"ulo",k:"u_lo",goal:2,t:"Ouvre 2 boosters Terre du Milieu",g:35},
+ {id:"ujv",k:"u_jv",goal:2,t:"Ouvre 2 boosters Jeux vidéo",g:35},
+ {id:"ufg",k:"u_fg",goal:2,t:"Ouvre 2 boosters Jeux de combat",g:35},
+ {id:"utf",k:"u_tf",goal:2,t:"Ouvre 2 boosters Robots & Tortues",g:35},
+ {id:"th2",k:"theme",goal:2,t:"Ouvre 2 boosters thématiques (Avengers, Gotham…)",g:40},
  {id:"w2",k:"wish",goal:2,t:"Ajoute 2 persos à tes envies",g:20},
- {id:"x2",k:"x2",goal:1,t:"Ouvre 2 boosters d'un coup (×2)",g:40},
+ {id:"x2",k:"x2",goal:1,t:"Ouvre plusieurs boosters d'un coup",g:40},
+ {id:"x3",k:"x2",goal:3,t:"Fais 3 ouvertures multiples",g:80},
  {id:"dp",k:"dailyp",goal:1,t:"Ouvre le pack du jour",g:25},
+ {id:"arp3",k:"arp",goal:3,t:"Joue 3 combats dans l'Arène",g:40},
  {id:"ar1",k:"arw",goal:1,t:"Gagne un combat dans l'Arène",g:40},
- {id:"mx",k:"mix",goal:2,t:"Ouvre 2 boosters Mix",g:30}
+ {id:"ar3",k:"arw",goal:3,t:"Gagne 3 combats dans l'Arène",g:90},
+ {id:"tw1",k:"tower",goal:1,t:"Franchis un étage de la Tour",g:40},
+ {id:"tw3",k:"tower",goal:3,t:"Franchis 3 étages de la Tour",g:100},
+ {id:"mk1",k:"mkbuy",goal:1,t:"Achète une carte au Marché",g:40},
+ {id:"sp3",k:"spend",goal:300,t:"Dépense 300 ◆",g:40},
+ {id:"sp10",k:"spend",goal:1000,t:"Dépense 1 000 ◆",g:90},
+ {id:"mx",k:"mix",goal:2,t:"Ouvre 2 boosters Mix",g:30},
+ {id:"mx5",k:"mix",goal:5,t:"Ouvre 5 boosters Mix",g:60}
 ];
 const MPOOL_W=[
  {id:"o25",k:"open",goal:25,t:"Ouvre 25 boosters",g:150,base:1},
  {id:"o40",k:"open",goal:40,t:"Ouvre 40 boosters",g:240,base:1},
+ {id:"o60",k:"open",goal:60,t:"Ouvre 60 boosters",g:340,base:1},
  {id:"l1",k:"legend",goal:1,t:"Obtiens une Légendaire ou mieux",g:150},
  {id:"l3",k:"legend",goal:3,t:"Obtiens 3 Légendaires ou mieux",g:350},
+ {id:"l5",k:"legend",goal:5,t:"Obtiens 5 Légendaires ou mieux",g:500},
+ {id:"m1",k:"myth",goal:1,t:"Obtiens une Mythique",g:700},
  {id:"e8",k:"epic",goal:8,t:"Obtiens 8 Épiques ou mieux",g:200},
+ {id:"e20",k:"epic",goal:20,t:"Obtiens 20 Épiques ou mieux",g:420},
  {id:"n50",k:"newc",goal:50,t:"Découvre 50 nouveaux persos",g:220},
+ {id:"n100",k:"newc",goal:100,t:"Découvre 100 nouveaux persos",g:380},
+ {id:"dup40",k:"dup",goal:40,t:"Obtiens 40 doublons",g:180},
  {id:"ar5",k:"arw",goal:5,t:"Gagne 5 combats dans l'Arène",g:220},
+ {id:"ar10",k:"arw",goal:10,t:"Gagne 10 combats dans l'Arène",g:400},
+ {id:"arp15",k:"arp",goal:15,t:"Joue 15 combats dans l'Arène",g:250},
+ {id:"tw5",k:"tower",goal:5,t:"Franchis 5 étages de la Tour",g:300},
+ {id:"tw10",k:"tower",goal:10,t:"Franchis 10 étages de la Tour",g:550},
  {id:"s30",k:"sell",goal:30,t:"Vends 30 doublons",g:150},
+ {id:"s60",k:"sell",goal:60,t:"Vends 60 doublons",g:260},
  {id:"wmv",k:"u_mv",goal:10,t:"Ouvre 10 boosters de l'univers Marvel",g:160},
  {id:"wdc",k:"u_dc",goal:8,t:"Ouvre 8 boosters de l'univers DC",g:160},
  {id:"wsw",k:"u_sw",goal:8,t:"Ouvre 8 boosters Star Wars",g:160},
+ {id:"wdi",k:"u_di",goal:8,t:"Ouvre 8 boosters Disney ou Pixar",g:160},
+ {id:"whp",k:"u_hp",goal:6,t:"Ouvre 6 boosters Harry Potter",g:150},
+ {id:"wjv",k:"u_jv",goal:6,t:"Ouvre 6 boosters Jeux vidéo",g:150},
+ {id:"th10",k:"theme",goal:10,t:"Ouvre 10 boosters thématiques",g:200},
+ {id:"mx10",k:"mix",goal:10,t:"Ouvre 10 boosters Mix",g:150},
+ {id:"x10",k:"x2",goal:10,t:"Fais 10 ouvertures multiples",g:220},
  {id:"sh2",k:"shop",goal:2,t:"Achète 2 boosters en boutique",g:180},
+ {id:"sh5",k:"shop",goal:5,t:"Achète 5 boosters en boutique",g:380},
+ {id:"sp5k",k:"spend",goal:5000,t:"Dépense 5 000 ◆",g:350},
+ {id:"mk5",k:"mkbuy",goal:5,t:"Achète 5 cartes au Marché",g:250},
+ {id:"f30",k:"fiche",goal:30,t:"Consulte 30 fiches de persos",g:120},
+ {id:"w5",k:"wish",goal:5,t:"Ajoute 5 persos à tes envies",g:60},
+ {id:"al1",k:"album",goal:1,t:"Complète un album",g:300},
  {id:"dp5",k:"dailyp",goal:5,t:"Ouvre 5 packs du jour",g:200}
 ];
 for(const m of [...MPOOL_D,...MPOOL_W]){const g0=m.g;Object.defineProperty(m,"g",{get(){return g0*(evIs("mis2")?2:1)}})}
+const MIS_N=5,misG=k=>/^u_|^theme$|^mix$/.test(k)?"uni":/^ar[pw]$|^tower$/.test(k)?"ar":/^(rare|epic|legend|myth)$/.test(k)?"rar":/^(newc|dup)$/.test(k)?"pull":/^(sell|spend|mkbuy|shop)$/.test(k)?"eco":k;
 function pickMis(pool,seed){let h=2166136261;for(const ch of seed)h=Math.imul(h^ch.charCodeAt(0),16777619)>>>0;
   const R=()=>{h=(h*1664525+1013904223)>>>0;return h/4294967296};
   const base=pool.filter(m=>m.base),rest=pool.filter(m=>!m.base).slice();
   const out=[base[Math.floor(R()*base.length)]];
-  while(out.length<3&&rest.length){const m=rest.splice(Math.floor(R()*rest.length),1)[0];if(!out.some(x=>x.k===m.k))out.push(m)}
+  while(out.length<MIS_N&&rest.length){const m=rest.splice(Math.floor(R()*rest.length),1)[0];if(!out.some(x=>misG(x.k)===misG(m.k)))out.push(m)}
   return out}
 const MIS_C={},misD=()=>{const k="d"+today();return MIS_C[k]||(MIS_C[k]=pickMis(MPOOL_D,k))},misW=()=>{const k="w"+weekKey();return MIS_C[k]||(MIS_C[k]=pickMis(MPOOL_W,k))};
 const weekKey=()=>{const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return ymd(d)};
@@ -3200,7 +3248,7 @@ function renderMis(){
     <div class="mfoot">${ico("flame")} ${S.st.logins} connexion${S.st.logins>1?"s":""} au total · 1 jour manqué toléré par série</div>
   </section>
   <div class="mgrid">
-    ${box("d",D,S.mis,"Missions du jour","Du jour",dur(msToMidnight()),"+1 booster gratuit",S.mis.bonus,0,mAll,dc)}
+    ${box("d",D,S.mis,"Missions du jour","Du jour",dur(msToMidnight()),"+2 boosters bonus",S.mis.bonus,0,mAll,dc)}
     ${box("w",W,S.wk,"Missions de la semaine","De la semaine",dur(msToMonday()),"Coffret de 20 cartes offert"+(S.freeBox?` · ${S.freeBox} en boutique`:""),S.wk.bonus,0,wAll,wc)}
   </div>
   <section class="achs">
@@ -3240,7 +3288,7 @@ function claimMis(key,quiet){
   const i=key.indexOf(":"),sc=key.slice(0,i),k=key.slice(i+1);
   if(sc==="alb"){const a=albumList().find(x=>x.n===k);if(!a||S.albums[k]||!a.pool.every(c=>S.own[c.id]))return;S.albums[k]=1;S.coins+=a.g;toast(`Album « ${k} » · +${a.g} ◆`)}
   else{const L=sc==="d"?misD():misW(),st=sc==="d"?S.mis:S.wk;
-    if(k==="bonus"){if(st.bonus||!L.every(m=>st.claimed.includes(m.id)))return;st.bonus=true;if(sc==="d"){S.bons=(S.bons||0)+1;quiet||toast("+1 booster bonus")}else{S.freeBox++;quiet||toast("Coffret offert ajouté en boutique")}}
+    if(k==="bonus"){if(st.bonus||!L.every(m=>st.claimed.includes(m.id)))return;st.bonus=true;if(sc==="d"){S.bons=(S.bons||0)+2;quiet||toast("+2 boosters bonus")}else{S.freeBox++;quiet||toast("Coffret offert ajouté en boutique")}}
     else{const m=L.find(x=>x.id===k);if(!m||st.claimed.includes(k)||(st[m.k]||0)<m.goal)return;st.claimed.push(k);S.coins+=m.g;quiet||toast("+"+m.g+" ◆")}}
   if(!quiet){save();renderAll()}
 }
@@ -3427,11 +3475,11 @@ const MK=(()=>{
   async function lease(path){try{const r=await db.doc(path).acquire({holder:me,ttlMs:8000});return r.acquired}catch(_){return false}}
   /* actions */
   async function buy(x){
-    if(x.npc){if(S.coins<x.price)return toast("Pas assez de ◆");track("mkbuy",1);S.coins-=x.price;get(x.card);S.npcBuy=S.npcBuy&&S.npcBuy.d===today()?S.npcBuy:{d:today(),ids:[]};S.npcBuy.ids.push(x.id);save();renderAll();toast(`${BY[x.card].s} acheté`);return paint()}
+    if(x.npc){if(S.coins<x.price)return toast("Pas assez de ◆");track("mkbuy",1);S.coins-=x.price;track("spend",x.price);get(x.card);S.npcBuy=S.npcBuy&&S.npcBuy.d===today()?S.npcBuy:{d:today(),ids:[]};S.npcBuy.ids.push(x.id);save();renderAll();toast(`${BY[x.card].s} acheté`);return paint()}
     if(!db)return;if(x.seller===me)return;if(S.coins<x.price)return toast("Pas assez de ◆");
     if(!await lease("listings/"+x.id))return toast("Quelqu'un est en train d'acheter, réessaie");
     const s=await db.doc("listings/"+x.id).get();if(!s.exists||s.data().status!=="open")return toast("Déjà vendu");
-    await db.doc("listings/"+x.id).update({status:"sold",buyer:me,st:now()});track("mkbuy",1);S.coins-=x.price;get(x.card);save();renderAll();toast(`${BY[x.card].s} acheté · −${x.price} ◆`)}
+    await db.doc("listings/"+x.id).update({status:"sold",buyer:me,st:now()});track("mkbuy",1);S.coins-=x.price;track("spend",x.price);get(x.card);save();renderAll();toast(`${BY[x.card].s} acheté · −${x.price} ◆`)}
   async function bid(x,amt){
     const min=Math.max(x.bid+1,Math.ceil(x.bid*1.05));if(!(amt>=min))return toast("Mise minimale : "+min+" ◆");
     const prev=(S.bids&&S.bids[x.id])||0;if(S.coins+prev<amt)return toast("Pas assez de ◆");
@@ -3670,7 +3718,7 @@ const AR=(()=>{
     else if(B.tower){if(res>0){B.rew=towerRew(B.floor);giveRew(B.rew);dc=10+B.floor*2;a.tw=B.floor+1;a.twBest=Math.max(a.twBest||0,B.floor);track("tower",1)}}
     else if(res>0)dc=5;
     S.coins+=dc;a.hist=[{t:Date.now(),o:o.n,r:res,dt,s:B.sc.slice(),rk:B.ranked,tw:B.tower?B.floor:0},...(a.hist||[])].slice(0,15);
-    if(res>0)track("arw",1);save();renderTop();checkAch();push();
+    track("arp",1);if(res>0)track("arw",1);save();renderTop();checkAch();push();
     const L=lg(a.tr),el=$("#arB");
     if(quit){const rk=B.ranked;close();renderAll();return toast(rk?`Abandon · ${dt} 🏆`:"Combat abandonné")}
     if(B.tower){el.insertAdjacentHTML("beforeend",`<div class="arend ${res>0?"arV":"arD"}"><div class="arendc">
