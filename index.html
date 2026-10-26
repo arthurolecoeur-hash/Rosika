@@ -1733,6 +1733,17 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .cinfo .ff{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 
 .bonchip{box-shadow:inset 0 0 0 1px rgb(255 95 168 / .5),0 0 18px -6px #ff5fa8}
+
+.codechip{cursor:pointer;border:0;color:var(--fg);font:inherit;box-shadow:inset 0 0 0 1px rgb(193 139 255 / .45)}
+.codechip:hover{box-shadow:inset 0 0 0 1px #c18bff,0 0 16px -6px #c18bff}
+#codeDlg{border:0;padding:0;background:transparent;max-width:min(440px,92vw);width:100%}
+#codeDlg::backdrop{background:#05060bcc;backdrop-filter:blur(4px)}
+.codebox{background:var(--panel);border-radius:20px;padding:18px;box-shadow:inset 0 0 0 1px #ffffff14,0 30px 80px -20px #000;color:var(--fg)}
+.cbh{display:flex;align-items:center;gap:12px;margin-bottom:14px}.cbh h3{margin:0;font-family:var(--display)}.cbh small{color:var(--mute);font-size:12px}.cbh>div{flex:1}
+.cbi{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#ff5fa8,#7c5cff);color:#fff}.cbi .ico{width:22px;height:22px}
+#cbF{display:flex;gap:8px}#cbIn{flex:1;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--fg);font:600 16px var(--mono);letter-spacing:.12em;text-transform:uppercase}
+#cbF .cta{width:auto;padding:12px 18px}
+.cbmsg{min-height:20px;margin:12px 2px 0;font-size:14px;color:var(--mute)}.cbmsg.ok{color:#5ef0a0;font-weight:700}.cbmsg.ko{color:#ff7a8f;font-weight:600}
 </style>
 
 <nav><div class="in">
@@ -2350,7 +2361,8 @@ document.addEventListener("pointerout",e=>{const pk=e.target.closest&&e.target.c
 function left(ts){const d=ts-Date.now();if(d<=0)return"Terminé";const j=Math.floor(d/864e5),h=Math.floor(d%864e5/36e5);return j+" j "+h+" h"}
 function priceTxt(P){
   if(P.daily)return S.daily===today()?"Disponible demain":"Gratuit";
-  if(S.bons>0&&!(P.until&&Date.now()>P.until)&&!(P.g==="free"&&S.stock>0)&&!(P.id==="box"&&S.freeBox)&&!(P.id==="pre"&&S.freePre))return "Bon cadeau · "+S.bons+" restant"+(S.bons>1?"s":"");
+  if(S.pv&&S.pv[P.id]>0)return "Offert · "+S.pv[P.id]+" restant"+(S.pv[P.id]>1?"s":"");
+  if(S.bons>0&&!(P.until&&Date.now()>P.until)&&!(P.g==="free"&&S.stock>0)&&!(P.id==="box"&&S.freeBox)&&!(P.id==="pre"&&S.freePre))return "Booster bonus · "+S.bons+" restant"+(S.bons>1?"s":"");
   if(P.g==="free")return S.stock>0?"1 booster gratuit":FREE_PRICE+" ◆";
   if(P.id==="box"&&S.freeBox)return "Offert";
   if(P.id==="pre"&&S.freePre)return "Offert";
@@ -2359,7 +2371,7 @@ function priceTxt(P){
 function canOpen(P){if(!P.pool().length)return false;
   if(P.daily)return S.daily!==today();
   if(P.until&&Date.now()>P.until)return false;
-  if(S.bons>0)return true;
+  if(S.bons>0||(S.pv&&S.pv[P.id]>0))return true;
   if(P.g==="free")return S.stock>0||S.coins>=FREE_PRICE;
   if(P.id==="box"&&S.freeBox)return true;
   if(P.id==="pre"&&S.freePre)return true;
@@ -2501,16 +2513,18 @@ function costN(P,n){
   if(P.daily)return n===1&&S.daily!==today()?{ok:true,txt:"Gratuit"}:{ok:false,txt:"Disponible demain"};
   if(P.until&&Date.now()>P.until)return{ok:false,txt:"Terminé"};
   let left=n;const parts=[];
+  const v=Math.min(S.pv&&S.pv[P.id]||0,left);left-=v;if(v)parts.push(v+" offert"+(v>1?"s":"")+" (code)");
   if(P.g==="free"){const f=Math.min(S.stock,left);left-=f;if(f)parts.push(f+" gratuit"+(f>1?"s":""))}
   if(P.id==="box"&&S.freeBox){const f=Math.min(S.freeBox,left);left-=f;if(f)parts.push(f+" offert"+(f>1?"s":""))}
   if(P.id==="pre"&&S.freePre){const f=Math.min(S.freePre,left);left-=f;if(f)parts.push(f+" offert"+(f>1?"s":""))}
-  const b=Math.min(S.bons||0,left);left-=b;if(b)parts.push(b+" bon"+(b>1?"s":"")+" cadeau");
+  const b=Math.min(S.bons||0,left);left-=b;if(b)parts.push(b+" bonus");
   const pay=left*(P.g==="free"?FREE_PRICE:P.price);if(pay)parts.push(pay+" ◆");
-  if(P.g==="free"&&!b&&!pay)return{ok:true,txt:"Gratuit · "+(S.stock-n)+" restant"+(S.stock-n>1?"s":"")};
+  if(P.g==="free"&&!b&&!pay&&!v)return{ok:true,txt:"Gratuit · "+(S.stock-n)+" restant"+(S.stock-n>1?"s":"")};
   return{ok:S.coins>=pay,txt:parts.join(" + ")||"Offert"};
 }
 function payOne(P){
   if(P.daily){S.daily=today();return}
+  if(S.pv&&S.pv[P.id]>0){S.pv[P.id]--;return}
   if(P.g==="free"&&S.stock>0){if(S.stock===MAXS)S.stockT=Date.now();S.stock--;return}
   if(P.id==="box"&&S.freeBox>0){S.freeBox--;return}
   if(P.id==="pre"&&S.freePre>0){S.freePre--;return}
@@ -2759,7 +2773,8 @@ function renderHero(){
 function renderChips(){renderEv();
   const nx=S.stock>=MAXS?"":` · +1 dans <span class="mono tmr">${fmt(S.stockT+CD-Date.now())}</span>`;
   const md=misD().filter(m=>(S.mis[m.k]||0)>=m.goal).length;
-  $("#chips").innerHTML=`${S.bons>0?`<div class="chip bonchip"><span class="ic" style="background:linear-gradient(135deg,#ff5fa8,#7c5cff);color:#fff">${ico("gift")}</span><b>${S.bons}</b> bon${S.bons>1?"s":""} cadeau · n'importe quel booster</div>`:""}
+  const pvs=Object.entries(S.pv||{}).filter(([,n])=>n>0);
+  $("#chips").innerHTML=`<button class="chip codechip" id="codeBtn"><span class="ic" style="background:#2a2140;color:#c18bff">${ico("gift")}</span>Code cadeau</button>${pvs.map(([id,n])=>{const P=PACKS.find(x=>x.id===id);return P?`<div class="chip bonchip"><span class="ic" style="background:linear-gradient(135deg,#ff5fa8,#7c5cff);color:#fff">${ico("gift")}</span><b>${n}</b> ${esc(P.n||P.s)} offert${n>1?"s":""}</div>`:""}).join("")}${S.bons>0?`<div class="chip bonchip"><span class="ic" style="background:linear-gradient(135deg,#ff5fa8,#7c5cff);color:#fff">${ico("gift")}</span><b>${S.bons}</b> booster${S.bons>1?"s":""} bonus · n'importe quel booster</div>`:""}
   <div class="chip"><span class="ic" style="background:#3a1410;color:var(--hot)">${ico("gift")}</span><b>${S.stock}/${MAXS}</b> boosters gratuits${nx}</div>
   <div class="chip"><span class="ic" style="background:#10301e;color:#4fd18b">${ico("target")}</span><b>${md}/${misD().length}</b> missions du jour</div>
   <div class="chip"><span class="ic" style="background:#221a3d;color:var(--e)">${ico("flame")}</span><b>J${S.streak.n}/7</b> série de connexion</div>
@@ -2851,7 +2866,7 @@ const msToMonday=()=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate
 const dur=ms=>{const m=Math.max(0,Math.floor(ms/6e4)),j=Math.floor(m/1440),h=Math.floor(m%1440/60),mi=m%60;return j?`${j} j ${h} h`:`${h} h ${String(mi).padStart(2,"0")} min`};
 function ensureState(){
   S.st=Object.assign({opens:0,sold:0,fiche:0,img:0,divine:0,streak7:0,logins:0},S.st||{});
-  S.ach=S.ach||{};S.albums=S.albums||{};S.freeBox=S.freeBox||0;S.freePre=S.freePre||0;S.bons=S.bons||0;if(!S.gift10){S.gift10=1;S.bons+=10;setTimeout(()=>{try{toast("🎁 Cadeau : 10 boosters offerts, valables sur n'importe quel booster !")}catch(_){}},1800)}S.forceGold=!!S.forceGold;
+  S.ach=S.ach||{};S.albums=S.albums||{};S.freeBox=S.freeBox||0;S.freePre=S.freePre||0;S.bons=S.bons||0;S.pv=S.pv||{};S.codes=S.codes||{};if(!S.gift10){S.gift10=1;S.bons+=10;setTimeout(()=>{try{toast("🎁 Cadeau : 10 boosters offerts, valables sur n'importe quel booster !")}catch(_){}},1800)}S.forceGold=!!S.forceGold;
   const t=today();
   if(S.mis.d!==t)S.mis={d:t,open:0,fiche:0,sell:0,img:0,claimed:[],bonus:false};
   S.mis.claimed=S.mis.claimed||[];
@@ -2991,7 +3006,7 @@ function claimMis(key,quiet){
   const i=key.indexOf(":"),sc=key.slice(0,i),k=key.slice(i+1);
   if(sc==="alb"){const a=albumList().find(x=>x.n===k);if(!a||S.albums[k]||!a.pool.every(c=>S.own[c.id]))return;S.albums[k]=1;S.coins+=a.g;toast(`Album « ${k} » · +${a.g} ◆`)}
   else{const L=sc==="d"?misD():misW(),st=sc==="d"?S.mis:S.wk;
-    if(k==="bonus"){if(st.bonus||!L.every(m=>st.claimed.includes(m.id)))return;st.bonus=true;if(sc==="d"){S.stock++;quiet||toast("+1 booster gratuit")}else{S.freeBox++;quiet||toast("Coffret offert ajouté en boutique")}}
+    if(k==="bonus"){if(st.bonus||!L.every(m=>st.claimed.includes(m.id)))return;st.bonus=true;if(sc==="d"){S.bons=(S.bons||0)+1;quiet||toast("+1 booster bonus")}else{S.freeBox++;quiet||toast("Coffret offert ajouté en boutique")}}
     else{const m=L.find(x=>x.id===k);if(!m||st.claimed.includes(k)||(st[m.k]||0)<m.goal)return;st.claimed.push(k);S.coins+=m.g;quiet||toast("+"+m.g+" ◆")}}
   if(!quiet){save();renderAll()}
 }
@@ -3337,8 +3352,8 @@ const AR=(()=>{
     for(let i=0;i<5;i++){let k=Math.round(t+(R()-.5)*1.6);if(isBoss(f)&&i===0)k++;k=Math.max(0,Math.min(6,k));
       const pool=CARDS.filter(c=>c.r===RS[k]&&hasArt(c.id)&&!out.includes(c.id));out.push(pool[Math.floor(R()*pool.length)].id)}
     return out}
-  function towerRew(f){return f%10===0?{k:"pre",t:"1 booster Prestige",i:"✺"}:f%5===0?{k:"box",t:"1 Coffret (20 cartes)",i:"▣"}:{k:"stock",t:"1 booster gratuit",i:"✦"}}
-  function giveRew(r){if(r.k==="pre")S.freePre=(S.freePre||0)+1;else if(r.k==="box")S.freeBox=(S.freeBox||0)+1;else S.stock++}
+  function towerRew(f){return f%10===0?{k:"pre",t:"1 booster Prestige",i:"✺"}:f%5===0?{k:"box",t:"1 Coffret (20 cartes)",i:"▣"}:{k:"bons",t:"1 booster bonus",i:"✦"}}
+  function giveRew(r){if(r.k==="pre")S.freePre=(S.freePre||0)+1;else if(r.k==="box")S.freeBox=(S.freeBox||0)+1;else S.bons=(S.bons||0)+1}
   const score=c=>c.atk+c.def+c.vit+RB[c.r]*3;
   const owned=()=>CARDS.filter(c=>S.own[c.id]);
   const autoDeck=()=>owned().sort((a,b)=>score(b)-score(a)).slice(0,5).map(c=>c.id);
@@ -3482,7 +3497,7 @@ const AR=(()=>{
         <div class="twenemy"><div class="twenh"><small>Équipe adverse</small><span class="mono">Puissance ${es}${bo?` · bonus +${bo}/manche`:""}</span></div>
           <div class="twdeck">${td.map(id=>cardHTML(BY[id],{noWish:true})).join("")}</div></div>
         <div class="twcta"><button class="arbtn arPri arBig" data-arg="tw">▲ Combattre l'étage ${f}</button><span class="armut" style="margin:0">Défaite = tu peux réessayer, sans pénalité.</span></div>
-        <div class="twrules"><span class="stock">✦ Chaque étage : 1 booster</span><span class="box">▣ Tous les 5 : 1 Coffret</span><span class="pre">✺ Tous les 10 : 1 Prestige</span></div>
+        <div class="twrules"><span class="stock">✦ Chaque étage : 1 booster bonus</span><span class="box">▣ Tous les 5 : 1 Coffret</span><span class="pre">✺ Tous les 10 : 1 Prestige</span></div>
       </div></section>`}
   function editor(){EDIT=deck().slice();EQ="";paintEd()}
   function paintEd(){let el=$("#arEd");if(!el){el=document.createElement("div");el.id="arEd";el.className="ared";document.body.append(el)}
@@ -3693,4 +3708,24 @@ const CUT=(()=>{
       if(t>=sc.dur)return fin();raf=requestAnimationFrame(fr)};
     raf=requestAnimationFrame(fr)}
   return{play,preload,has:id=>!!SC[id]}})();
+
+const CODEX=(()=>{
+  const norm=c=>String(c||"").trim().toUpperCase().replace(/\s+/g,"");
+  async function load(){try{const r=await fetch("codes.json?t="+Date.now(),{cache:"no-store"});if(r.ok)return await r.json()}catch(_){}return {}}
+  async function redeem(code){code=norm(code);if(!code)return{ok:false,msg:"Entre un code"};
+    S.codes=S.codes||{};if(S.codes[code])return{ok:false,msg:"Tu as déjà utilisé ce code"};
+    const all=await load(),c=all[code];if(!c)return{ok:false,msg:"Code invalide"};
+    if(c.expire&&Date.now()>new Date(c.expire).getTime())return{ok:false,msg:"Ce code a expiré"};
+    const got=[];for(const r of c.rewards||[]){
+      if(r.pack){const P=PACKS.find(x=>x.id===r.pack);if(!P)continue;S.pv=S.pv||{};S.pv[r.pack]=(S.pv[r.pack]||0)+(r.n||1);got.push(`${r.n||1} booster${(r.n||1)>1?"s":""} ${P.n||P.s}`)}
+      else if(r.bons){S.bons=(S.bons||0)+r.bons;got.push(`${r.bons} booster${r.bons>1?"s":""} bonus`)}
+      else if(r.coins){S.coins+=r.coins;got.push(`${nf(r.coins)} ◆`)}}
+    S.codes[code]=Date.now();save();renderAll();return{ok:true,msg:c.msg||("Tu as reçu : "+got.join(", ")),got}}
+  function open(){let d=$("#codeDlg");if(!d){d=document.createElement("dialog");d.id="codeDlg";document.body.append(d)}
+    d.innerHTML=`<div class="codebox"><div class="cbh"><span class="cbi">${ico("gift")}</span><div><h3>Code cadeau</h3><small>Entre un code pour recevoir des récompenses</small></div><button class="xbtn" id="cbX" aria-label="Fermer">${ico("x")}</button></div>
+      <form id="cbF"><input id="cbIn" placeholder="EX : ROSIX" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="24"><button class="cta" type="submit">Valider</button></form><p class="cbmsg" id="cbMsg"></p></div>`;
+    d.showModal();const i=$("#cbIn");setTimeout(()=>i.focus(),50);$("#cbX").onclick=()=>d.close();
+    $("#cbF").onsubmit=async e=>{e.preventDefault();const m=$("#cbMsg");m.className="cbmsg";m.textContent="Vérification…";const r=await redeem(i.value);m.className="cbmsg "+(r.ok?"ok":"ko");m.textContent=r.msg;if(r.ok){try{SND.coin()}catch(_){}const b=i.getBoundingClientRect();burst(b.left+b.width/2,b.top,["#ff5fa8","#ffd34d","#fff","#7c5cff"],70,6);i.value=""}}}
+  document.addEventListener("click",e=>{if(e.target.closest("#codeBtn"))open()});
+  return{open,redeem}})();
 </script>
