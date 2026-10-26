@@ -7,5 +7,14 @@
       }
     ],
     "msg": "🎉 10 boosters Mix offerts !"
+  },
+  "PRESTIGE": {
+    "rewards": [
+      {
+        "pack": "pre",
+        "n": 1
+      }
+    ],
+    "msg": "✺ 1 booster Prestige offert !"
   }
 }
