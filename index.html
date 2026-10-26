@@ -1731,6 +1731,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .cinfo{height:80px;min-height:80px;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;overflow:hidden;width:min(92vw,520px)}
 .cinfo h3{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.15}
 .cinfo .ff{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+
+.bonchip{box-shadow:inset 0 0 0 1px rgb(255 95 168 / .5),0 0 18px -6px #ff5fa8}
 </style>
 
 <nav><div class="in">
@@ -2348,6 +2350,7 @@ document.addEventListener("pointerout",e=>{const pk=e.target.closest&&e.target.c
 function left(ts){const d=ts-Date.now();if(d<=0)return"Terminé";const j=Math.floor(d/864e5),h=Math.floor(d%864e5/36e5);return j+" j "+h+" h"}
 function priceTxt(P){
   if(P.daily)return S.daily===today()?"Disponible demain":"Gratuit";
+  if(S.bons>0&&!(P.until&&Date.now()>P.until)&&!(P.g==="free"&&S.stock>0)&&!(P.id==="box"&&S.freeBox)&&!(P.id==="pre"&&S.freePre))return "Bon cadeau · "+S.bons+" restant"+(S.bons>1?"s":"");
   if(P.g==="free")return S.stock>0?"1 booster gratuit":FREE_PRICE+" ◆";
   if(P.id==="box"&&S.freeBox)return "Offert";
   if(P.id==="pre"&&S.freePre)return "Offert";
@@ -2356,6 +2359,7 @@ function priceTxt(P){
 function canOpen(P){if(!P.pool().length)return false;
   if(P.daily)return S.daily!==today();
   if(P.until&&Date.now()>P.until)return false;
+  if(S.bons>0)return true;
   if(P.g==="free")return S.stock>0||S.coins>=FREE_PRICE;
   if(P.id==="box"&&S.freeBox)return true;
   if(P.id==="pre"&&S.freePre)return true;
@@ -2496,17 +2500,22 @@ $("#profBtn").onclick=()=>{renderProf();$("#prof").showModal()};
 function costN(P,n){
   if(P.daily)return n===1&&S.daily!==today()?{ok:true,txt:"Gratuit"}:{ok:false,txt:"Disponible demain"};
   if(P.until&&Date.now()>P.until)return{ok:false,txt:"Terminé"};
-  if(P.g==="free"){const f=Math.min(S.stock,n),pay=(n-f)*FREE_PRICE;return{ok:S.coins>=pay,txt:pay?(f?f+" gratuit + ":"")+pay+" ◆":"Gratuit · "+(S.stock-f)+" restant"+(S.stock-f>1?"s":"")}}
-  if(P.id==="box"&&S.freeBox){const f=Math.min(S.freeBox,n),pay=(n-f)*P.price;return{ok:S.coins>=pay,txt:pay?f+" offert + "+pay+" ◆":"Offert"}}
-  if(P.id==="pre"&&S.freePre){const f=Math.min(S.freePre,n),pay=(n-f)*P.price;return{ok:S.coins>=pay,txt:pay?f+" offert + "+pay+" ◆":"Offert"}}
-  const pay=P.price*n;return{ok:S.coins>=pay,txt:pay+" ◆"};
+  let left=n;const parts=[];
+  if(P.g==="free"){const f=Math.min(S.stock,left);left-=f;if(f)parts.push(f+" gratuit"+(f>1?"s":""))}
+  if(P.id==="box"&&S.freeBox){const f=Math.min(S.freeBox,left);left-=f;if(f)parts.push(f+" offert"+(f>1?"s":""))}
+  if(P.id==="pre"&&S.freePre){const f=Math.min(S.freePre,left);left-=f;if(f)parts.push(f+" offert"+(f>1?"s":""))}
+  const b=Math.min(S.bons||0,left);left-=b;if(b)parts.push(b+" bon"+(b>1?"s":"")+" cadeau");
+  const pay=left*(P.g==="free"?FREE_PRICE:P.price);if(pay)parts.push(pay+" ◆");
+  if(P.g==="free"&&!b&&!pay)return{ok:true,txt:"Gratuit · "+(S.stock-n)+" restant"+(S.stock-n>1?"s":"")};
+  return{ok:S.coins>=pay,txt:parts.join(" + ")||"Offert"};
 }
 function payOne(P){
-  if(P.daily)S.daily=today();
-  else if(P.g==="free"){if(S.stock>0){if(S.stock===MAXS)S.stockT=Date.now();S.stock--}else S.coins-=FREE_PRICE}
-  else if(P.id==="box"&&S.freeBox>0)S.freeBox--;
-  else if(P.id==="pre"&&S.freePre>0)S.freePre--;
-  else S.coins-=P.price;
+  if(P.daily){S.daily=today();return}
+  if(P.g==="free"&&S.stock>0){if(S.stock===MAXS)S.stockT=Date.now();S.stock--;return}
+  if(P.id==="box"&&S.freeBox>0){S.freeBox--;return}
+  if(P.id==="pre"&&S.freePre>0){S.freePre--;return}
+  if(S.bons>0){S.bons--;return}
+  S.coins-=P.g==="free"?FREE_PRICE:P.price;
 }
 const POWRANK=Object.fromEntries(CARDS.slice().sort((a,b)=>b.pow-a.pow).map((c,i)=>[c.id,i+1]));
 let OP=null;
@@ -2750,7 +2759,7 @@ function renderHero(){
 function renderChips(){renderEv();
   const nx=S.stock>=MAXS?"":` · +1 dans <span class="mono tmr">${fmt(S.stockT+CD-Date.now())}</span>`;
   const md=misD().filter(m=>(S.mis[m.k]||0)>=m.goal).length;
-  $("#chips").innerHTML=`
+  $("#chips").innerHTML=`${S.bons>0?`<div class="chip bonchip"><span class="ic" style="background:linear-gradient(135deg,#ff5fa8,#7c5cff);color:#fff">${ico("gift")}</span><b>${S.bons}</b> bon${S.bons>1?"s":""} cadeau · n'importe quel booster</div>`:""}
   <div class="chip"><span class="ic" style="background:#3a1410;color:var(--hot)">${ico("gift")}</span><b>${S.stock}/${MAXS}</b> boosters gratuits${nx}</div>
   <div class="chip"><span class="ic" style="background:#10301e;color:#4fd18b">${ico("target")}</span><b>${md}/${misD().length}</b> missions du jour</div>
   <div class="chip"><span class="ic" style="background:#221a3d;color:var(--e)">${ico("flame")}</span><b>J${S.streak.n}/7</b> série de connexion</div>
@@ -2842,7 +2851,7 @@ const msToMonday=()=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate
 const dur=ms=>{const m=Math.max(0,Math.floor(ms/6e4)),j=Math.floor(m/1440),h=Math.floor(m%1440/60),mi=m%60;return j?`${j} j ${h} h`:`${h} h ${String(mi).padStart(2,"0")} min`};
 function ensureState(){
   S.st=Object.assign({opens:0,sold:0,fiche:0,img:0,divine:0,streak7:0,logins:0},S.st||{});
-  S.ach=S.ach||{};S.albums=S.albums||{};S.freeBox=S.freeBox||0;S.freePre=S.freePre||0;S.forceGold=!!S.forceGold;
+  S.ach=S.ach||{};S.albums=S.albums||{};S.freeBox=S.freeBox||0;S.freePre=S.freePre||0;S.bons=S.bons||0;if(!S.gift10){S.gift10=1;S.bons+=10;setTimeout(()=>{try{toast("🎁 Cadeau : 10 boosters offerts, valables sur n'importe quel booster !")}catch(_){}},1800)}S.forceGold=!!S.forceGold;
   const t=today();
   if(S.mis.d!==t)S.mis={d:t,open:0,fiche:0,sell:0,img:0,claimed:[],bonus:false};
   S.mis.claimed=S.mis.claimed||[];
