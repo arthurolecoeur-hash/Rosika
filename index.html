@@ -1744,6 +1744,10 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 #cbF{display:flex;gap:8px}#cbIn{flex:1;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--fg);font:600 16px var(--mono);letter-spacing:.12em;text-transform:uppercase}
 #cbF .cta{width:auto;padding:12px 18px}
 .cbmsg{min-height:20px;margin:12px 2px 0;font-size:14px;color:var(--mute)}.cbmsg.ok{color:#5ef0a0;font-weight:700}.cbmsg.ko{color:#ff7a8f;font-weight:600}
+
+.splash .sr.nocard{flex-direction:column}
+.splash .sr.nocard .tx{text-align:center}
+.splash .sr.nocard .tx h2{font-size:clamp(34px,7vw,72px)}
 </style>
 
 <nav><div class="in">
@@ -2693,6 +2697,7 @@ function toEpic(){if(!OP||OP.done)return -1;const st=OP.i+(OP.up?1:0);for(let j=
 function advance(){
   if(OP.lock)return;const c=OP.cards[OP.i];
   if(!OP.up){
+    if(["e","l","m"].includes(c.r)&&!OP.splashed[OP.i]&&!RMOT()){OP.splashed[OP.i]=1;OP.lock=true;showSplash(c,()=>{OP.lock=false;reveal()});return}
     reveal();return;
   }
   const rs=$("#deck .rays");if(rs)rs.remove();
@@ -2725,7 +2730,7 @@ function reveal(){
     const th=$("#thumbs");if(th)th.outerHTML=thumbsHTML();
     const bt=$("#barT");if(bt)bt.textContent=barTxt();
     OP.lock=false;
-    if(["e","l","m","d"].includes(c.r)&&!OP.splashed[OP.i]&&!RMOT()){OP.splashed[OP.i]=1;OP.lock=true;setTimeout(()=>showSplash(c,()=>{OP.lock=false}),450)}
+
   },520);
 }
 let splT;
@@ -2733,11 +2738,11 @@ function showSplash(c,after){
   const sp=$("#splash"),rk=POWRANK[c.id],top=(rk/N*100);
   sp.className="splash "+c.r;
   sp.innerHTML=`<span class="lab">${RN[c.r].toUpperCase()}</span>
-  <div class="sr">${cardHTML(c,{noWish:true})}<div class="tx"><small>Univers</small><h2>${FR[c.f]}</h2></div></div>
+  <div class="sr nocard"><div class="tx"><small>Univers</small><h2>${FR[c.f]}</h2></div></div>
   <div class="top"><small>Classement</small><b>Top ${top.toFixed(1).replace(".",",")} %</b><small>Note ${c.ovr} · ${rk}e sur ${N}</small></div>
   <span class="skip">Toucher pour continuer</span>`;
   sp.hidden=false;
-  setTimeout(()=>{const r=sp.querySelector('.sr .card');if(r){const[x,y]=mid(r);burst(x,y,RCOL[c.r],60,7)}},350);
+  setTimeout(()=>{const r=sp.querySelector('.sr .tx');if(r){const[x,y]=mid(r);burst(x,y,RCOL[c.r],60,7)}},350);
   const done=()=>{clearTimeout(splT);if(sp.hidden)return;sp.hidden=true;if(after)after()};
   sp.onclick=done;splT=setTimeout(done,2600);
 }
@@ -2866,7 +2871,7 @@ const msToMonday=()=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate
 const dur=ms=>{const m=Math.max(0,Math.floor(ms/6e4)),j=Math.floor(m/1440),h=Math.floor(m%1440/60),mi=m%60;return j?`${j} j ${h} h`:`${h} h ${String(mi).padStart(2,"0")} min`};
 function ensureState(){
   S.st=Object.assign({opens:0,sold:0,fiche:0,img:0,divine:0,streak7:0,logins:0},S.st||{});
-  S.ach=S.ach||{};S.albums=S.albums||{};S.freeBox=S.freeBox||0;S.freePre=S.freePre||0;S.bons=S.bons||0;S.pv=S.pv||{};S.codes=S.codes||{};if(!S.gift10){S.gift10=1;S.bons+=10;setTimeout(()=>{try{toast("🎁 Cadeau : 10 boosters offerts, valables sur n'importe quel booster !")}catch(_){}},1800)}S.forceGold=!!S.forceGold;
+  S.ach=S.ach||{};S.albums=S.albums||{};S.freeBox=S.freeBox||0;S.freePre=S.freePre||0;S.bons=S.bons||0;S.pv=S.pv||{};S.codes=S.codes||{};if(S.gift10===1&&!S.gift10x){S.gift10x=1;S.bons=Math.max(0,S.bons-10)}else if(!S.gift10)S.gift10=2;S.forceGold=!!S.forceGold;
   const t=today();
   if(S.mis.d!==t)S.mis={d:t,open:0,fiche:0,sell:0,img:0,claimed:[],bonus:false};
   S.mis.claimed=S.mis.claimed||[];
