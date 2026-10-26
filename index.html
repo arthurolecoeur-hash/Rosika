@@ -2356,11 +2356,13 @@ function pickR(w,minR){
   const tot=allowed.reduce((a,k)=>a+w[k],0);let t=Math.random()*tot;
   for(const k of allowed){if(t<w[k])return k;t-=w[k]}return allowed[allowed.length-1];
 }
-function poolBy(pool,r){
-  let p=pool.filter(c=>c.r===r);
-  if(!p.length){for(const k of ORD.slice(ORD.indexOf(r)))if((p=pool.filter(c=>c.r===k)).length)break}
-  return p.length?p:pool;
+function fallR(pool,r){
+  if(pool.some(c=>c.r===r))return r;const i=ORD.indexOf(r);
+  for(const k of ORD.slice(i+1))if(pool.some(c=>c.r===k))return k;
+  for(const k of ORD.slice(0,i).reverse())if(pool.some(c=>c.r===k))return k;
+  return r;
 }
+function poolBy(pool,r){const p=pool.filter(c=>c.r===fallR(pool,r));return p.length?p:pool}
 const GOD_RATE=1/2000;
 function rollGod(P){
   const pool=P.pool(),pick=r=>{const p=poolBy(pool,r);return p[Math.floor(Math.random()*p.length)]};
@@ -2387,7 +2389,7 @@ function slotDist(P,last){
   const allowed=min?ORD.slice(0,ORD.indexOf(min)+1):ORD,tot=allowed.reduce((a,k)=>a+w[k],0);
   const pool=P.pool(),d={};
   for(const k of ORD)d[k]=0;
-  for(const k of allowed){const p=w[k]/tot;if(!p)continue;const real=pool.some(c=>c.r===k)?k:(ORD.slice(ORD.indexOf(k)).find(x=>pool.some(c=>c.r===x))||k);d[real]+=p}
+  for(const k of allowed){const p=w[k]/tot;if(!p)continue;d[fallR(pool,k)]+=p}
   return d;
 }
 function chances(P){
