@@ -3041,7 +3041,9 @@ const weekKey=()=>{const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()
 const msToMidnight=()=>{const d=new Date();d.setHours(24,0,0,0);return d-Date.now()};
 const msToMonday=()=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+(((8-d.getDay())%7)||7));return d-Date.now()};
 const dur=ms=>{const m=Math.max(0,Math.floor(ms/6e4)),j=Math.floor(m/1440),h=Math.floor(m%1440/60),mi=m%60;return j?`${j} j ${h} h`:`${h} h ${String(mi).padStart(2,"0")} min`};
+const PURGE1=["mv:Scarlet Witch (Wanda Maximoff)","mv:Doctor Strange (Stephen Strange)","mv:Venom (Symbiote)"];
 function ensureState(){
+  if(!S.purge1){S.purge1=1;for(const id of PURGE1)delete S.own[id]}
   S.st=Object.assign({opens:0,sold:0,fiche:0,img:0,divine:0,streak7:0,logins:0},S.st||{});
   S.ach=S.ach||{};S.albums=S.albums||{};S.freeBox=S.freeBox||0;S.freePre=S.freePre||0;S.bons=S.bons||0;S.pv=S.pv||{};S.codes=S.codes||{};if(S.gift10===1&&!S.gift10x){S.gift10x=1;S.bons=Math.max(0,S.bons-10)}else if(!S.gift10)S.gift10=2;S.forceGold=!!S.forceGold;
   const t=today();
@@ -3459,7 +3461,7 @@ const MK=(()=>{
   function badge(){const n=incoming().length+Object.values(O).filter(o=>o.to===me&&o.status==="open").length;const d=$("#mkDot");if(d){d.hidden=!n;d.textContent=n||""}}
   /* rendu */
   const priceOf=x=>x.kind==="auction"?x.bid:x.price;
-  function filt(arr){const q=Q.trim().toLowerCase();return arr.filter(x=>{const c=BY[x.card];if(!c)return false;if(RF!=="all"&&c.r!==RF)return false;if(UF!=="all"&&c.f!==UF)return false;if(ONLYMISS&&S.own[c.id])return false;if(ONLYWISH&&!S.wish[c.id])return false;return !q||c.n.toLowerCase().includes(q)||c.s.toLowerCase().includes(q)||FR[c.f].toLowerCase().includes(q)})}
+  function filt(arr){const q=Q.trim().toLowerCase();return arr.filter(x=>{const c=BY[x.card];if(!c||PURGE1.includes(x.card))return false;if(RF!=="all"&&c.r!==RF)return false;if(UF!=="all"&&c.f!==UF)return false;if(ONLYMISS&&S.own[c.id])return false;if(ONLYWISH&&!S.wish[c.id])return false;return !q||c.n.toLowerCase().includes(q)||c.s.toLowerCase().includes(q)||FR[c.f].toLowerCase().includes(q)})}
   function left(ms){if(ms<=0)return"Terminée";const h=Math.floor(ms/H),m=Math.floor(ms%H/6e4);return h>=24?Math.floor(h/24)+" j "+(h%24)+" h":h?h+" h "+m+" min":m+" min"}
   function filters(){return `<div class="mkfil"><input class="mksr" id="mkQ" placeholder="Rechercher un perso, un univers…" value="${esc(Q)}">
     <div class="mkchips">${["all",...ORD.slice().reverse()].map(r=>`<button class="rchip ${r==="all"?"":r}" data-mr="${r}" aria-pressed="${RF===r}">${r==="all"?"Toutes":`<i class="dotr ${r}"></i>${RN[r]}`}</button>`).join("")}</div>

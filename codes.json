@@ -16,5 +16,13 @@
       }
     ],
     "msg": "✺ 1 booster Prestige offert !"
+  },
+  "GEMS1000": {
+    "rewards": [
+      {
+        "coins": 1000
+      }
+    ],
+    "msg": "💎 1 000 gemmes offertes !"
   }
 }
