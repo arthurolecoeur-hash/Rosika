@@ -2089,7 +2089,7 @@ const PACKS=[
  {id:"sec",kind:"foil",pat:"dots",ic:"moon",g:"shop",n:"Seconds rôles",s:"Plus de Communes et Peu communes",em:"◐",p1:"#5a8fd6",p2:"#15233d",k:5,pool:()=>CARDS,price:100,w:{c:58,u:31,r:9,e:1.2,l:.12,m:.003,d:0}},
  {id:"mini",kind:"env",pat:"",ic:"mail",g:"shop",n:"Mini-booster",s:"3 cartes",em:"✉",p1:"#e9e2d0",p2:"#b8ab8c",pt:"#3a2a10",k:3,pool:()=>CARDS,price:100},
  {id:"box",kind:"box",pat:"diam",ic:"cube",g:"shop",n:"Coffret",s:"20 cartes · Épique garantie",em:"▣",p1:"#7b5bd6",p2:"#22163f",k:20,pool:()=>CARDS,price:550,gE:true,w:{c:52,u:26,r:15,e:5.8,l:.6,m:.0421,d:.00434}},
- {id:"pre",kind:"noir",pat:"flecks",ic:"gem",g:"shop",n:"Prestige",s:"Mythique 1,5 % · Divin 0,15 %",em:"✺",p1:"#b9a67a",p2:"#141414",k:5,pool:()=>CARDS,price:575,w:{c:52,u:26,r:15,e:5.8,l:1.62,m:.294,d:.0302}}
+ {id:"pre",kind:"noir",pat:"flecks",ic:"gem",g:"shop",n:"Prestige",s:"Rare garantie · Mythique 1,5 % · Divin 0,15 %",em:"✺",p1:"#b9a67a",p2:"#141414",k:5,pool:()=>CARDS,price:575,gR:true,w:{c:52,u:26,r:15,e:5.8,l:1.62,m:.17358,d:.01787}}
 ];
 const FREE_PRICE=150;
 const EVENTS=[
@@ -2903,38 +2903,86 @@ const ownedR=r=>{let n=0;for(const id in S.own)if(S.own[id]&&BY[id]&&BY[id].r===
 const albumsDone=()=>albumList().filter(a=>a.pool.every(c=>S.own[c.id])).length;
 const ACH=[
  {id:"o10",t:"Premiers pas",d:"Ouvrir 10 boosters",v:()=>(S.st.open||0),g:10,r:10},
+ {id:"o50",t:"Échauffement",d:"Ouvrir 50 boosters",v:()=>(S.st.open||0),g:50,r:30},
  {id:"o100",t:"Habitué",d:"Ouvrir 100 boosters",v:()=>(S.st.open||0),g:100,r:50},
+ {id:"o500",t:"Déchireur de papier",d:"Ouvrir 500 boosters",v:()=>(S.st.open||0),g:500,r:150},
  {id:"o1k",t:"Accro",d:"Ouvrir 1 000 boosters",v:()=>(S.st.open||0),g:1000,r:300},
  {id:"o10k",t:"Va donc jouer dehors",d:"Ouvrir 10 000 boosters",v:()=>(S.st.open||0),g:10000,r:2000},
+ {id:"x25",t:"Gros joueur",d:"Faire 25 ouvertures multiples (×5, ×10…)",v:()=>(S.st.x2||0),g:25,r:120},
+ {id:"shop10",t:"Client fidèle",d:"Ouvrir 10 boosters de la boutique",v:()=>(S.st.shop||0),g:10,r:80},
+ {id:"dp7",t:"Rendez-vous quotidien",d:"Ouvrir 7 packs du jour",v:()=>(S.st.dailyp||0),g:7,r:70},
+ {id:"dp30",t:"Rituel",d:"Ouvrir 30 packs du jour",v:()=>(S.st.dailyp||0),g:30,r:300},
  {id:"c50",t:"Collectionneur",d:"Posséder 50 persos différents",v:ownedN,g:50,r:20},
  {id:"c250",t:"Archiviste",d:"Posséder 250 persos différents",v:ownedN,g:250,r:75},
+ {id:"c500",t:"Conservateur",d:"Posséder 500 persos différents",v:ownedN,g:500,r:150},
  {id:"c1k",t:"Encyclopédiste",d:"Posséder 1 000 persos différents",v:ownedN,g:1000,r:300},
  {id:"c2k",t:"Bibliothécaire",d:"Posséder 2 000 persos différents",v:ownedN,g:2000,r:800},
- {id:"c5k",t:"Gardien du multivers",d:"Posséder 5 000 persos différents",v:ownedN,g:5000,r:2000},
- {id:"call",t:"Héros complet",d:"Posséder tous les persos du jeu",v:ownedN,g:N||Infinity,r:5000},
+ {id:"c3k",t:"Gardien du multivers",d:"Posséder 3 000 persos différents",v:ownedN,g:3000,r:1500},
+ {id:"call",t:"Rosika complet",d:"Posséder tous les persos du jeu",v:ownedN,g:N||Infinity,r:5000},
+ {id:"new500",t:"Explorateur",d:"Découvrir 500 nouveaux persos",v:()=>(S.st.newc||0),g:500,r:150},
  {id:"mv500",t:"Fan de Marvel",d:"Posséder 500 persos Marvel",v:()=>ownedOf("mv"),g:500,r:250},
  {id:"dc500",t:"Fan de DC",d:"Posséder 500 persos DC",v:()=>ownedOf("dc"),g:500,r:250},
  {id:"sw300",t:"Fan de Star Wars",d:"Posséder 300 persos Star Wars",v:()=>ownedOf("sw"),g:300,r:250},
+ {id:"di200",t:"Il était une fois",d:"Posséder 200 persos Disney & Pixar",v:()=>ownedOf("di"),g:200,r:200},
+ {id:"dw60",t:"Ogre de collection",d:"Posséder 60 persos DreamWorks",v:()=>ownedOf("dw"),g:60,r:150},
+ {id:"hp60",t:"Sorcier diplômé",d:"Posséder 60 persos Harry Potter",v:()=>ownedOf("hp"),g:60,r:150},
+ {id:"lo50",t:"Communauté",d:"Posséder 50 persos du Seigneur des anneaux",v:()=>ownedOf("lo"),g:50,r:150},
+ {id:"jv100",t:"Joueur pro",d:"Posséder 100 persos de jeux vidéo",v:()=>ownedOf("jv"),g:100,r:180},
+ {id:"fg80",t:"Combo parfait",d:"Posséder 80 persos de jeux de combat",v:()=>ownedOf("fg"),g:80,r:160},
+ {id:"tf50",t:"Plus que des robots",d:"Posséder 50 persos Robots & Tortues",v:()=>ownedOf("tf"),g:50,r:150},
+ {id:"lofull",t:"Le Retour du collectionneur",d:"Compléter tout l'univers du Seigneur des anneaux",v:()=>ownedOf("lo"),g:CARDS.filter(c=>c.f==="lo").length,r:1500},
+ {id:"hpfull",t:"Ordre de Merlin",d:"Compléter tout l'univers Harry Potter",v:()=>ownedOf("hp"),g:CARDS.filter(c=>c.f==="hp").length,r:1500},
  {id:"fe",t:"Épique !",d:"Obtenir une première carte Épique ou mieux",v:()=>ownedR("e")+ownedR("l")+ownedR("m")+ownedR("d")?1:0,g:1,r:20},
+ {id:"e50",t:"Épopée",d:"Posséder 50 Épiques différentes",v:()=>ownedR("e"),g:50,r:250},
  {id:"fl",t:"Légendaire !",d:"Obtenir une première Légendaire ou mieux",v:()=>ownedR("l")+ownedR("m")+ownedR("d")?1:0,g:1,r:75},
+ {id:"l10",t:"Salle des légendes",d:"Posséder 10 Légendaires différentes",v:()=>ownedR("l"),g:10,r:300},
+ {id:"l50",t:"Mémoire vivante",d:"Posséder 50 Légendaires différentes",v:()=>ownedR("l"),g:50,r:1000},
+ {id:"lp25",t:"Pluie de légendes",d:"Tirer 25 Légendaires ou mieux",v:()=>(S.st.legend||0),g:25,r:400},
  {id:"fm",t:"Mythique !",d:"Obtenir une première Mythique",v:()=>ownedR("m")+ownedR("d")?1:0,g:1,r:200},
- {id:"fd",t:"Divin !",d:"Obtenir une carte Divine",v:()=>ownedR("d")?1:0,g:1,r:1500},
- {id:"aw1",t:"Premier sang",d:"Gagner un combat dans l'Arène",v:()=>S.st.arw||0,g:1,r:50},
- {id:"aw25",t:"Gladiateur",d:"Gagner 25 combats",v:()=>S.st.arw||0,g:25,r:400},
- {id:"agold",t:"Ligue Or",d:"Atteindre 800 trophées",v:()=>S.arena?S.arena.best||0:0,g:800,r:600},
- {id:"d6",t:"Olympe",d:"Posséder les 6 Divins",v:()=>ownedR("d"),g:6,r:10000},
+ {id:"m3",t:"Trio mythique",d:"Posséder 3 Mythiques différentes",v:()=>ownedR("m"),g:3,r:300},
  {id:"m10",t:"Panthéon",d:"Posséder 10 Mythiques différentes",v:()=>ownedR("m"),g:10,r:500},
+ {id:"mall",t:"Mythologie complète",d:"Posséder toutes les Mythiques",v:()=>ownedR("m"),g:CARDS.filter(c=>c.r==="m").length,r:5000},
+ {id:"fd",t:"Divin !",d:"Obtenir une carte Divine",v:()=>ownedR("d")?1:0,g:1,r:1500},
+ {id:"d3",t:"Trinité",d:"Posséder 3 Divins différents",v:()=>ownedR("d"),g:3,r:4000},
+ {id:"d6",t:"Olympe",d:"Posséder les 6 Divins",v:()=>ownedR("d"),g:6,r:10000},
  {id:"godp",t:"Béni des dieux",d:"Ouvrir un GOD PACK",v:()=>S.st.god||0,g:1,r:1000},
  {id:"div",t:"Touché par les dieux",d:"2 Mythiques dans un même booster",v:()=>S.st.divine,g:1,r:500},
+ {id:"dup10",t:"Obsession",d:"Avoir 10 exemplaires d'une même carte",v:()=>Math.max(0,...Object.values(S.own)),g:10,r:60},
+ {id:"aw1",t:"Premier sang",d:"Gagner un combat dans l'Arène",v:()=>S.st.arw||0,g:1,r:50},
+ {id:"aw10",t:"Combattant",d:"Gagner 10 combats",v:()=>S.st.arw||0,g:10,r:150},
+ {id:"aw25",t:"Gladiateur",d:"Gagner 25 combats",v:()=>S.st.arw||0,g:25,r:400},
+ {id:"aw100",t:"Champion de l'Arène",d:"Gagner 100 combats",v:()=>S.st.arw||0,g:100,r:1500},
+ {id:"as5",t:"Invaincu",d:"Enchaîner 5 victoires classées",v:()=>S.arena?S.arena.bs||0:0,g:5,r:300},
+ {id:"as10",t:"Inarrêtable",d:"Enchaîner 10 victoires classées",v:()=>S.arena?S.arena.bs||0:0,g:10,r:1000},
+ {id:"aarg",t:"Ligue Argent",d:"Atteindre 400 trophées",v:()=>S.arena?S.arena.best||0:0,g:400,r:250},
+ {id:"agold",t:"Ligue Or",d:"Atteindre 800 trophées",v:()=>S.arena?S.arena.best||0:0,g:800,r:600},
+ {id:"aplat",t:"Ligue Platine",d:"Atteindre 1 200 trophées",v:()=>S.arena?S.arena.best||0:0,g:1200,r:1000},
+ {id:"adiam",t:"Ligue Diamant",d:"Atteindre 1 600 trophées",v:()=>S.arena?S.arena.best||0:0,g:1600,r:1600},
+ {id:"amai",t:"Ligue Maître",d:"Atteindre 2 000 trophées",v:()=>S.arena?S.arena.best||0:0,g:2000,r:2500},
+ {id:"adiv",t:"Ligue Divine",d:"Atteindre 2 600 trophées",v:()=>S.arena?S.arena.best||0:0,g:2600,r:5000},
+ {id:"tw5",t:"Premier palier",d:"Franchir l'étage 5 de la Tour",v:()=>S.arena?S.arena.twBest||0:0,g:5,r:150},
+ {id:"tw10",t:"Grimpeur",d:"Franchir l'étage 10 de la Tour",v:()=>S.arena?S.arena.twBest||0:0,g:10,r:300},
+ {id:"tw25",t:"Vertige",d:"Franchir l'étage 25 de la Tour",v:()=>S.arena?S.arena.twBest||0:0,g:25,r:800},
+ {id:"tw50",t:"Au sommet",d:"Franchir l'étage 50 de la Tour",v:()=>S.arena?S.arena.twBest||0:0,g:50,r:2500},
  {id:"s1",t:"Première vente",d:"Vendre une carte",v:()=>(S.st.sell||0),g:1,r:30},
  {id:"s10",t:"Marchand",d:"Vendre 10 cartes",v:()=>(S.st.sell||0),g:10,r:100},
  {id:"s100",t:"Gestion de patrimoine",d:"Vendre 100 cartes",v:()=>(S.st.sell||0),g:100,r:500},
- {id:"i1",t:"Artiste",d:"Personnaliser une image",v:()=>Object.keys(IMG).length,g:1,r:30},
- {id:"i25",t:"Galeriste",d:"Personnaliser 25 images",v:()=>Object.keys(IMG).length,g:25,r:250},
- {id:"i100",t:"Musée",d:"Personnaliser 100 images",v:()=>Object.keys(IMG).length,g:100,r:800},
+ {id:"s1k",t:"Grossiste",d:"Vendre 1 000 cartes",v:()=>(S.st.sell||0),g:1000,r:1500},
+ {id:"mk1",t:"Bonne affaire",d:"Acheter une carte au Marché",v:()=>(S.st.mkbuy||0),g:1,r:40},
+ {id:"mk10",t:"Chineur",d:"Acheter 10 cartes au Marché",v:()=>(S.st.mkbuy||0),g:10,r:200},
+ {id:"ml1",t:"Vitrine",d:"Mettre une carte en vente au Marché",v:()=>(S.st.mklist||0),g:1,r:40},
+ {id:"tr1",t:"Marché conclu",d:"Accepter un échange",v:()=>(S.st.trade||0),g:1,r:80},
+ {id:"fr1",t:"Pas tout seul",d:"Envoyer une demande d'ami",v:()=>(S.st.friend||0),g:1,r:40},
+ {id:"rich",t:"Fortune",d:"Avoir 10 000 ◆ en même temps",v:()=>S.coins,g:10000,r:500},
+ {id:"code1",t:"Chasseur de codes",d:"Utiliser un code cadeau",v:()=>Object.keys(S.codes||{}).length,g:1,r:50},
+ {id:"w10",t:"Liste de souhaits",d:"Ajouter 10 persos à tes envies",v:()=>(S.st.wish||0),g:10,r:40},
+ {id:"st7",t:"Fidèle",d:"Terminer une série de connexion de 7 jours",v:()=>(S.st.streak7||0),g:1,r:200},
+ {id:"lg30",t:"Assidu",d:"Se connecter 30 jours",v:()=>(S.st.logins||0),g:30,r:600},
  {id:"a1",t:"Premier album",d:"Compléter un album",v:albumsDone,g:1,r:50},
  {id:"a5",t:"Albums en série",d:"Compléter 5 albums",v:albumsDone,g:5,r:300},
- {id:"f50",t:"Curieux",d:"Consulter 50 fiches",v:()=>S.st.fiche,g:50,r:50}
+ {id:"a25",t:"Relieur",d:"Compléter 25 albums",v:albumsDone,g:25,r:1000},
+ {id:"f50",t:"Curieux",d:"Consulter 50 fiches",v:()=>S.st.fiche,g:50,r:50},
+ {id:"f300",t:"Érudit",d:"Consulter 300 fiches",v:()=>S.st.fiche,g:300,r:200}
 ];
 let achReady=false;
 function checkAch(){if(!achReady)return;let got=[];for(const a of ACH){if(S.ach[a.id])continue;if(a.v()>=a.g){S.ach[a.id]=Date.now();S.coins+=a.r;got.push(a)}}if(got.length){save();renderTop();got.forEach((a,i)=>setTimeout(()=>toast(`Succès « ${a.t} » · +${nf(a.r)} ◆`),i*1300))}}
@@ -3198,11 +3246,11 @@ const MK=(()=>{
   async function lease(path){try{const r=await db.doc(path).acquire({holder:me,ttlMs:8000});return r.acquired}catch(_){return false}}
   /* actions */
   async function buy(x){
-    if(x.npc){if(S.coins<x.price)return toast("Pas assez de ◆");S.coins-=x.price;get(x.card);S.npcBuy=S.npcBuy&&S.npcBuy.d===today()?S.npcBuy:{d:today(),ids:[]};S.npcBuy.ids.push(x.id);save();renderAll();toast(`${BY[x.card].s} acheté`);return paint()}
+    if(x.npc){if(S.coins<x.price)return toast("Pas assez de ◆");track("mkbuy",1);S.coins-=x.price;get(x.card);S.npcBuy=S.npcBuy&&S.npcBuy.d===today()?S.npcBuy:{d:today(),ids:[]};S.npcBuy.ids.push(x.id);save();renderAll();toast(`${BY[x.card].s} acheté`);return paint()}
     if(!db)return;if(x.seller===me)return;if(S.coins<x.price)return toast("Pas assez de ◆");
     if(!await lease("listings/"+x.id))return toast("Quelqu'un est en train d'acheter, réessaie");
     const s=await db.doc("listings/"+x.id).get();if(!s.exists||s.data().status!=="open")return toast("Déjà vendu");
-    await db.doc("listings/"+x.id).update({status:"sold",buyer:me,st:now()});S.coins-=x.price;get(x.card);save();renderAll();toast(`${BY[x.card].s} acheté · −${x.price} ◆`)}
+    await db.doc("listings/"+x.id).update({status:"sold",buyer:me,st:now()});track("mkbuy",1);S.coins-=x.price;get(x.card);save();renderAll();toast(`${BY[x.card].s} acheté · −${x.price} ◆`)}
   async function bid(x,amt){
     const min=Math.max(x.bid+1,Math.ceil(x.bid*1.05));if(!(amt>=min))return toast("Mise minimale : "+min+" ◆");
     const prev=(S.bids&&S.bids[x.id])||0;if(S.coins+prev<amt)return toast("Pas assez de ◆");
@@ -3211,13 +3259,13 @@ const MK=(()=>{
     const s=await db.doc("listings/"+x.id).get(),d=s.data();if(!s.exists||d.status!=="open"||d.ends<now())return toast("Enchère terminée");if(amt<Math.max(d.bid+1,Math.ceil(d.bid*1.05)))return toast("Quelqu'un a misé plus");
     const ends=d.ends-now()<2*60e3?now()+2*60e3:d.ends;
     await db.doc("listings/"+x.id).update({bid:amt,bidder:me,ends,nb:(d.nb||0)+1});S.bids=S.bids||{};S.coins-=amt-prev;S.bids[x.id]=amt;save();renderAll();toast("Mise placée : "+amt+" ◆")}
-  async function list(id,kind,price,hours){if(!db)return toast("Connexion au marché indisponible");if(ownFree(id)<1)return toast("Garde au moins un exemplaire");
+  async function list(id,kind,price,hours){track("mklist",1);if(!db)return toast("Connexion au marché indisponible");if(ownFree(id)<1)return toast("Garde au moins un exemplaire");
     lock(id);save();const d={seller:me,card:id,kind,price:kind==="fixed"?price:0,bid:kind==="auction"?price:0,ends:kind==="auction"?now()+hours*H:0,status:"open",t:now()};
     try{await db.collection("listings").add(d);toast(kind==="fixed"?"Mise en vente":"Enchère lancée");renderAll()}catch(e){unlock(id);save();toast("Échec de la mise en vente")}}
   async function cancel(x){if(x.bidder)return toast("Impossible : il y a déjà une mise");await db.doc("listings/"+x.id).update({status:"cancel"});unlock(x.card);save();renderAll();toast("Annonce retirée")}
   async function offer(giveId,want,to){if(ownFree(giveId)<1)return toast("Garde au moins un exemplaire");lock(giveId);save();
     try{await db.collection("offers").add({from:me,give:giveId,want,to:to||null,status:"open",t:now(),exp:now()+72*H});toast(to?"Proposition envoyée à "+nm(to):"Offre publiée");renderAll()}catch(e){unlock(giveId);save();toast("Échec")}}
-  async function accept(o,gotId){if(ownFree(gotId)<1)return toast("Tu n'as pas ce perso en double");
+  async function accept(o,gotId){track("trade",1);if(ownFree(gotId)<1)return toast("Tu n'as pas ce perso en double");
     if(!await lease("offers/"+o.id))return toast("Échange en cours, réessaie");const s=await db.doc("offers/"+o.id).get();if(!s.exists||s.data().status!=="open")return toast("Offre déjà prise");
     await db.doc("offers/"+o.id).update({status:"done",taker:me,got:gotId,dt:now()});give(gotId);get(o.give);save();renderAll();toast(`Échange réussi : ${BY[o.give].s} rejoint ta collection`)}
   async function cancelOffer(o){await db.doc("offers/"+o.id).update({status:"cancel"});unlock(o.give);save();renderAll();toast("Offre retirée")}
@@ -3227,7 +3275,7 @@ const MK=(()=>{
   const friends=()=>Object.values(FRQ).filter(f=>f.status==="ok"&&(f.from===me||f.to===me)).map(f=>f.from===me?f.to:f.from);
   const incoming=()=>Object.values(FRQ).filter(f=>f.status==="pending"&&f.to===me);
   const outgoing=()=>Object.values(FRQ).filter(f=>f.status==="pending"&&f.from===me);
-  async function addFriend(id){if(id===me)return;const k=fid(me,id),ex=FRQ[k];if(ex&&ex.status==="ok")return toast("Déjà amis");if(ex&&ex.status==="pending"&&ex.to===me)return acceptFriend(ex);
+  async function addFriend(id){track("friend",1);if(id===me)return;const k=fid(me,id),ex=FRQ[k];if(ex&&ex.status==="ok")return toast("Déjà amis");if(ex&&ex.status==="pending"&&ex.to===me)return acceptFriend(ex);
     await db.doc("friends/"+k).set({from:me,to:id,status:"pending",t:now()});toast("Demande envoyée à "+nm(id))}
   async function acceptFriend(f){await db.doc("friends/"+f.id).update({status:"ok",at:now()});toast("Vous êtes maintenant amis")}
   async function removeFriend(id){await db.doc("friends/"+fid(me,id)).delete();toast("Ami retiré")}
@@ -3435,7 +3483,7 @@ const AR=(()=>{
   function countUp(el,to){if(!el)return;const t0=performance.now();const f=t=>{const k=Math.min(1,(t-t0)/600);el.textContent=Math.round(to*k);if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
 
   function end(quit){const a=A(),o=B.opp,res=quit?-1:B.sc[0]>B.sc[1]?1:B.sc[0]<B.sc[1]?-1:0;let dt=0,dc=0,first=false;
-    if(B.ranked){const diff=o.tr-a.tr;if(res>0){dt=Math.max(18,Math.min(45,Math.round(30+diff/25)));a.w++;a.streak=(a.streak||0)+1;if(a.streak>=3)dt+=5}else if(res<0){dt=-Math.max(10,Math.min(32,Math.round(20-diff/25)));a.l++;a.streak=0}else{a.dr=(a.dr||0)+1}
+    if(B.ranked){const diff=o.tr-a.tr;if(res>0){dt=Math.max(18,Math.min(45,Math.round(30+diff/25)));a.w++;a.streak=(a.streak||0)+1;a.bs=Math.max(a.bs||0,a.streak);if(a.streak>=3)dt+=5}else if(res<0){dt=-Math.max(10,Math.min(32,Math.round(20-diff/25)));a.l++;a.streak=0}else{a.dr=(a.dr||0)+1}
       a.tr=Math.max(0,a.tr+dt);a.best=Math.max(a.best||0,a.tr);
       if(res>0){dc=30;if(a.fw!==today()){a.fw=today();dc+=100;first=true}}else if(!res)dc=10;else if(!quit)dc=5}
     else if(B.tower){if(res>0){B.rew=towerRew(B.floor);giveRew(B.rew);dc=10+B.floor*2;a.tw=B.floor+1;a.twBest=Math.max(a.twBest||0,B.floor);track("tower",1)}}
