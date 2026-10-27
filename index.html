@@ -1930,6 +1930,47 @@ body::after{background:radial-gradient(55% 42% at 90% -6%,rgb(167 139 250 / .16)
 .bkp>div{flex:1;min-width:180px}.bkp b{display:block;font-size:14px}.bkp small{color:var(--mute);font-size:12px}
 .bkp .dsb{background:var(--glass),var(--panel);box-shadow:var(--edge);color:var(--fg);width:auto}
 .bkp label.dsb{cursor:pointer}
+
+.annbar{position:relative;z-index:5;background:linear-gradient(90deg,rgb(167 139 250 / .18),rgb(103 232 249 / .12),rgb(240 171 252 / .16));box-shadow:inset 0 -1px 0 rgb(255 255 255 / .08)}
+.annbar .in{display:flex;align-items:center;gap:12px;padding-block:10px}
+.annbar p{margin:0;flex:1;font-weight:700;font-size:14px;line-height:1.35}
+.annic{font-size:18px}.annx{width:30px;height:30px;border-radius:50%;background:rgb(255 255 255 / .08);font-size:18px;line-height:1;flex:none}
+.admtag{display:inline-block;font:800 10px var(--mono);letter-spacing:.08em;padding:2px 6px;border-radius:6px;background:var(--holo);color:#0a0a0f;vertical-align:middle}
+.admtag.red{background:#ff5470;color:#fff}
+.dsb.adm{background:var(--holo);color:#0a0a0f}
+.dsb.soft{background:var(--glass),var(--panel2);box-shadow:var(--edge);color:var(--fg)}
+.dsb.red{background:#3a141c;color:#ff8da0;box-shadow:inset 0 0 0 1px rgb(255 84 112 / .4)}
+#admDlg{position:fixed;inset:0;z-index:200;background:#05060bd9;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px}
+#admDlg[hidden]{display:none}
+.admbox{width:min(980px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--glass),var(--panel);box-shadow:var(--edge),0 40px 90px -30px #000;border-radius:22px;padding:20px}
+.admh{display:flex;align-items:center;justify-content:space-between;gap:12px}.admh h2{margin:4px 0 0;font-size:28px}
+.admtabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:14px 0 16px;padding-bottom:2px}
+.admtabs button{flex:none;padding:9px 14px;border-radius:999px;font-weight:700;font-size:13.5px;color:var(--mute);background:rgb(255 255 255 / .04)}
+.admtabs button[aria-current="true"]{background:var(--fg);color:#0a0a0f}
+.admstats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.admstats>div,.admquota,.admcard{background:var(--glass),var(--panel2);box-shadow:var(--edge);border-radius:16px;padding:14px}
+.admstats b{display:block;font-size:26px}.admstats small,.admquota small,.admwho small{color:var(--mute);font-size:12px;display:block}
+.admquota{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.admlist{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.admrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:var(--glass),var(--panel2);box-shadow:var(--edge);border-radius:14px;padding:12px}
+.admrow.isban{box-shadow:inset 0 0 0 1px rgb(255 84 112 / .35)}
+.admwho{flex:1;min-width:200px;display:flex;flex-direction:column;gap:3px}.admwho b{font-size:15px}
+.admact{display:flex;gap:6px;flex-wrap:wrap}
+.admgive{flex-basis:100%;display:flex;flex-direction:column;gap:8px;padding-top:8px;border-top:1px solid rgb(255 255 255 / .06)}
+.admcard{display:flex;flex-direction:column;gap:10px}.admcard h3{margin:0}.admhint{margin:0;color:var(--mute);font-size:13px}
+.rwb{display:flex;flex-direction:column;gap:6px}
+.rwl{display:flex;gap:6px;flex-wrap:wrap}
+.rwl select,.rwl input,.admmsg,.admin2,.admf input,#anTxt,#admQ{background:var(--panel);color:var(--fg);border:0;box-shadow:var(--edge);border-radius:10px;padding:10px 12px;font:600 14px var(--ui);min-width:0}
+.rwl .rwn{width:110px}.rwl .rwc{flex:1;min-width:160px}.rwl .rwp{flex:1;min-width:160px}
+.rwx{width:38px;border-radius:10px;background:rgb(255 255 255 / .05);font-size:18px}
+.admlink{align-self:flex-start;color:#c4b5fd;font-weight:700;font-size:13px;padding:2px 0}
+.admin2{font-family:var(--mono)!important;letter-spacing:.08em;text-transform:uppercase}
+#anTxt{min-height:90px;resize:vertical;width:100%}
+#admQ{width:100%;max-width:none}
+.admf{display:flex;align-items:center;gap:8px;color:var(--mute);font-size:13px;font-weight:600}.admf input{width:120px}
+.admf2{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.admload{color:var(--mute)}
+@media (max-width:640px){.admbox{padding:14px;border-radius:18px}.admh h2{font-size:22px}.admact .dsb{padding:8px 11px}.rwl .rwn{width:90px}}
 </style>
 
 <nav><div class="in">
@@ -1948,6 +1989,7 @@ body::after{background:radial-gradient(55% 42% at 90% -6%,rgb(167 139 250 / .16)
     <div class="spop" id="pop" hidden></div></div>
   </div>
 </div></nav>
+<div class="annbar" id="annBar" hidden></div>
 
 <main id="vBoost">
   <div class="in">
@@ -3557,6 +3599,7 @@ const MK=(()=>{
   /* règlement : ce client encaisse ce qui le concerne */
   function settle(){let ch=false;S.bids=S.bids||{};S.lock=S.lock||{};
     for(const x of Object.values(L)){
+      if(x.seller===me&&x.removed&&!(S.unl&&S.unl[x.id])){S.unl=S.unl||{};S.unl[x.id]=1;unlock(x.card);ch=true;toast(`Annonce retirée par un admin : ${BY[x.card]?BY[x.card].s:"carte"} te revient`)}
       if(x.seller===me&&x.status==="sold"&&!x.paid){S.coins+=x.kind==="auction"?x.bid:x.price;unlock(x.card);give(x.card);db.doc("listings/"+x.id).update({paid:true,status:"done"}).catch(()=>{});ch=true;toast(`${BY[x.card].s} vendu · +${x.kind==="auction"?x.bid:x.price} ◆`)}
       if(x.kind==="auction"&&x.status==="open"&&x.ends<now()){
         if(x.bidder&&(x.bidder===me||x.seller===me)){if(!x._cl){x._cl=1;db.doc("listings/"+x.id).update({status:"sold",buyer:x.bidder}).catch(()=>{x._cl=0})}}
@@ -3916,7 +3959,7 @@ const GEMSVG='<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient 
 const DSC='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.6 5.3A16.6 16.6 0 0 0 15.5 4l-.5 1a15.3 15.3 0 0 0-6 0l-.5-1a16.6 16.6 0 0 0-4.1 1.3C1.8 9.2 1.1 13 1.4 16.7a16.7 16.7 0 0 0 5 2.5l1.1-1.7c-.6-.2-1.2-.5-1.7-.8l.4-.3a11.9 11.9 0 0 0 11.6 0l.4.3c-.5.3-1.1.6-1.7.8l1.1 1.7a16.6 16.6 0 0 0 5-2.5c.4-4.3-.6-8-2.9-11.4zM8.7 14.5c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2zm6.6 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2z"/></svg>';
 
 const SBCFG={url:"https://lqgmwsqvbqadblkhclez.supabase.co",key:"sb_publishable_6_nWrHxsEhCTqFZg3yrHXA_HAVh75kG"};
-var SBX=(()=>{let sb=null,user=null,dname="",avatar="",st="off",tm=0,busy=false;const ready=()=>!!(SBCFG.url&&SBCFG.key)&&!window.claude;
+var SBX=(()=>{let sb=null,user=null,dname="",avatar="",st="off",tm=0,busy=false,ME={admin:false,banned:false,reason:""};const ready=()=>!!(SBCFG.url&&SBCFG.key)&&!window.claude;
   const okKey=id=>"rosika-mfa-"+id;
   function load(){return new Promise((res,rej)=>{if(window.supabase)return res();const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.111.0/dist/umd/supabase.js";s.onload=res;s.onerror=rej;document.head.append(s)})}
   async function checkMfa(session){const id=session.user.id;try{if(localStorage.getItem(okKey(id))==="1")return true}catch(_){}
@@ -3951,25 +3994,37 @@ var SBX=(()=>{let sb=null,user=null,dname="",avatar="",st="off",tm=0,busy=false;
         const iv=setInterval(run,45000);return()=>{alive=false;clearInterval(iv);sb.removeChannel(ch)}}};return api}
     return{doc,collection}}
   let BK=null;
-  function goOnline(){const uid=user.id,db=mkDB(uid);
+  async function goOnline(){const uid=user.id,db=mkDB(uid);
+    try{const r=await sb.rpc("claim_name",{p_base:dname});if(!r.error&&r.data)dname=r.data}catch(_){}
+    try{const r=await sb.rpc("my_status");if(!r.error&&r.data){ME=Object.assign(ME,r.data);if(r.data.name)dname=r.data.name}}catch(_){}
+    paint();if(ME.banned)toast("Compte suspendu"+(ME.reason?" : "+ME.reason:""));
     const uapi={id:async()=>uid,profiles:async ids=>{const o={};ids=ids.filter(Boolean);if(!ids.length)return o;const r=await sb.from("docs").select("id,data").eq("col","profiles").in("id",ids);for(const x of r.data||[])o[x.id]={name:x.data&&x.data.name};return o}};
-    BK=[db,uapi];db.doc("profiles/"+uid).set({name:dname,avatar,t:Date.now()}).catch(()=>{});
-    window.dispatchEvent(new Event("rosika-online"))}
+    BK=[db,uapi];if(!ME.banned)db.doc("profiles/"+uid).set({name:dname,avatar,t:Date.now()}).catch(()=>{});
+    window.dispatchEvent(new Event("rosika-online"));grants();setInterval(grants,5*60e3)}
+  async function grants(){if(!sb||!user||ME.banned)return;try{const r=await sb.rpc("claim_grants");if(r.error||!Array.isArray(r.data)||!r.data.length)return;
+      r.data.forEach((g,i)=>{const got=giveRewards(g.rewards||[]);setTimeout(()=>toast("🎁 Cadeau de l'admin : "+(g.msg?g.msg+" · ":"")+got.join(", ")),i*2600)});save();renderAll();try{SND.coin()}catch(_){}}catch(_){}}
+  async function announce(){if(!sb)return;try{const r=await sb.from("config").select("value,updated_at").eq("key","announce").maybeSingle();const bar=document.getElementById("annBar");if(!bar)return;
+      const v=r.data&&r.data.value,txt=v&&v.text,stamp=r.data&&r.data.updated_at;let hid="";try{hid=localStorage.getItem("rosika-ann-x")||""}catch(_){}
+      if(!txt||hid===stamp){bar.hidden=true;return}
+      bar.innerHTML=`<div class="in"><span class="annic">📣</span><p>${esc(txt)}</p><button class="annx" aria-label="Masquer">×</button></div>`;bar.hidden=false;
+      bar.querySelector(".annx").onclick=()=>{bar.hidden=true;try{localStorage.setItem("rosika-ann-x",stamp)}catch(_){}}}catch(_){}}
   async function push(){if(!sb||!user)return;if(busy){clearTimeout(tm);tm=setTimeout(push,1500);return}busy=true;
     try{const {error}=await sb.from("saves").upsert({user_id:user.id,data:S,t:S.t||Date.now(),discord_name:dname,updated_at:new Date().toISOString()});if(error)throw error;st="ok"}catch(e){st="err"}busy=false;paint()}
   async function init(){if(!ready())return;try{await load();sb=window.supabase.createClient(SBCFG.url,SBCFG.key,{auth:{flowType:"pkce",detectSessionInUrl:true,persistSession:true}});
+      announce();setInterval(announce,5*60e3);
       sb.auth.onAuthStateChange((ev,session)=>{if(ev==="SIGNED_IN"||ev==="INITIAL_SESSION")setTimeout(()=>onSession(session),0);if(ev==="SIGNED_OUT"){user=null;if(st!=="mfa")st="off";paint()}})}catch(e){st="err";paint()}}
   async function login(){if(!sb)return;await sb.auth.signInWithOAuth({provider:"discord",options:{redirectTo:location.origin+location.pathname,scopes:"identify email"}})}
   async function logout(){if(!sb)return;if(user)try{localStorage.removeItem(okKey(user.id))}catch(_){}await sb.auth.signOut();user=null;st="off";paint();if(BK){BK=null;setTimeout(()=>location.reload(),300)}}
   function html(){if(window.claude)return `<div class="dsc"><span class="dsl">${DSC}</span><div><b>Compte Discord</b><small>Disponible sur le site Rosika (pas dans claude.ai).</small></div></div>`;
     if(!ready())return `<div class="dsc"><span class="dsl">${DSC}</span><div><b>Compte Discord</b><small>Connexion bientôt disponible.</small></div></div>`;
-    if(user)return `<div class="dsc on">${avatar?`<img src="${esc(avatar)}" alt="">`:`<span class="dsl">${DSC}</span>`}<div><b>${esc(dname)}</b><small>${{sync:"Synchronisation…",ok:"Sauvegardé sur ton compte Discord",err:"Sauvegarde en ligne indisponible"}[st]||"Connecté"}</small></div><button class="dsb out" data-dsc="out">Déconnexion</button></div>`;
+    if(user)return `<div class="dsc on">${avatar?`<img src="${esc(avatar)}" alt="">`:`<span class="dsl">${DSC}</span>`}<div><b>${esc(dname)}${ME.admin?' <span class="admtag">ADMIN</span>':""}</b><small>${ME.banned?"Compte suspendu"+(ME.reason?" : "+esc(ME.reason):""):{sync:"Synchronisation…",ok:"Sauvegardé sur ton compte Discord",err:"Sauvegarde en ligne indisponible"}[st]||"Connecté"}</small></div>${ME.admin?'<button class="dsb adm" data-adm="open">Panel admin</button>':""}<button class="dsb out" data-dsc="out">Déconnexion</button></div>`;
     return `<div class="dsc"><span class="dsl">${DSC}</span><div><b>Compte Discord</b><small>${st==="mfa"?"A2F requise : active la double authentification sur Discord.":"Connecte-toi avec ton compte Discord pour sauvegarder ta progression et la retrouver partout."}</small></div><button class="dsb" data-dsc="in">Se connecter avec Discord</button></div>`}
   function paint(){const el=document.getElementById("dscBox");if(el)el.innerHTML=html();const hb=document.getElementById("dscHead");if(hb)hb.classList.toggle("on",!!user)}
   document.addEventListener("click",e=>{const b=e.target.closest("[data-dsc]");if(!b)return;b.dataset.dsc==="in"?login():logout()});
   document.addEventListener("visibilitychange",()=>{if(document.hidden&&user&&tm){clearTimeout(tm);tm=0;push()}});
   setTimeout(init,0);
-  return{queue(){if(!user)return;clearTimeout(tm);tm=setTimeout(push,3000)},html,paint,logged:()=>!!user,on:ready,backend:()=>BK}})();
+  return{queue(){if(!user)return;clearTimeout(tm);tm=setTimeout(push,3000)},html,paint,logged:()=>!!user,on:ready,backend:()=>BK,
+    isAdmin:()=>!!(user&&ME.admin),banned:()=>!!ME.banned,rpc:(f,a)=>sb.rpc(f,a),client:()=>sb,name:()=>dname,announce}})();
 
 const CUT=(()=>{
   const E=(a,b,t)=>Math.max(0,Math.min(1,(t-a)/(b-a)));
@@ -4115,17 +4170,25 @@ const CUT=(()=>{
     raf=requestAnimationFrame(fr)}
   return{play,preload,has:id=>!!SC[id]}})();
 
+function giveRewards(list){const got=[];
+  for(const r of list||[]){
+    if(r.pack){const P=PACKS.find(x=>x.id===r.pack);if(!P)continue;const n=Math.max(1,Math.min(1000,r.n|0||1));S.pv=S.pv||{};S.pv[r.pack]=(S.pv[r.pack]||0)+n;got.push(`${n} booster${n>1?"s":""} ${P.n||P.s}`)}
+    else if(r.bons){const n=Math.max(1,Math.min(1000,r.bons|0));S.bons=(S.bons||0)+n;got.push(`${n} booster${n>1?"s":""} bonus`)}
+    else if(r.coins){const n=Math.max(1,Math.min(10000000,r.coins|0));S.coins+=n;got.push(`${nf(n)} ◆`)}
+    else if(r.card){const c=BY[r.card];if(!c)continue;const n=Math.max(1,Math.min(100,r.n|0||1));S.own[c.id]=(S.own[c.id]||0)+n;if(!S.since[c.id])S.since[c.id]=today();got.push(`${n>1?n+"× ":""}${c.s} (${RN[c.r]})`)}}
+  return got}
 const CODEX=(()=>{
   const norm=c=>String(c||"").trim().toUpperCase().replace(/\s+/g,"");
   async function load(){try{const r=await fetch("codes.json?t="+Date.now(),{cache:"no-store"});if(r.ok)return await r.json()}catch(_){}return {}}
   async function redeem(code){code=norm(code);if(!code)return{ok:false,msg:"Entre un code"};
     S.codes=S.codes||{};if(S.codes[code])return{ok:false,msg:"Tu as déjà utilisé ce code"};
+    if(typeof SBX!=="undefined"&&SBX&&SBX.logged()){try{const r=await SBX.rpc("redeem_code",{p_code:code});const d=r&&r.data;
+      if(d&&d.status==="ok"){const got=giveRewards(d.rewards);S.codes[code]=Date.now();save();renderAll();return{ok:true,msg:d.msg||("Tu as reçu : "+got.join(", ")),got}}
+      const M={used:"Tu as déjà utilisé ce code",expired:"Ce code a expiré",exhausted:"Ce code n'est plus disponible",slow:"Trop d'essais, réessaie dans quelques minutes",banned:"Compte suspendu"};
+      if(d&&M[d.status])return{ok:false,msg:M[d.status]}}catch(_){}}
     const all=await load(),key=Object.keys(all).find(k=>norm(k)===code),c=key&&all[key];if(!c)return{ok:false,msg:"Code invalide"};
     if(c.expire&&Date.now()>new Date(c.expire).getTime())return{ok:false,msg:"Ce code a expiré"};
-    const got=[];for(const r of c.rewards||[]){
-      if(r.pack){const P=PACKS.find(x=>x.id===r.pack);if(!P)continue;S.pv=S.pv||{};S.pv[r.pack]=(S.pv[r.pack]||0)+(r.n||1);got.push(`${r.n||1} booster${(r.n||1)>1?"s":""} ${P.n||P.s}`)}
-      else if(r.bons){S.bons=(S.bons||0)+r.bons;got.push(`${r.bons} booster${r.bons>1?"s":""} bonus`)}
-      else if(r.coins){S.coins+=r.coins;got.push(`${nf(r.coins)} ◆`)}}
+    const got=giveRewards(c.rewards);
     S.codes[code]=Date.now();save();renderAll();return{ok:true,msg:c.msg||("Tu as reçu : "+got.join(", ")),got}}
   function open(){let d=$("#codeDlg");if(!d){d=document.createElement("dialog");d.id="codeDlg";document.body.append(d)}
     d.innerHTML=`<div class="codebox"><div class="cbh"><span class="cbi">${ico("gift")}</span><div><h3>Code cadeau</h3><small>Entre un code pour recevoir des récompenses</small></div><button class="xbtn" id="cbX" aria-label="Fermer">${ico("x")}</button></div>
@@ -4159,4 +4222,81 @@ const CODEX=(()=>{
       for(const k of Object.keys(S))delete S[k];Object.assign(S,d);for(const k of["own","since","wish"])for(const id in S[k]||{})if(!BY[id])delete S[k][id];
       ensureState();save();renderAll();toast("Sauvegarde restaurée")}catch(_){toast("Fichier de sauvegarde invalide")}finally{i.value=""}});
 })();
+
+const ADM=(()=>{
+  let T="ov",PL=[],Q="",CODES=[],LST=[],busy=false;
+  const rpc=async(f,a)=>{const r=await SBX.rpc(f,a||{});if(r.error)throw new Error(r.error.message||"Erreur");return r.data};
+  const ago=t=>{if(!t)return"jamais";const m=Math.floor((Date.now()-new Date(t).getTime())/6e4);return m<1?"à l'instant":m<60?m+" min":m<1440?Math.floor(m/60)+" h":Math.floor(m/1440)+" j"};
+  const packOpts=()=>PACKS.filter(P=>!P.daily).map(P=>`<option value="${P.id}">${esc(P.n||P.s)}</option>`).join("");
+  const rwLine=()=>`<div class="rwl"><select class="rwt"><option value="coins">◆ Gemmes</option><option value="bons">Boosters bonus</option><option value="pack">Booster précis</option><option value="card">Carte</option></select>
+    <input class="rwn" type="number" min="1" value="100"><select class="rwp" hidden>${packOpts()}</select><input class="rwc" list="admCards" placeholder="Nom du perso…" hidden><button class="rwx" type="button" aria-label="Retirer">×</button></div>`;
+  const rwBox=id=>`<div class="rwb" id="${id}">${rwLine()}</div><button class="admlink" type="button" data-rwadd="${id}">+ Ajouter une récompense</button>`;
+  function rwRead(id){const out=[];document.querySelectorAll("#"+id+" .rwl").forEach(l=>{const t=l.querySelector(".rwt").value,n=Math.max(1,parseInt(l.querySelector(".rwn").value,10)||1);
+      if(t==="coins")out.push({coins:n});else if(t==="bons")out.push({bons:n});else if(t==="pack")out.push({pack:l.querySelector(".rwp").value,n});
+      else{const v=l.querySelector(".rwc").value.trim(),c=BY[v]||CARDS.find(x=>x.n.toLowerCase()===v.toLowerCase()||x.s.toLowerCase()===v.toLowerCase());if(c)out.push({card:c.id,n})}});return out}
+  const rwTxt=rw=>(rw||[]).map(r=>r.coins?nf(r.coins)+" ◆":r.bons?r.bons+" bonus":r.pack?(r.n||1)+"× "+((PACKS.find(x=>x.id===r.pack)||{}).n||r.pack):r.card?(r.n>1?r.n+"× ":"")+(BY[r.card]?BY[r.card].s:r.card):"?").join(" + ");
+  function shell(body){let d=document.getElementById("admDlg");if(!d){d=document.createElement("div");d.id="admDlg";document.body.append(d)}
+    const tabs=[["ov","Vue d'ensemble"],["pl","Joueurs"],["gi","Cadeau à tous"],["co","Codes"],["an","Annonce"],["mk","Marché"]];
+    d.innerHTML=`<div class="admbox" role="dialog" aria-label="Panel admin"><div class="admh"><div><div class="eyebrow mono">Rosika</div><h2>Panel admin</h2></div><button class="xbtn" data-adm="close" aria-label="Fermer">${ico("x")}</button></div>
+      <div class="admtabs">${tabs.map(([k,t])=>`<button data-admt="${k}" aria-current="${T===k}">${t}</button>`).join("")}</div><div class="admbody">${body}</div></div>
+      <datalist id="admCards">${CARDS.map(c=>`<option value="${esc(c.s)}">${esc(FR[c.f]+" · "+RN[c.r])}</option>`).join("")}</datalist>`;
+    d.hidden=false;document.body.classList.add("arlock")}
+  async function show(){if(!SBX.isAdmin())return toast("Réservé à l'admin");shell(`<p class="admload">Chargement…</p>`);
+    try{let html="";
+      if(T==="ov"){const o=await rpc("admin_overview");const mb=(o.dbsize||0)/1048576,pc=Math.min(100,mb/500*100);
+        html=`<div class="admstats">${[["Joueurs",o.players],["Actifs 24 h",o.active24],["Actifs 7 j",o.active7],["Annonces ouvertes",o.listings],["Offres ouvertes",o.offers],["Bannis",o.bans],["Codes",o.codes],["Cadeaux actifs",o.grants]].map(([k,v])=>`<div><b class="mono">${nf(v||0)}</b><small>${k}</small></div>`).join("")}</div>
+          <div class="admquota"><div><b>Base de données</b><small>${mb.toFixed(1)} Mo / 500 Mo (plan gratuit)</small></div><div class="mbar"><i style="width:${pc}%"></i></div></div>`}
+      else if(T==="pl"){PL=await rpc("admin_players",{p_q:Q||null,p_limit:200});
+        html=`<input class="search" id="admQ" placeholder="Chercher un joueur…" value="${esc(Q)}"><div class="admlist">${PL.length?PL.map(p=>`<div class="admrow${p.banned?" isban":""}">
+          <div class="admwho"><b>${esc(p.name)}${p.admin?' <span class="admtag">ADMIN</span>':""}${p.banned?' <span class="admtag red">BANNI</span>':""}</b><small>Discord : ${esc(p.base)} · vu ${ago(p.last)} · inscrit ${ago(p.created)}</small>
+          <small class="mono">${nf(p.coins)} ◆ · ${nf(p.cards)} persos · ${nf(p.opens)} boosters${p.reason?" · "+esc(p.reason):""}</small></div>
+          <div class="admact"><button class="dsb" data-admg="${p.id}">Donner</button><button class="dsb soft" data-admr="${p.id}">Renommer</button>${p.admin?"":`<button class="dsb ${p.banned?"soft":"red"}" data-admb="${p.id}" data-on="${p.banned?0:1}">${p.banned?"Débannir":"Bannir"}</button>`}</div>
+          <div class="admgive" id="g-${p.id}" hidden>${rwBox("rw-"+p.id)}<input class="admmsg" placeholder="Message (optionnel)"><button class="cta sm" data-admsend="${p.id}">Envoyer le cadeau</button></div></div>`).join(""):`<p class="empty">Aucun joueur.</p>`}</div>`}
+      else if(T==="gi"){html=`<div class="admcard"><h3>Cadeau à tous les joueurs</h3><p class="admhint">Chaque joueur le reçoit à sa prochaine connexion (une seule fois), tant que le cadeau est actif.</p>
+          ${rwBox("rw-all")}<input class="admmsg" id="giMsg" placeholder="Message affiché aux joueurs"><label class="admf">Actif pendant <input type="number" id="giDays" min="1" value="7"> jours</label>
+          <button class="cta" data-admall="1">Envoyer à tout le monde</button></div>`}
+      else if(T==="co"){CODES=await rpc("admin_codes");
+        html=`<div class="admcard"><h3>Nouveau code</h3><input class="admin2" id="coName" placeholder="NOM DU CODE (ex : NOEL2026)" maxlength="32">${rwBox("rw-code")}
+          <input class="admmsg" id="coMsg" placeholder="Message affiché (optionnel)"><div class="admf2"><label class="admf">Utilisations max <input type="number" id="coMax" min="1" placeholder="illimité"></label><label class="admf">Expire le <input type="date" id="coExp"></label></div>
+          <button class="cta" data-admcode="1">Créer le code</button></div>
+          <div class="admlist">${CODES.length?CODES.map(c=>`<div class="admrow"><div class="admwho"><b class="mono">${esc(c.code)}</b><small>${esc(rwTxt(c.rewards))}${c.msg?" · « "+esc(c.msg)+" »":""}</small>
+            <small class="mono">${nf(c.uses)}${c.max_uses?"/"+nf(c.max_uses):""} utilisation${c.uses>1?"s":""}${c.expires_at?" · expire le "+new Date(c.expires_at).toLocaleDateString("fr-FR"):""}</small></div>
+            <div class="admact"><button class="dsb red" data-admdel="${esc(c.code)}">Supprimer</button></div></div>`).join(""):`<p class="empty">Aucun code créé ici. Les codes de codes.json marchent toujours.</p>`}</div>`}
+      else if(T==="an"){const r=await SBX.client().from("config").select("value").eq("key","announce").maybeSingle();const cur=r.data&&r.data.value&&r.data.value.text||"";
+        html=`<div class="admcard"><h3>Annonce en haut du site</h3><p class="admhint">Visible par tous les joueurs (connectés ou non) sur le site GitHub.</p>
+          <textarea id="anTxt" maxlength="280" placeholder="Ex : Double gemmes ce week-end !">${esc(cur)}</textarea>
+          <div class="admf2"><button class="cta" data-adman="set">Publier</button>${cur?`<button class="dsb red" data-adman="clear">Retirer l'annonce</button>`:""}</div></div>`}
+      else if(T==="mk"){const r=await SBX.client().from("docs").select("id,data,owner").eq("col","listings").eq("data->>status","open").limit(300);LST=r.data||[];
+        const ids=[...new Set(LST.map(x=>x.owner))];const nm={};if(ids.length){const q=await SBX.client().from("names").select("user_id,name").in("user_id",ids);for(const x of q.data||[])nm[x.user_id]=x.name}
+        html=`<div class="admlist">${LST.length?LST.map(x=>{const c=BY[x.data.card];return `<div class="admrow"><div class="admwho"><b>${c?esc(c.s):esc(x.data.card)} <span class="mono" style="color:var(--mute)">${c?RN[c.r]:""}</span></b>
+            <small>par ${esc(nm[x.owner]||"?")} · ${x.data.kind==="auction"?"enchère "+nf(x.data.bid)+" ◆":nf(x.data.price)+" ◆"}</small></div><div class="admact"><button class="dsb red" data-admrm="${esc(x.id)}">Retirer</button></div></div>`}).join(""):`<p class="empty">Aucune annonce ouverte.</p>`}</div>`}
+      shell(html);if(T==="pl"){const q=document.getElementById("admQ");if(q){q.focus();q.setSelectionRange(q.value.length,q.value.length)}}}
+    catch(e){shell(`<p class="empty">Erreur : ${esc(e.message||String(e))}</p>`)}}
+  async function act(f,a,ok){if(busy)return;busy=true;try{await rpc(f,a);if(ok)toast(ok);await show()}catch(e){toast(e.message||"Erreur")}busy=false}
+  let qt=0;
+  document.addEventListener("input",e=>{if(e.target.id==="admQ"){Q=e.target.value;clearTimeout(qt);qt=setTimeout(show,350)}});
+  document.addEventListener("change",e=>{const t=e.target.closest(".rwt");if(!t)return;const l=t.closest(".rwl"),v=t.value;l.querySelector(".rwp").hidden=v!=="pack";l.querySelector(".rwc").hidden=v!=="card";const n=l.querySelector(".rwn");n.value=v==="coins"?100:1});
+  document.addEventListener("click",async e=>{const b=e.target.closest("[data-adm],[data-admt],[data-rwadd],.rwx,[data-admg],[data-admsend],[data-admr],[data-admb],[data-admall],[data-admcode],[data-admdel],[data-adman],[data-admrm]");if(!b)return;
+    if(b.dataset.adm==="open"){const pd=document.getElementById("prof");if(pd&&pd.open)pd.close();T="ov";return show()}
+    if(b.dataset.adm==="close"){const d=document.getElementById("admDlg");if(d)d.hidden=true;document.body.classList.remove("arlock");return}
+    if(b.dataset.admt){T=b.dataset.admt;return show()}
+    if(b.dataset.rwadd){document.getElementById(b.dataset.rwadd).insertAdjacentHTML("beforeend",rwLine());return}
+    if(b.classList.contains("rwx")){const box=b.closest(".rwb");if(box.children.length>1)b.closest(".rwl").remove();return}
+    if(b.dataset.admg){const g=document.getElementById("g-"+b.dataset.admg);g.hidden=!g.hidden;return}
+    if(b.dataset.admsend){const id=b.dataset.admsend,rw=rwRead("rw-"+id);if(!rw.length)return toast("Choisis une récompense");const p=PL.find(x=>x.id===id);
+      if(!confirm(`Envoyer ${rwTxt(rw)} à ${p?p.name:"ce joueur"} ?`))return;return act("admin_grant",{p_user:id,p_rewards:rw,p_msg:document.querySelector("#g-"+CSS.escape(id)+" .admmsg").value,p_days:30},"Cadeau envoyé")}
+    if(b.dataset.admr){const p=PL.find(x=>x.id===b.dataset.admr);const n=prompt("Nouveau pseudo pour "+(p?p.name:""),p?p.name:"");if(!n)return;return act("admin_rename",{p_user:b.dataset.admr,p_name:n},"Pseudo modifié")}
+    if(b.dataset.admb){const on=b.dataset.on==="1",p=PL.find(x=>x.id===b.dataset.admb);let why=null;if(on){why=prompt("Raison du bannissement de "+(p?p.name:"")+" :","");if(why===null)return}else if(!confirm("Débannir "+(p?p.name:"")+" ?"))return;
+      return act("admin_ban",{p_user:b.dataset.admb,p_ban:on,p_reason:why},on?"Joueur banni":"Joueur débanni")}
+    if(b.dataset.admall){const rw=rwRead("rw-all");if(!rw.length)return toast("Choisis une récompense");const days=parseInt(document.getElementById("giDays").value,10)||7;
+      if(!confirm(`Envoyer ${rwTxt(rw)} à TOUS les joueurs (actif ${days} j) ?`))return;return act("admin_grant",{p_user:null,p_rewards:rw,p_msg:document.getElementById("giMsg").value,p_days:days},"Cadeau envoyé à tout le monde")}
+    if(b.dataset.admcode){const name=document.getElementById("coName").value.trim().toUpperCase().replace(/\s+/g,""),rw=rwRead("rw-code");if(name.length<2)return toast("Nom de code trop court");if(!rw.length)return toast("Choisis une récompense");
+      const mx=parseInt(document.getElementById("coMax").value,10),ex=document.getElementById("coExp").value;
+      return act("admin_code_save",{p_code:name,p_rewards:rw,p_msg:document.getElementById("coMsg").value,p_max:mx>0?mx:null,p_expires:ex?new Date(ex+"T23:59:59").toISOString():null},"Code "+name+" créé")}
+    if(b.dataset.admdel){if(!confirm("Supprimer le code "+b.dataset.admdel+" ?"))return;return act("admin_code_delete",{p_code:b.dataset.admdel},"Code supprimé")}
+    if(b.dataset.adman){const v=b.dataset.adman==="set"?document.getElementById("anTxt").value.trim():"";if(b.dataset.adman==="set"&&!v)return toast("Écris un message");
+      await act("admin_set_config",{p_key:"announce",p_value:v?{text:v}:null},v?"Annonce publiée":"Annonce retirée");try{localStorage.removeItem("rosika-ann-x")}catch(_){}SBX.announce();return}
+    if(b.dataset.admrm){if(!confirm("Retirer cette annonce du marché ? La carte sera rendue au vendeur."))return;return act("admin_listing_remove",{p_id:b.dataset.admrm},"Annonce retirée")}
+  });
+  return{show}})();
 </script>
