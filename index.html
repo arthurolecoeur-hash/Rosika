@@ -2064,6 +2064,38 @@ nav::after{background:#262a52!important;opacity:1!important}
 .brand span,.brand b{background:linear-gradient(90deg,#ffffff,#c9c1ff)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;-webkit-text-fill-color:transparent}
 .brand .lgo{filter:drop-shadow(0 0 10px rgb(124 92 255 / .55))!important}
 .dot{background:#a99bff!important;box-shadow:0 0 8px #7c5cff!important}
+
+/* ===== Panneau booster + nav (style Kyara) ===== */
+.kxb{position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,color-mix(in srgb,var(--p1) 85%,#fff) 0%,var(--p1) 22%,color-mix(in srgb,var(--p1) 55%,var(--p2)) 48%,color-mix(in srgb,var(--p2) 70%,#000) 100%)}
+.kxr{position:absolute;inset:-20%;background:repeating-conic-gradient(from 0deg at 50% 46%,rgb(255 255 255 / .16) 0deg 3deg,transparent 3deg 9deg);mix-blend-mode:overlay;-webkit-mask-image:radial-gradient(circle at 50% 46%,transparent 18%,#000 40%);mask-image:radial-gradient(circle at 50% 46%,transparent 18%,#000 40%)}
+.kxl{position:relative;z-index:2;margin-top:9%;display:flex;align-items:center;gap:6px;font:800 10.5px var(--display);letter-spacing:.32em;color:#fff;text-shadow:0 1px 3px rgb(0 0 0 / .5)}
+.kxl i{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:rgb(0 0 0 / .45);box-shadow:0 0 0 1px rgb(255 255 255 / .25)}
+.kxl i .lgm{width:13px;height:13px}
+.kxm{position:relative;z-index:2;margin-top:10%;width:60%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,#2a2433,#120f1c 70%);box-shadow:0 0 0 3px color-mix(in srgb,var(--p1) 70%,#fff),0 0 0 5px rgb(0 0 0 / .35),0 0 0 7px color-mix(in srgb,var(--p1) 45%,transparent),0 14px 30px -8px rgb(0 0 0 / .7),0 0 40px color-mix(in srgb,var(--p1) 50%,transparent)}
+.kxm b{display:grid;place-items:center;width:58%;aspect-ratio:1;color:color-mix(in srgb,var(--p1) 80%,#fff)}
+.kxm b svg{width:100%;height:100%;fill:currentColor;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--p1) 70%,transparent))}
+.kxd{display:flex;flex-direction:column;align-items:center;line-height:1}
+.kxd b{font:800 clamp(22px,3vw,34px) var(--display);color:#fff}
+.kxd small{font:700 11px var(--ui);text-transform:uppercase;letter-spacing:.12em;color:color-mix(in srgb,var(--p1) 70%,#fff)}
+.kxn{position:relative;z-index:2;margin-top:auto;font:800 clamp(15px,1.7vw,20px)/1.1 var(--display);letter-spacing:-.01em;text-align:center;padding:0 8px;text-shadow:0 2px 8px rgb(0 0 0 / .6)}
+.kxs{position:relative;z-index:2;margin-top:3px;font:600 11.5px var(--ui);color:rgb(255 255 255 / .82);text-align:center;padding:0 8px;text-shadow:0 1px 4px rgb(0 0 0 / .6)}
+.kxc{position:relative;z-index:2;margin:9px 0 10%;padding:4px 11px;border-radius:999px;background:rgb(10 11 20 / .7);box-shadow:inset 0 0 0 1px rgb(255 255 255 / .14);font:700 11px var(--ui);color:#fff}
+
+.side .kv b{font-family:var(--display)}
+.seeall{box-shadow:inset 0 0 0 1px rgb(34 211 238 / .55)!important;background:rgb(34 211 238 / .06)!important}
+.kxgo{display:flex!important;align-items:center;justify-content:center;gap:14px;min-height:64px;border-radius:999px!important;font-size:18px!important}
+.kxgo b{font:800 19px var(--display)}
+.kxgo i{width:1px;height:22px;background:rgb(255 255 255 / .35)}
+.kxgo small{font:600 13.5px var(--ui);opacity:.92}
+.nextfree{margin-top:-4px;text-align:center;font:600 13px var(--ui);color:var(--mute);font-variant-numeric:tabular-nums}
+
+.misbtn{display:none;align-items:center;gap:8px;position:relative;height:42px;padding:0 14px;border-radius:12px;background:#171a36;box-shadow:inset 0 0 0 1px #262a52;color:#f2f3ff;font:700 14px var(--ui)}
+.misbtn svg{width:18px;height:18px;color:#a99bff}
+.mbadge{position:absolute;top:-7px;right:-7px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;display:grid;place-items:center;background:#facc15;color:#14100a;font:800 11px var(--ui);box-shadow:0 0 0 2px #0a0b14}
+@media (min-width:900px){.misbtn{display:inline-flex}.tab[data-v="mis"]{display:none!important}}
+
+:root{--ink:#0a0b14}
+.new,.sum .dupn{color:#fff!important}
 </style>
 
 <nav><div class="in">
@@ -2076,6 +2108,7 @@ nav::after{background:#262a52!important;opacity:1!important}
     <button class="tab" data-v="mkt" aria-current="false">Marché <span class="mkdot" id="mkDot" hidden></span></button>
   </div>
   <div class="right">
+    <button class="misbtn" id="misBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>Missions<b class="mbadge" id="misBadge" hidden></b></button>
     <span data-snd-slot></span>
     <button class="icob" id="profBtn" aria-label="Profil" title="Profil"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button>
     <div class="popw"><button class="pill mono" id="pillBtn" aria-expanded="false"><span class="sbar"><i id="sbarI"></i></span><span id="nStock">10/10</span><span class="sep"></span><span class="gem">◆</span><span id="nCoins">0</span></button>
@@ -2711,6 +2744,11 @@ function renderPacks(){
   $("#packs").innerHTML=list.map(P=>`<button class="pk" data-p="${P.id}" aria-pressed="${P.id===SEL}">${packHTML(P)}<span class="price">${esc(priceTxt(P))}</span></button>`).join("");
   renderSide();
 }
+function nextFree(){const el=document.getElementById("nextFree");if(!el)return;
+  if(S.stock>=MAXS){el.textContent="Stock plein · "+S.stock+"/"+MAXS+" boosters gratuits";return}
+  const ms=Math.max(0,S.stockT+CD-Date.now()),h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4),sc=Math.floor(ms%6e4/1e3),z=n=>String(n).padStart(2,"0");
+  el.textContent=`Prochain gratuit dans ${z(h)}:${z(m)}:${z(sc)}`}
+setInterval(nextFree,1000);
 function renderSide(){
   const P=PACKS.find(p=>p.id===SEL),t=theme(),ch=chances(P);
   const gtxt=P.gE?"Épique":P.gR?"Rare":"—";
@@ -2726,8 +2764,10 @@ function renderSide(){
   ${wn?`<div class="wishbox"><span style="color:var(--pink)">♥</span><span><b>${wn} de tes envies</b> dans ce booster · ${pct(ch.wish*100)} d'en avoir une par booster</span></div>`:`<div class="wishbox"><span style="color:var(--pink)">♥</span><span>Ajoute des envies depuis une carte pour voir tes chances ici.</span></div>`}
   <div class="godline"><span>GOD PACK</span><small>1 chance sur 2 000 · 1 à 3 Mythiques, le reste Épique ou mieux</small></div>
   <div class="lbl">Chance par booster</div>
-  <div class="odds">${ORD.slice().reverse().map(k=>{const v=ch[k]*100;return `<div class="od ${k}"><span class="n">${RN[k]}</span><span class="t"><i style="width:${Math.min(100,v)}%"></i></span><span class="v">${pct(v)}</span></div>`}).join("")}</div>
-  <button class="cta" id="bOpen" ${canOpen(P)?"":"disabled"}>Ouvrir · ${esc(priceTxt(P))}</button>`;
+  <div class="odds">${ORD.slice().reverse().filter(k=>["r","e","l","m","d"].includes(k)&&(k!=="d"||ch.d>0)).map(k=>{const v=ch[k]*100;return `<div class="od ${k}"><span class="n">${RN[k]}</span><span class="t"><i style="width:${Math.min(100,v)}%"></i></span><span class="v">${pct(v)}</span></div>`}).join("")}</div>
+  <button class="cta kxgo" id="bOpen" ${canOpen(P)?"":"disabled"}><b>Ouvrir</b><i aria-hidden="true"></i><small>${esc(priceTxt(P))}</small></button>
+  ${P.g==="free"?`<div class="nextfree" id="nextFree"></div>`:""}`;
+  nextFree();
   {const mx=canOpen(P)?maxN(P):0;if(mx>1){const b=document.createElement("button");b.className="cta maxb";b.id="bMax";b.innerHTML=`Ouvrir le max · ×${mx} <small>${esc(costN(P,mx).txt)}</small>`;$("#bOpen").after(b);b.onclick=()=>{openPack(P);if(OP){OP.n=mx;S.lastN=mx;stagePack()}}}}
   $("#bOpen").onclick=()=>openPack(P);
   $("#bSee").onclick=()=>openList(P);
@@ -3113,7 +3153,7 @@ function renderChips(){renderEv();
 }
 function renderTop(){if(!document.querySelector("[data-snd]"))paintSnd();
   $("#nStock").textContent=S.stock+"/"+MAXS;$("#nCoins").textContent=nf(S.coins);
-  const cl=misClaimable();$("#tabDot").hidden=!cl;
+  const cl=misClaimable();$("#tabDot").hidden=!cl;{const b=document.getElementById("misBadge");if(b){let n=0;try{n=claimable().length+(streakState().done?0:1)}catch(_){n=cl?1:0}b.hidden=!n;b.textContent=n>9?"9+":n}}
   const full=S.stock>=MAXS,lf=S.stockT+CD-Date.now();$("#sbarI").style.width=(full?100:Math.max(0,Math.min(100,(1-lf/CD)*100)))+"%";
 }
 
@@ -4465,4 +4505,6 @@ const AUTOUP=(()=>{
   setTimeout(check,3000);setInterval(check,60e3);
   document.addEventListener("visibilitychange",()=>{if(!document.hidden)check()});
   return{check}})();
+
+document.getElementById("misBtn").addEventListener("click",()=>{const t=document.querySelector('.tab[data-v="mis"]');if(t)t.click()});
 </script>
