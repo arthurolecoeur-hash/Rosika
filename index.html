@@ -4120,7 +4120,7 @@ const CODEX=(()=>{
   async function load(){try{const r=await fetch("codes.json?t="+Date.now(),{cache:"no-store"});if(r.ok)return await r.json()}catch(_){}return {}}
   async function redeem(code){code=norm(code);if(!code)return{ok:false,msg:"Entre un code"};
     S.codes=S.codes||{};if(S.codes[code])return{ok:false,msg:"Tu as déjà utilisé ce code"};
-    const all=await load(),c=all[code];if(!c)return{ok:false,msg:"Code invalide"};
+    const all=await load(),key=Object.keys(all).find(k=>norm(k)===code),c=key&&all[key];if(!c)return{ok:false,msg:"Code invalide"};
     if(c.expire&&Date.now()>new Date(c.expire).getTime())return{ok:false,msg:"Ce code a expiré"};
     const got=[];for(const r of c.rewards||[]){
       if(r.pack){const P=PACKS.find(x=>x.id===r.pack);if(!P)continue;S.pv=S.pv||{};S.pv[r.pack]=(S.pv[r.pack]||0)+(r.n||1);got.push(`${r.n||1} booster${(r.n||1)>1?"s":""} ${P.n||P.s}`)}
