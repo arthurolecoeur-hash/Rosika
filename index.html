@@ -1971,6 +1971,17 @@ body::after{background:radial-gradient(55% 42% at 90% -6%,rgb(167 139 250 / .16)
 .admf2{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .admload{color:var(--mute)}
 @media (max-width:640px){.admbox{padding:14px;border-radius:18px}.admh h2{font-size:22px}.admact .dsb{padding:8px 11px}.rwl .rwn{width:90px}}
+
+.guestchip{border:0;cursor:pointer;font:inherit;color:var(--fg);box-shadow:inset 0 0 0 1px rgb(255 196 77 / .55)!important;background:linear-gradient(90deg,rgb(255 196 77 / .14),rgb(255 255 255 / .03))!important}
+.guestchip .ic{background:rgb(255 196 77 / .2)!important}
+#gateDlg{position:fixed;inset:0;z-index:250;display:grid;place-items:center;padding:16px;background:#05060bd9;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+#gateDlg[hidden]{display:none}
+.gatebox{width:min(440px,100%);text-align:center;background:var(--glass),var(--panel);box-shadow:var(--edge),0 40px 90px -30px #000;border-radius:24px;padding:26px 22px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.gateic{width:60px;height:60px;border-radius:18px;display:grid;place-items:center;font-size:28px;background:linear-gradient(135deg,#5865f2,#7c5cff)}
+.gatebox h2{margin:0;font-size:24px}.gatebox p{margin:0;color:#b9b9c8;line-height:1.5;font-size:14.5px}
+.gatebox .gatego{width:100%;padding:14px 16px;font-size:15px;margin-top:4px}
+.gatex{color:var(--mute);font-weight:700;font-size:13px;padding:6px}
+.gatebox small{color:var(--mute);font-size:12px}
 </style>
 
 <nav><div class="in">
@@ -2782,6 +2793,7 @@ function mid(el){const r=el.getBoundingClientRect();return[r.left+r.width/2,r.to
 function flash(){const f=$("#flash");f.classList.remove("go");void f.offsetWidth;f.classList.add("go")}
 function opPill(){$("#opPill").innerHTML=`${S.stock}/${MAXS} <span class="sep"></span><span class="gem">◆</span> ${nf(S.coins)}`}
 function openPack(P){if(!P.pool().length){toast("Aucun perso dans ce booster pour l'instant");return}
+  if(guestLeft()<=0)return guestGate();
   regen();
   const pn=P.daily?theme().n:P.n;
   OP={P,n:P.daily?1:(S.lastN||1),pn};
@@ -2858,6 +2870,7 @@ function autoTear(){
 function commitTear(){
   if(OP.torn)return;OP.torn=true;OP.busy=true;SND.tear();
   const P=OP.P,before={...S.own},cards=[];let gold=false;
+  {const gl=guestLeft();if(gl<OP.n){OP.n=Math.max(1,gl);toast("Mode essai : "+OP.n+" booster"+(OP.n>1?"s":"")+" ouvert"+(OP.n>1?"s":""))}}
   let god=false;
   const RK={c:0,u:1,r:2,e:3,l:4,m:5,d:6};
   for(let i=0;i<OP.n;i++){payOne(P);const r=rollPack(P);if(r.cards.every(c=>c.r==="c"))track("allc",1);if(!r.god&&r.cards.every(c=>"elmd".includes(c.r)))track("perf",1);const sorted=r.cards.map((c,j)=>[c,j]).sort((a,b)=>RK[a[0].r]-RK[b[0].r]||a[1]-b[1]).map(x=>x[0]);cards.push(...sorted);gold=gold||r.gold;god=god||!!r.god}
@@ -3009,7 +3022,7 @@ function renderChips(){renderEv();
   const nx=S.stock>=MAXS?"":` · +1 dans <span class="mono tmr">${fmt(S.stockT+CD-Date.now())}</span>`;
   const md=misD().filter(m=>(S.mis[m.k]||0)>=m.goal).length;
   const pvs=Object.entries(S.pv||{}).filter(([,n])=>n>0);
-  $("#chips").innerHTML=`<button class="chip codechip" id="codeBtn"><span class="ic" style="background:#2a2140;color:#c18bff">${ico("gift")}</span>Code cadeau</button>${pvs.map(([id,n])=>{const P=PACKS.find(x=>x.id===id);return P?`<div class="chip bonchip"><span class="ic" style="background:linear-gradient(135deg,#ff5fa8,#7c5cff);color:#fff">${ico("gift")}</span><b>${n}</b> ${esc(P.n||P.s)} offert${n>1?"s":""}</div>`:""}).join("")}${S.bons>0?`<div class="chip bonchip"><span class="ic" style="background:linear-gradient(135deg,#ff5fa8,#7c5cff);color:#fff">${ico("gift")}</span><b>${S.bons}</b> booster${S.bons>1?"s":""} bonus · n'importe quel booster</div>`:""}
+  $("#chips").innerHTML=`${isGuest()?`<button class="chip guestchip" data-dsc="in"><span class="ic">🔒</span>Essai : <b>${Math.max(0,GUEST_MAX-(S.st.open||0))}/${GUEST_MAX}</b> boosters · Se connecter</button>`:""}<button class="chip codechip" id="codeBtn"><span class="ic" style="background:#2a2140;color:#c18bff">${ico("gift")}</span>Code cadeau</button>${pvs.map(([id,n])=>{const P=PACKS.find(x=>x.id===id);return P?`<div class="chip bonchip"><span class="ic" style="background:linear-gradient(135deg,#ff5fa8,#7c5cff);color:#fff">${ico("gift")}</span><b>${n}</b> ${esc(P.n||P.s)} offert${n>1?"s":""}</div>`:""}).join("")}${S.bons>0?`<div class="chip bonchip"><span class="ic" style="background:linear-gradient(135deg,#ff5fa8,#7c5cff);color:#fff">${ico("gift")}</span><b>${S.bons}</b> booster${S.bons>1?"s":""} bonus · n'importe quel booster</div>`:""}
   <div class="chip"><span class="ic" style="background:#3a1410;color:var(--hot)">${ico("gift")}</span><b>${S.stock}/${MAXS}</b> boosters gratuits${nx}</div>
   <div class="chip"><span class="ic" style="background:#10301e;color:#4fd18b">${ico("target")}</span><b>${md}/${misD().length}</b> missions du jour</div>
   <div class="chip"><span class="ic" style="background:#221a3d;color:var(--e)">${ico("flame")}</span><b>J${S.streak.n}/7</b> série de connexion</div>
@@ -3618,12 +3631,14 @@ const MK=(()=>{
   async function lease(path){try{const r=await db.doc(path).acquire({holder:me,ttlMs:8000});return r.acquired}catch(_){return false}}
   /* actions */
   async function buy(x){
+    if(isGuest()&&guestLeft()<=0)return guestGate();
     if(x.npc){if(S.coins<x.price)return toast("Pas assez de ◆");track("mkbuy",1);S.coins-=x.price;track("spend",x.price);get(x.card);S.npcBuy=S.npcBuy&&S.npcBuy.d===today()?S.npcBuy:{d:today(),ids:[]};S.npcBuy.ids.push(x.id);save();renderAll();toast(`${BY[x.card].s} acheté`);return paint()}
     if(!db)return;if(x.seller===me)return;if(S.coins<x.price)return toast("Pas assez de ◆");
     if(!await lease("listings/"+x.id))return toast("Quelqu'un est en train d'acheter, réessaie");
     const s=await db.doc("listings/"+x.id).get();if(!s.exists||s.data().status!=="open")return toast("Déjà vendu");
     try{await db.doc("listings/"+x.id).update({status:"sold",buyer:me,st:now()})}catch(_){return toast("Trop tard, la carte vient d'être vendue")}track("mkbuy",1);S.coins-=x.price;track("spend",x.price);get(x.card);save();renderAll();toast(`${BY[x.card].s} acheté · −${x.price} ◆`)}
   async function bid(x,amt){
+    if(isGuest()&&guestLeft()<=0)return guestGate();
     const min=Math.max(x.bid+1,Math.ceil(x.bid*1.05));if(!(amt>=min))return toast("Mise minimale : "+min+" ◆");
     const prev=(S.bids&&S.bids[x.id])||0;if(S.coins+prev<amt)return toast("Pas assez de ◆");
     if(x.npc){S.coins-=amt-prev;S.bids=S.bids||{};delete S.bids[x.id];get(x.card);S.npcBuy=S.npcBuy&&S.npcBuy.d===today()?S.npcBuy:{d:today(),ids:[]};S.npcBuy.ids.push(x.id);save();renderAll();toast(`Le marchand accepte : ${BY[x.card].s} est à toi`);return paint()}
@@ -3959,7 +3974,7 @@ const GEMSVG='<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient 
 const DSC='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.6 5.3A16.6 16.6 0 0 0 15.5 4l-.5 1a15.3 15.3 0 0 0-6 0l-.5-1a16.6 16.6 0 0 0-4.1 1.3C1.8 9.2 1.1 13 1.4 16.7a16.7 16.7 0 0 0 5 2.5l1.1-1.7c-.6-.2-1.2-.5-1.7-.8l.4-.3a11.9 11.9 0 0 0 11.6 0l.4.3c-.5.3-1.1.6-1.7.8l1.1 1.7a16.6 16.6 0 0 0 5-2.5c.4-4.3-.6-8-2.9-11.4zM8.7 14.5c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2zm6.6 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2z"/></svg>';
 
 const SBCFG={url:"https://lqgmwsqvbqadblkhclez.supabase.co",key:"sb_publishable_6_nWrHxsEhCTqFZg3yrHXA_HAVh75kG"};
-var SBX=(()=>{let sb=null,user=null,dname="",avatar="",st="off",tm=0,busy=false,ME={admin:false,banned:false,reason:""};const ready=()=>!!(SBCFG.url&&SBCFG.key)&&!window.claude;
+var SBX=(()=>{let checked=false,sb=null,user=null,dname="",avatar="",st="off",tm=0,busy=false,ME={admin:false,banned:false,reason:""};const ready=()=>!!(SBCFG.url&&SBCFG.key)&&!window.claude;
   const okKey=id=>"rosika-mfa-"+id;
   function load(){return new Promise((res,rej)=>{if(window.supabase)return res();const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.111.0/dist/umd/supabase.js";s.onload=res;s.onerror=rej;document.head.append(s)})}
   async function checkMfa(session){const id=session.user.id;try{if(localStorage.getItem(okKey(id))==="1")return true}catch(_){}
@@ -4012,7 +4027,7 @@ var SBX=(()=>{let sb=null,user=null,dname="",avatar="",st="off",tm=0,busy=false,
     try{const {error}=await sb.from("saves").upsert({user_id:user.id,data:S,t:S.t||Date.now(),discord_name:dname,updated_at:new Date().toISOString()});if(error)throw error;st="ok"}catch(e){st="err"}busy=false;paint()}
   async function init(){if(!ready())return;try{await load();sb=window.supabase.createClient(SBCFG.url,SBCFG.key,{auth:{flowType:"pkce",detectSessionInUrl:true,persistSession:true}});
       announce();setInterval(announce,5*60e3);
-      sb.auth.onAuthStateChange((ev,session)=>{if(ev==="SIGNED_IN"||ev==="INITIAL_SESSION")setTimeout(()=>onSession(session),0);if(ev==="SIGNED_OUT"){user=null;if(st!=="mfa")st="off";paint()}})}catch(e){st="err";paint()}}
+      sb.auth.onAuthStateChange((ev,session)=>{if(ev==="SIGNED_IN"||ev==="INITIAL_SESSION"){if(session)user=session.user;checked=true;setTimeout(()=>{onSession(session);renderAll()},0)}if(ev==="SIGNED_OUT"){user=null;if(st!=="mfa")st="off";paint()}})}catch(e){st="err";paint()}}
   async function login(){if(!sb)return;await sb.auth.signInWithOAuth({provider:"discord",options:{redirectTo:location.origin+location.pathname,scopes:"identify email"}})}
   async function logout(){if(!sb)return;if(user)try{localStorage.removeItem(okKey(user.id))}catch(_){}await sb.auth.signOut();user=null;st="off";paint();if(BK){BK=null;setTimeout(()=>location.reload(),300)}}
   function html(){if(window.claude)return `<div class="dsc"><span class="dsl">${DSC}</span><div><b>Compte Discord</b><small>Disponible sur le site Rosika (pas dans claude.ai).</small></div></div>`;
@@ -4024,7 +4039,7 @@ var SBX=(()=>{let sb=null,user=null,dname="",avatar="",st="off",tm=0,busy=false,
   document.addEventListener("visibilitychange",()=>{if(document.hidden&&user&&tm){clearTimeout(tm);tm=0;push()}});
   setTimeout(init,0);
   return{queue(){if(!user)return;clearTimeout(tm);tm=setTimeout(push,3000)},html,paint,logged:()=>!!user,on:ready,backend:()=>BK,
-    isAdmin:()=>!!(user&&ME.admin),banned:()=>!!ME.banned,rpc:(f,a)=>sb.rpc(f,a),client:()=>sb,name:()=>dname,announce}})();
+    isAdmin:()=>!!(user&&ME.admin),guest:()=>!!(sb&&checked&&!user),login,banned:()=>!!ME.banned,rpc:(f,a)=>sb.rpc(f,a),client:()=>sb,name:()=>dname,announce}})();
 
 const CUT=(()=>{
   const E=(a,b,t)=>Math.max(0,Math.min(1,(t-a)/(b-a)));
@@ -4299,4 +4314,14 @@ const ADM=(()=>{
     if(b.dataset.admrm){if(!confirm("Retirer cette annonce du marché ? La carte sera rendue au vendeur."))return;return act("admin_listing_remove",{p_id:b.dataset.admrm},"Annonce retirée")}
   });
   return{show}})();
+
+const GUEST_MAX=10;
+function isGuest(){return typeof SBX!=="undefined"&&!!SBX&&!!SBX.guest&&SBX.guest()}
+function guestLeft(){return isGuest()?GUEST_MAX-(S.st.open||0):Infinity}
+function guestGate(){let d=document.getElementById("gateDlg");if(!d){d=document.createElement("div");d.id="gateDlg";document.body.append(d)}
+  d.innerHTML=`<div class="gatebox" role="dialog" aria-label="Connexion requise"><div class="gateic">🔒</div><h2>Connecte-toi pour continuer</h2>
+    <p>Tu as ouvert tes <b>${GUEST_MAX} boosters d'essai</b>. Connecte-toi avec Discord pour continuer à ouvrir des boosters, échanger au marché et garder ta collection en sécurité.</p>
+    <button class="dsb gatego" data-dsc="in">Se connecter avec Discord</button><button class="gatex" data-gate="x">Plus tard</button><small>Ta progression actuelle sera gardée sur ton compte.</small></div>`;
+  d.hidden=false;
+  d.onclick=e=>{if(e.target===d||e.target.closest('[data-gate="x"]'))d.hidden=true}}
 </script>
