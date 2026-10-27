@@ -24,5 +24,13 @@
       }
     ],
     "msg": "💎 1 000 gemmes offertes !"
+  },
+  "Trixou": {
+    "rewards": [
+      {
+        "coins": 8000
+      }
+    ],
+    "msg": "💎 1 000 gemmes offertes !"
   }
 }
