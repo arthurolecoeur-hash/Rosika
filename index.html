@@ -3909,10 +3909,10 @@ const GEMSVG='<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient 
   if(document.body)go();else addEventListener("DOMContentLoaded",go)})();
 const DSC='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.6 5.3A16.6 16.6 0 0 0 15.5 4l-.5 1a15.3 15.3 0 0 0-6 0l-.5-1a16.6 16.6 0 0 0-4.1 1.3C1.8 9.2 1.1 13 1.4 16.7a16.7 16.7 0 0 0 5 2.5l1.1-1.7c-.6-.2-1.2-.5-1.7-.8l.4-.3a11.9 11.9 0 0 0 11.6 0l.4.3c-.5.3-1.1.6-1.7.8l1.1 1.7a16.6 16.6 0 0 0 5-2.5c.4-4.3-.6-8-2.9-11.4zM8.7 14.5c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2zm6.6 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2z"/></svg>';
 
-const SBCFG={url:"",key:""};
+const SBCFG={url:"https://lqgmwsqvbqadblkhclez.supabase.co",key:"sb_publishable_6_nWrHxsEhCTqFZg3yrHXA_HAVh75kG"};
 var SBX=(()=>{let sb=null,user=null,dname="",avatar="",st="off",tm=0,busy=false;const ready=()=>!!(SBCFG.url&&SBCFG.key)&&!window.claude;
   const okKey=id=>"rosika-mfa-"+id;
-  function load(){return new Promise((res,rej)=>{if(window.supabase)return res();const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js";s.onload=res;s.onerror=rej;document.head.append(s)})}
+  function load(){return new Promise((res,rej)=>{if(window.supabase)return res();const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.111.0/dist/umd/supabase.js";s.onload=res;s.onerror=rej;document.head.append(s)})}
   async function checkMfa(session){const id=session.user.id;try{if(localStorage.getItem(okKey(id))==="1")return true}catch(_){}
     const tok=session.provider_token;if(!tok)return false;
     try{const r=await fetch("https://discord.com/api/users/@me",{headers:{Authorization:"Bearer "+tok}});if(!r.ok)return false;const u=await r.json();
