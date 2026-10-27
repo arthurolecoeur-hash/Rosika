@@ -1925,6 +1925,11 @@ body::after{background:radial-gradient(55% 42% at 90% -6%,rgb(167 139 250 / .16)
 .ach.hid{background:repeating-linear-gradient(135deg,rgb(255 255 255 / .015) 0 10px,transparent 10px 20px),var(--panel)!important}
 .ach.hid b{color:transparent;background:var(--holo);-webkit-background-clip:text;background-clip:text}
 .ach.hid .mbar,.ach.hid small{opacity:.35}
+
+.bkp{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;padding:12px 14px;border-radius:14px;background:var(--glass),var(--panel2);box-shadow:var(--edge)}
+.bkp>div{flex:1;min-width:180px}.bkp b{display:block;font-size:14px}.bkp small{color:var(--mute);font-size:12px}
+.bkp .dsb{background:var(--glass),var(--panel);box-shadow:var(--edge);color:var(--fg);width:auto}
+.bkp label.dsb{cursor:pointer}
 </style>
 
 <nav><div class="in">
@@ -2686,6 +2691,7 @@ function renderProf(){
   <div class="mbar"><i style="width:${pc.replace(",",".")}%"></i></div>
   <div class="cloud" id="cloudSt">${CLOUD.label()}</div>
   <div id="dscBox">${typeof SBX!=="undefined"&&SBX?SBX.html():""}</div>
+  <div class="bkp"><div><b>Copie de secours</b><small>Télécharge ta progression dans un fichier, et restaure-la quand tu veux.</small></div><button class="dsb" data-bkp="exp">Exporter</button><label class="dsb">Importer<input type="file" accept="application/json,.json" data-bkp="imp" hidden></label></div>
   <div class="prg">${st.map(([i,v,l])=>`<div><span class="pri">${ico(i)}</span><b class="mono">${v}</b><small>${l}</small></div>`).join("")}</div>
   <div class="cgal"><div class="cgh"><b>Cinématiques des Divins</b><small>Touche une carte pour voir sa cinématique</small></div><div class="cgg">${CARDS.filter(c=>c.r==="d").map(c=>`<button class="cgi${S.own[c.id]?"":" lk"}" data-cut="${esc(c.id)}">${hasArt(c.id)?artHTML(c,1):""}<span>${esc(c.s)}</span><i>▶</i></button>`).join("")}</div><label class="cgs"><input type="checkbox" id="cgSus" checked> Avec le suspense (14 s)</label></div>`;
   $("#profX").onclick=()=>$("#prof").close();
@@ -3573,7 +3579,7 @@ const MK=(()=>{
     if(!db)return;if(x.seller===me)return;if(S.coins<x.price)return toast("Pas assez de ◆");
     if(!await lease("listings/"+x.id))return toast("Quelqu'un est en train d'acheter, réessaie");
     const s=await db.doc("listings/"+x.id).get();if(!s.exists||s.data().status!=="open")return toast("Déjà vendu");
-    await db.doc("listings/"+x.id).update({status:"sold",buyer:me,st:now()});track("mkbuy",1);S.coins-=x.price;track("spend",x.price);get(x.card);save();renderAll();toast(`${BY[x.card].s} acheté · −${x.price} ◆`)}
+    try{await db.doc("listings/"+x.id).update({status:"sold",buyer:me,st:now()})}catch(_){return toast("Trop tard, la carte vient d'être vendue")}track("mkbuy",1);S.coins-=x.price;track("spend",x.price);get(x.card);save();renderAll();toast(`${BY[x.card].s} acheté · −${x.price} ◆`)}
   async function bid(x,amt){
     const min=Math.max(x.bid+1,Math.ceil(x.bid*1.05));if(!(amt>=min))return toast("Mise minimale : "+min+" ◆");
     const prev=(S.bids&&S.bids[x.id])||0;if(S.coins+prev<amt)return toast("Pas assez de ◆");
@@ -3581,7 +3587,7 @@ const MK=(()=>{
     if(!await lease("listings/"+x.id))return toast("Mise en cours d'un autre joueur, réessaie");
     const s=await db.doc("listings/"+x.id).get(),d=s.data();if(!s.exists||d.status!=="open"||d.ends<now())return toast("Enchère terminée");if(amt<Math.max(d.bid+1,Math.ceil(d.bid*1.05)))return toast("Quelqu'un a misé plus");
     const ends=d.ends-now()<2*60e3?now()+2*60e3:d.ends;
-    await db.doc("listings/"+x.id).update({bid:amt,bidder:me,ends,nb:(d.nb||0)+1});S.bids=S.bids||{};S.coins-=amt-prev;S.bids[x.id]=amt;save();renderAll();toast("Mise placée : "+amt+" ◆")}
+    try{await db.doc("listings/"+x.id).update({bid:amt,bidder:me,ends,nb:(d.nb||0)+1})}catch(_){return toast("Mise refusée, l'enchère a changé")}S.bids=S.bids||{};S.coins-=amt-prev;S.bids[x.id]=amt;save();renderAll();toast("Mise placée : "+amt+" ◆")}
   async function list(id,kind,price,hours){track("mklist",1);if(!db)return toast("Connecte-toi avec Discord (Profil) pour vendre aux joueurs");if(ownFree(id)<1)return toast("Garde au moins un exemplaire");
     lock(id);save();const d={seller:me,card:id,kind,price:kind==="fixed"?price:0,bid:kind==="auction"?price:0,ends:kind==="auction"?now()+hours*H:0,status:"open",t:now()};
     try{await db.collection("listings").add(d);toast(kind==="fixed"?"Mise en vente":"Enchère lancée");renderAll()}catch(e){unlock(id);save();toast("Échec de la mise en vente")}}
@@ -3590,17 +3596,17 @@ const MK=(()=>{
     try{await db.collection("offers").add({from:me,give:giveId,want,to:to||null,status:"open",t:now(),exp:now()+72*H});toast(to?"Proposition envoyée à "+nm(to):"Offre publiée");renderAll()}catch(e){unlock(giveId);save();toast("Échec")}}
   async function accept(o,gotId){track("trade",1);if(ownFree(gotId)<1)return toast("Tu n'as pas ce perso en double");
     if(!await lease("offers/"+o.id))return toast("Échange en cours, réessaie");const s=await db.doc("offers/"+o.id).get();if(!s.exists||s.data().status!=="open")return toast("Offre déjà prise");
-    await db.doc("offers/"+o.id).update({status:"done",taker:me,got:gotId,dt:now()});give(gotId);get(o.give);save();renderAll();toast(`Échange réussi : ${BY[o.give].s} rejoint ta collection`)}
+    try{await db.doc("offers/"+o.id).update({status:"done",taker:me,got:gotId,dt:now()})}catch(_){return toast("Échange impossible, l'offre a changé")}give(gotId);get(o.give);save();renderAll();toast(`Échange réussi : ${BY[o.give].s} rejoint ta collection`)}
   async function cancelOffer(o){await db.doc("offers/"+o.id).update({status:"cancel"});unlock(o.give);save();renderAll();toast("Offre retirée")}
-  async function refuse(o){await db.doc("offers/"+o.id).update({status:"refused"});toast("Proposition refusée")}
+  async function refuse(o){try{await db.doc("offers/"+o.id).update({status:"refused"})}catch(_){return toast("Offre déjà traitée")}toast("Proposition refusée")}
   /* amis */
   const fid=(a,b)=>[a,b].sort().join("_");
   const friends=()=>Object.values(FRQ).filter(f=>f.status==="ok"&&(f.from===me||f.to===me)).map(f=>f.from===me?f.to:f.from);
   const incoming=()=>Object.values(FRQ).filter(f=>f.status==="pending"&&f.to===me);
   const outgoing=()=>Object.values(FRQ).filter(f=>f.status==="pending"&&f.from===me);
-  async function addFriend(id){track("friend",1);if(id===me)return;const k=fid(me,id),ex=FRQ[k];if(ex&&ex.status==="ok")return toast("Déjà amis");if(ex&&ex.status==="pending"&&ex.to===me)return acceptFriend(ex);
-    await db.doc("friends/"+k).set({from:me,to:id,status:"pending",t:now()});toast("Demande envoyée à "+nm(id))}
-  async function acceptFriend(f){await db.doc("friends/"+f.id).update({status:"ok",at:now()});toast("Vous êtes maintenant amis")}
+  async function addFriend(id){if(id===me)return;track("friend",1);const k=fid(me,id),ex=FRQ[k];if(ex&&ex.status==="ok")return toast("Déjà amis");if(ex&&ex.status==="pending"&&ex.to===me)return acceptFriend(ex);
+    try{await db.doc("friends/"+k).set({from:me,to:id,status:"pending",t:now()})}catch(_){return toast("Demande impossible pour l'instant")}toast("Demande envoyée à "+nm(id))}
+  async function acceptFriend(f){try{await db.doc("friends/"+f.id).update({status:"ok",at:now()})}catch(_){return toast("Demande expirée")}toast("Vous êtes maintenant amis")}
   async function removeFriend(id){await db.doc("friends/"+fid(me,id)).delete();toast("Ami retiré")}
   function badge(){const n=incoming().length+Object.values(O).filter(o=>o.to===me&&o.status==="open").length;const d=$("#mkDot");if(d){d.hidden=!n;d.textContent=n||""}}
   /* rendu */
@@ -3930,7 +3936,7 @@ var SBX=(()=>{let sb=null,user=null,dname="",avatar="",st="off",tm=0,busy=false;
     function doc(path){const i=path.indexOf("/"),col=path.slice(0,i),id=path.slice(i+1);return{
       async get(){const r=await sb.from("docs").select("data").eq("col",col).eq("id",id).maybeSingle();if(r.error)throw r.error;return{exists:!!r.data,id,data:()=>r.data?r.data.data:undefined}},
       async set(d){const r=await sb.from("docs").upsert({col,id,data:d},{onConflict:"col,id"});if(r.error)throw r.error},
-      async update(pt){const r=await sb.rpc("doc_patch",{p_col:col,p_id:id,p_patch:pt});if(r.error)throw r.error},
+      async update(pt){const r=await sb.rpc("doc_update",{p_col:col,p_id:id,p_patch:pt});if(r.error)throw r.error},
       async delete(){const r=await sb.from("docs").delete().eq("col",col).eq("id",id);if(r.error)throw r.error},
       async acquire(o){const r=await sb.rpc("doc_lease",{p_path:path,p_holder:o.holder,p_ttl_ms:o.ttlMs||8000});if(r.error)throw r.error;return{acquired:!!r.data}}}}
     function collection(col){const q={w:[],o:null,l:1000};const api={
@@ -4142,4 +4148,15 @@ const CODEX=(()=>{
   const upd=()=>{const n=Object.entries(D).filter(([i,d])=>{const e=document.getElementById(i);return e&&e.value!==d}).length;nb.hidden=!n;nb.textContent=n};
   t.addEventListener("click",()=>{const o=f.classList.toggle("open");t.setAttribute("aria-expanded",o)});
   f.addEventListener("change",upd);upd();})();
+
+(()=>{
+  document.addEventListener("click",e=>{const b=e.target.closest('[data-bkp="exp"]');if(!b)return;
+    const blob=new Blob([JSON.stringify({rosika:1,at:Date.now(),S})],{type:"application/json"}),a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);a.download="rosika-sauvegarde-"+today()+".json";document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast("Sauvegarde téléchargée")});
+  document.addEventListener("change",async e=>{const i=e.target.closest('[data-bkp="imp"]');if(!i||!i.files[0])return;
+    try{const j=JSON.parse(await i.files[0].text()),d=j&&j.S;if(!j||j.rosika!==1||!d||typeof d.own!=="object")throw 0;
+      if(!confirm("Remplacer ta progression actuelle par cette sauvegarde ?"))return;
+      for(const k of Object.keys(S))delete S[k];Object.assign(S,d);for(const k of["own","since","wish"])for(const id in S[k]||{})if(!BY[id])delete S[k][id];
+      ensureState();save();renderAll();toast("Sauvegarde restaurée")}catch(_){toast("Fichier de sauvegarde invalide")}finally{i.value=""}});
+})();
 </script>
