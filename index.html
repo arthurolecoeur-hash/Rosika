@@ -2691,7 +2691,7 @@ function renderProf(){
   <div class="mbar"><i style="width:${pc.replace(",",".")}%"></i></div>
   <div class="cloud" id="cloudSt">${CLOUD.label()}</div>
   <div id="dscBox">${typeof SBX!=="undefined"&&SBX?SBX.html():""}</div>
-  <div class="bkp"><div><b>Copie de secours</b><small>Télécharge ta progression dans un fichier, et restaure-la quand tu veux.</small></div><button class="dsb" data-bkp="exp">Exporter</button><label class="dsb">Importer<input type="file" accept="application/json,.json" data-bkp="imp" hidden></label></div>
+  ${window.claude?"":`<div class="bkp"><div><b>Copie de secours</b><small>Télécharge ta progression dans un fichier, et restaure-la quand tu veux.</small></div><button class="dsb" data-bkp="exp">Exporter</button><label class="dsb">Importer<input type="file" accept="application/json,.json" data-bkp="imp" hidden></label></div>`}
   <div class="prg">${st.map(([i,v,l])=>`<div><span class="pri">${ico(i)}</span><b class="mono">${v}</b><small>${l}</small></div>`).join("")}</div>
   <div class="cgal"><div class="cgh"><b>Cinématiques des Divins</b><small>Touche une carte pour voir sa cinématique</small></div><div class="cgg">${CARDS.filter(c=>c.r==="d").map(c=>`<button class="cgi${S.own[c.id]?"":" lk"}" data-cut="${esc(c.id)}">${hasArt(c.id)?artHTML(c,1):""}<span>${esc(c.s)}</span><i>▶</i></button>`).join("")}</div><label class="cgs"><input type="checkbox" id="cgSus" checked> Avec le suspense (14 s)</label></div>`;
   $("#profX").onclick=()=>$("#prof").close();
