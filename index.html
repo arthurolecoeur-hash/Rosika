@@ -2297,6 +2297,10 @@ for(const k of["own","since","wish"]){const o={};for(const id in S[k]){const nid
 for(const id in S.own)if(!S.since[id])S.since[id]=today();
 const save=()=>{S.t=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}CLOUD.queue();if(typeof SBX!=="undefined"&&SBX)SBX.queue()};
 const LOCAL_T0=S.t||0;
+async function getBackend(){
+  if(window.claude&&claude.use){const[db,user]=await Promise.all([claude.use("db"),claude.use("user")]);return[db,user]}
+  if(typeof SBX!=="undefined"&&SBX&&SBX.backend){const b=SBX.backend();if(b)return b}
+  return[null,null]}
 const CLOUD=(()=>{let ref=null,tm=0,busy=false,again=false,st="off";
   const gz=async str=>{if(!window.CompressionStream)return{raw:str};const b=await new Response(new Blob([str]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer();let bin="";const u=new Uint8Array(b);for(let i=0;i<u.length;i+=32768)bin+=String.fromCharCode.apply(null,u.subarray(i,i+32768));return{gz:btoa(bin)}};
   const ungz=async d=>{if(d.raw)return d.raw;const bin=atob(d.gz),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream("gzip"))).text()};
@@ -3536,7 +3540,8 @@ const MK=(()=>{
     for(const[r,n]of plan)for(let i=0;i<n;i++){const c=pick(r);if(!c)continue;const id="npc"+d+"-"+(k++);
       const auc=R()<.3;out.push({id,npc:1,seller:"npc",card:c.id,kind:auc?"auction":"fixed",price:Math.round(base(r)*(.8+R()*.6)),bid:auc?Math.round(base(r)*(.5+R()*.3)):0,ends:auc?new Date(d).getTime()+(18+R()*30)*H:0,status:sold.includes(id)?"sold":"open",t:0})}
     return out}
-  async function init(){try{if(!window.claude||!claude.use)return;[db,user]=await Promise.all([claude.use("db"),claude.use("user")]);if(!db||!user)return;me=await user.id();if(!me)return;
+  window.addEventListener("rosika-online",()=>{if(!ready)init()});
+  async function init(){try{if(ready)return;[db,user]=await getBackend();if(!db||!user)return;me=await user.id();if(!me)return;
     db.doc("players/"+me).set({id:me,t:now(),n:Object.keys(S.own).length}).catch(()=>{});
     unsub.push(db.collection("listings").where("status","in",["open","sold","done"]).orderBy("t","desc").limit(800).onSnapshot(s=>{for(const k in L)delete L[k];s.docs.forEach(d=>L[d.id]={id:d.id,...d.data()});settle();names(Object.values(L).map(x=>x.seller));paint()},()=>{}));
     unsub.push(db.collection("offers").orderBy("t","desc").limit(600).onSnapshot(s=>{for(const k in O)delete O[k];s.docs.forEach(d=>O[d.id]={id:d.id,...d.data()});settle();names(Object.values(O).flatMap(x=>[x.from,x.to,x.taker]));paint()},()=>{}));
@@ -3577,7 +3582,7 @@ const MK=(()=>{
     const s=await db.doc("listings/"+x.id).get(),d=s.data();if(!s.exists||d.status!=="open"||d.ends<now())return toast("Enchère terminée");if(amt<Math.max(d.bid+1,Math.ceil(d.bid*1.05)))return toast("Quelqu'un a misé plus");
     const ends=d.ends-now()<2*60e3?now()+2*60e3:d.ends;
     await db.doc("listings/"+x.id).update({bid:amt,bidder:me,ends,nb:(d.nb||0)+1});S.bids=S.bids||{};S.coins-=amt-prev;S.bids[x.id]=amt;save();renderAll();toast("Mise placée : "+amt+" ◆")}
-  async function list(id,kind,price,hours){track("mklist",1);if(!db)return toast("Connexion au marché indisponible");if(ownFree(id)<1)return toast("Garde au moins un exemplaire");
+  async function list(id,kind,price,hours){track("mklist",1);if(!db)return toast("Connecte-toi avec Discord (Profil) pour vendre aux joueurs");if(ownFree(id)<1)return toast("Garde au moins un exemplaire");
     lock(id);save();const d={seller:me,card:id,kind,price:kind==="fixed"?price:0,bid:kind==="auction"?price:0,ends:kind==="auction"?now()+hours*H:0,status:"open",t:now()};
     try{await db.collection("listings").add(d);toast(kind==="fixed"?"Mise en vente":"Enchère lancée");renderAll()}catch(e){unlock(id);save();toast("Échec de la mise en vente")}}
   async function cancel(x){if(x.bidder)return toast("Impossible : il y a déjà une mise");await db.doc("listings/"+x.id).update({status:"cancel"});unlock(x.card);save();renderAll();toast("Annonce retirée")}
@@ -3651,7 +3656,7 @@ const MK=(()=>{
     const tabs=[["buy","Acheter"],["auc","Enchères"],["sell","Vendre"],["trade","Échanges"],["friends","Amis"],["act","Mon activité"]];
     const inc=incoming().length,dm=Object.values(O).filter(o=>o.to===me&&o.status==="open").length;
     el.innerHTML=`<div class="mktabs">${tabs.map(([k,t])=>`<button data-mt="${k}" aria-current="${TAB===k}">${t}${k==="friends"&&inc?` <span class="cnt">${inc}</span>`:""}${k==="trade"&&dm?` <span class="cnt">${dm}</span>`:""}</button>`).join("")}</div>
-    ${!db&&TAB!=="buy"&&TAB!=="auc"&&TAB!=="sell"?`<div class="mkempty">Le marché entre joueurs, les échanges et les amis demandent d'ouvrir le jeu connecté à claude.ai.</div>`:TAB==="buy"?vBuy(0):TAB==="auc"?vBuy(1):TAB==="sell"?vSell():TAB==="trade"?vTrade():TAB==="friends"?vFriends():vAct()}`;
+    ${!db&&TAB!=="buy"&&TAB!=="auc"&&TAB!=="sell"?`<div class="mkempty">${typeof SBX!=="undefined"&&SBX&&SBX.on()?`<b>Marché entre joueurs, échanges et amis</b><br>Connecte-toi avec ton compte Discord pour y accéder.<br><button class="dsb" data-dsc="in" style="margin-top:12px">Se connecter avec Discord</button>`:"Le marché entre joueurs, les échanges et les amis arrivent bientôt."}</div>`:TAB==="buy"?vBuy(0):TAB==="auc"?vBuy(1):TAB==="sell"?vSell():TAB==="trade"?vTrade():TAB==="friends"?vFriends():vAct()}`;
     if(f){const q=$("#mkQ");if(q){q.focus();q.setSelectionRange(pos,pos)}}
     $("#mkWallet").innerHTML=`<span class="gem">◆</span> ${nf(S.coins)}`}
   /* dialogue vente / offre */
@@ -3827,7 +3832,8 @@ const AR=(()=>{
   function close(){const el=$("#arB");if(el)el.remove();B=null;document.body.classList.remove("arlock");paint()}
 
   async function push(){if(!db||!me)return;const a=A();try{await db.doc("arena/"+me).set({tr:a.tr,w:a.w,l:a.l,deck:deck(),n:myName||"Joueur",t:Date.now(),best:a.best||a.tr})}catch(_){}}
-  async function init(){try{if(!window.claude||!claude.use)return;[db,user]=await Promise.all([claude.use("db"),claude.use("user")]);if(!db||!user)return;me=await user.id();if(!me)return;
+  window.addEventListener("rosika-online",()=>{if(!ready)init()});
+  async function init(){try{if(ready)return;[db,user]=await getBackend();if(!db||!user)return;me=await user.id();if(!me)return;
       try{const p=await user.profiles([me]);myName=(p[me]&&p[me].name)||""}catch(_){}
       ready=true;push();
       db.collection("arena").orderBy("tr","desc").limit(150).onSnapshot(s=>{LB=s.docs.map(d=>Object.assign({id:d.id},d.data()));const miss=LB.map(x=>x.id).filter(i=>i!==me&&NAMES[i]===undefined);
@@ -3919,13 +3925,38 @@ var SBX=(()=>{let sb=null,user=null,dname="",avatar="",st="off",tm=0,busy=false;
     try{const {data,error}=await sb.from("saves").select("data,t").eq("user_id",user.id).maybeSingle();if(error)throw error;
       if(data&&(data.t||0)>(S.t||0)){S=Object.assign(S,data.data);for(const k of["own","since","wish"])for(const id in S[k]||{})if(!BY[id])delete S[k][id];try{localStorage.setItem(KEY,JSON.stringify(S))}catch(_){}renderAll();toast("Progression récupérée depuis ton compte Discord")}
       else await push();
-      st="ok"}catch(e){st="err"}paint()}
+      st="ok"}catch(e){st="err"}paint();try{goOnline()}catch(_){}}
+
+  function mkDB(uid){
+    const id36=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
+    function doc(path){const i=path.indexOf("/"),col=path.slice(0,i),id=path.slice(i+1);return{
+      async get(){const r=await sb.from("docs").select("data").eq("col",col).eq("id",id).maybeSingle();if(r.error)throw r.error;return{exists:!!r.data,id,data:()=>r.data?r.data.data:undefined}},
+      async set(d){const r=await sb.from("docs").upsert({col,id,data:d},{onConflict:"col,id"});if(r.error)throw r.error},
+      async update(pt){const r=await sb.rpc("doc_patch",{p_col:col,p_id:id,p_patch:pt});if(r.error)throw r.error},
+      async delete(){const r=await sb.from("docs").delete().eq("col",col).eq("id",id);if(r.error)throw r.error},
+      async acquire(o){const r=await sb.rpc("doc_lease",{p_path:path,p_holder:o.holder,p_ttl_ms:o.ttlMs||8000});if(r.error)throw r.error;return{acquired:!!r.data}}}}
+    function collection(col){const q={w:[],o:null,l:1000};const api={
+      where(f,op,v){q.w.push([f,op,v]);return api},orderBy(f,dir){q.o=[f,dir];return api},limit(n){q.l=n;return api},
+      async add(d){const id=id36();const r=await sb.from("docs").insert({col,id,data:d});if(r.error)throw r.error;return{id}},
+      async fetch(){let b=sb.from("docs").select("id,data").eq("col",col);
+        for(const[f,op,v]of q.w){const k="data->>"+f;if(op==="in")b=b.in(k,v.map(String));else b=b.eq(k,String(v))}
+        if(q.o)b=b.order("data->"+q.o[0],{ascending:q.o[1]!=="desc",nullsFirst:false});
+        const r=await b.limit(q.l);if(r.error)throw r.error;return{docs:r.data.map(x=>({id:x.id,data:()=>x.data}))}},
+      onSnapshot(cb,err){let alive=true,tm=0;const run=()=>api.fetch().then(x=>{if(alive)cb(x)}).catch(e=>{err&&err(e)});run();
+        const ch=sb.channel("d-"+col+"-"+id36()).on("postgres_changes",{event:"*",schema:"public",table:"docs",filter:"col=eq."+col},()=>{clearTimeout(tm);tm=setTimeout(run,300)}).subscribe();
+        const iv=setInterval(run,45000);return()=>{alive=false;clearInterval(iv);sb.removeChannel(ch)}}};return api}
+    return{doc,collection}}
+  let BK=null;
+  function goOnline(){const uid=user.id,db=mkDB(uid);
+    const uapi={id:async()=>uid,profiles:async ids=>{const o={};ids=ids.filter(Boolean);if(!ids.length)return o;const r=await sb.from("docs").select("id,data").eq("col","profiles").in("id",ids);for(const x of r.data||[])o[x.id]={name:x.data&&x.data.name};return o}};
+    BK=[db,uapi];db.doc("profiles/"+uid).set({name:dname,avatar,t:Date.now()}).catch(()=>{});
+    window.dispatchEvent(new Event("rosika-online"))}
   async function push(){if(!sb||!user)return;if(busy){clearTimeout(tm);tm=setTimeout(push,1500);return}busy=true;
     try{const {error}=await sb.from("saves").upsert({user_id:user.id,data:S,t:S.t||Date.now(),discord_name:dname,updated_at:new Date().toISOString()});if(error)throw error;st="ok"}catch(e){st="err"}busy=false;paint()}
   async function init(){if(!ready())return;try{await load();sb=window.supabase.createClient(SBCFG.url,SBCFG.key,{auth:{flowType:"pkce",detectSessionInUrl:true,persistSession:true}});
       sb.auth.onAuthStateChange((ev,session)=>{if(ev==="SIGNED_IN"||ev==="INITIAL_SESSION")setTimeout(()=>onSession(session),0);if(ev==="SIGNED_OUT"){user=null;if(st!=="mfa")st="off";paint()}})}catch(e){st="err";paint()}}
   async function login(){if(!sb)return;await sb.auth.signInWithOAuth({provider:"discord",options:{redirectTo:location.origin+location.pathname,scopes:"identify email"}})}
-  async function logout(){if(!sb)return;if(user)try{localStorage.removeItem(okKey(user.id))}catch(_){}await sb.auth.signOut();user=null;st="off";paint()}
+  async function logout(){if(!sb)return;if(user)try{localStorage.removeItem(okKey(user.id))}catch(_){}await sb.auth.signOut();user=null;st="off";paint();if(BK){BK=null;setTimeout(()=>location.reload(),300)}}
   function html(){if(window.claude)return `<div class="dsc"><span class="dsl">${DSC}</span><div><b>Compte Discord</b><small>Disponible sur le site Rosika (pas dans claude.ai).</small></div></div>`;
     if(!ready())return `<div class="dsc"><span class="dsl">${DSC}</span><div><b>Compte Discord</b><small>Connexion bientôt disponible.</small></div></div>`;
     if(user)return `<div class="dsc on">${avatar?`<img src="${esc(avatar)}" alt="">`:`<span class="dsl">${DSC}</span>`}<div><b>${esc(dname)}</b><small>${{sync:"Synchronisation…",ok:"Sauvegardé sur ton compte Discord",err:"Sauvegarde en ligne indisponible"}[st]||"Connecté"}</small></div><button class="dsb out" data-dsc="out">Déconnexion</button></div>`;
@@ -3934,7 +3965,7 @@ var SBX=(()=>{let sb=null,user=null,dname="",avatar="",st="off",tm=0,busy=false;
   document.addEventListener("click",e=>{const b=e.target.closest("[data-dsc]");if(!b)return;b.dataset.dsc==="in"?login():logout()});
   document.addEventListener("visibilitychange",()=>{if(document.hidden&&user&&tm){clearTimeout(tm);tm=0;push()}});
   setTimeout(init,0);
-  return{queue(){if(!user)return;clearTimeout(tm);tm=setTimeout(push,3000)},html,paint,logged:()=>!!user}})();
+  return{queue(){if(!user)return;clearTimeout(tm);tm=setTimeout(push,3000)},html,paint,logged:()=>!!user,on:ready,backend:()=>BK}})();
 
 const CUT=(()=>{
   const E=(a,b,t)=>Math.max(0,Math.min(1,(t-a)/(b-a)));
