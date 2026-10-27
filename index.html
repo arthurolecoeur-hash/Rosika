@@ -2,6 +2,9 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a10">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2216%22 fill=%22%23ff3d81%22/%3E%3Ctext x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-weight=%22900%22 font-size=%2218%22 fill=%22%231a0700%22%3EH%3C/text%3E%3C/svg%3E">
 <title>Rosika</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1982,6 +1985,32 @@ body::after{background:radial-gradient(55% 42% at 90% -6%,rgb(167 139 250 / .16)
 .gatebox .gatego{width:100%;padding:14px 16px;font-size:15px;margin-top:4px}
 .gatex{color:var(--mute);font-weight:700;font-size:13px;padding:6px}
 .gatebox small{color:var(--mute);font-size:12px}
+
+#pmenu{position:fixed;z-index:120;background:#121217;border-radius:16px;padding:18px;box-shadow:0 0 0 1px rgb(255 255 255 / .07),0 30px 70px -20px #000;opacity:0;transform:translateY(-6px);transition:opacity .16s,transform .16s}
+#pmenu.on{opacity:1;transform:none}
+#pmenu[hidden]{display:none}
+.pmh{display:flex;align-items:center;gap:14px;position:relative;padding-right:30px}
+.pmav{width:56px;height:56px;border-radius:50%;flex:none;display:grid;place-items:center;background:#0f2a20;box-shadow:inset 0 0 0 3px #2fd28a;overflow:hidden}
+.pmav b{font:800 22px var(--display);color:#3fe39a}
+.pmav img{width:100%;height:100%;object-fit:cover;border-radius:50%;padding:3px;background:#2fd28a}
+.pmn{min-width:0;display:flex;flex-direction:column;gap:4px}
+.pmn>b{font:800 19px var(--display);letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pmd{display:flex;align-items:center;gap:6px;font:600 12.5px var(--mono);color:#a5adff}
+.pmd svg{width:15px;height:15px;color:#5865f2;flex:none}
+.pmd.off{color:var(--mute);font-family:var(--ui)}
+.pmflag{position:absolute;top:-6px;right:-4px;width:26px;height:26px;border-radius:50%;background:linear-gradient(90deg,#0055a4 0 33.3%,#fff 33.3% 66.6%,#ef4135 66.6%);box-shadow:0 0 0 2px #121217,0 0 0 3px rgb(255 255 255 / .12)}
+.pms{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:8px;margin:18px 0 14px}
+.pms>div{background:#1a1a20;border-radius:10px;padding:10px 10px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.pms small{color:var(--mute);font-size:11.5px}
+.pms b{font-size:15px;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pml{display:flex;flex-direction:column;align-items:flex-start}
+.pml button{color:#ff6a4d;font-weight:700;font-size:14.5px;padding:6px 0;text-align:left}
+.pml button:hover{color:#ff8a72}
+.pmf{margin-top:10px;padding-top:12px;border-top:1px solid rgb(255 255 255 / .07)}
+.pmf button{color:var(--mute);font-weight:600;font-size:13.5px;padding:4px 0}
+.pmf button:hover{color:var(--fg)}
+.pmf .pmin{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#5865f2;color:#fff;border-radius:999px;padding:11px 14px;font-weight:700}
+.pmf .pmin svg{width:18px;height:18px}
 </style>
 
 <nav><div class="in">
@@ -2750,7 +2779,7 @@ function renderProf(){
   $("#profX").onclick=()=>$("#prof").close();
   $("#profBody").querySelectorAll("[data-cut]").forEach(b=>b.onclick=()=>{const c=BY[b.dataset.cut],sus=$("#cgSus").checked;$("#prof").close();CUT.play(c,()=>{},{noSus:!sus})});
 }
-$("#profBtn").onclick=()=>{renderProf();$("#prof").showModal()};
+$("#profBtn").onclick=e=>{e.stopPropagation();PMENU.toggle()};
 
 
 
@@ -4039,6 +4068,7 @@ var SBX=(()=>{let checked=false,sb=null,user=null,dname="",avatar="",st="off",tm
   document.addEventListener("visibilitychange",()=>{if(document.hidden&&user&&tm){clearTimeout(tm);tm=0;push()}});
   setTimeout(init,0);
   return{queue(){if(!user)return;clearTimeout(tm);tm=setTimeout(push,3000)},html,paint,logged:()=>!!user,on:ready,backend:()=>BK,
+    info:()=>{const md=(user&&user.user_metadata)||{};return{logged:!!user,name:dname,handle:(md.full_name||md.user_name||md.name||"").replace(/#0+$/,""),avatar,admin:!!(user&&ME.admin)}},logout,
     isAdmin:()=>!!(user&&ME.admin),guest:()=>!!(sb&&checked&&!user),login,banned:()=>!!ME.banned,rpc:(f,a)=>sb.rpc(f,a),client:()=>sb,name:()=>dname,announce}})();
 
 const CUT=(()=>{
@@ -4324,4 +4354,50 @@ function guestGate(){let d=document.getElementById("gateDlg");if(!d){d=document.
     <button class="dsb gatego" data-dsc="in">Se connecter avec Discord</button><button class="gatex" data-gate="x">Plus tard</button><small>Ta progression actuelle sera gardée sur ton compte.</small></div>`;
   d.hidden=false;
   d.onclick=e=>{if(e.target===d||e.target.closest('[data-gate="x"]'))d.hidden=true}}
+
+const PMENU=(()=>{
+  let el=null,deferred=null;
+  window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e});
+  window.addEventListener("appinstalled",()=>{deferred=null;toast("Rosika est installée")});
+  const standalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+  const DISC='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18.1a19.9 19.9 0 0 0 6 3l1.3-2.1a12.9 12.9 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4c-.6.4-1.3.7-2 1l1.3 2.1a19.8 19.8 0 0 0 6-3c.5-5.2-.9-9.7-3.6-13.7ZM8 15.4c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.6 8 10.6s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>';
+  function html(){const sb=typeof SBX!=="undefined"&&SBX&&SBX.on&&SBX.on(),inf=sb&&SBX.info?SBX.info():{logged:false},logged=inf.logged;
+    const name=logged?inf.name:(window.claude?"Joueur":"Invité"),init=(name||"?").trim().charAt(0).toUpperCase();
+    const sub=logged?`<span class="pmd">${DISC}${esc(inf.handle||"discord")}</span>`:window.claude?`<span class="pmd off">Version claude.ai</span>`:`<span class="pmd off">Non connecté</span>`;
+    const canInstall=!window.claude&&!standalone();
+    return `<div class="pmh"><span class="pmav">${logged&&inf.avatar?`<img src="${esc(inf.avatar)}" alt="">`:`<b>${esc(init)}</b>`}</span><div class="pmn"><b>${esc(name)}</b>${sub}</div><span class="pmflag" title="Français" aria-label="Français"></span></div>
+      <div class="pms"><div><small>Gemmes</small><b class="mono">${nf(S.coins)}</b></div><div><small>Cartes</small><b class="mono">${nf(ownedN())}</b></div><div><small>Pitié M</small><b class="mono">${Math.min(S.sinceLeg||0,PITY_MYT)}/${PITY_MYT}</b></div></div>
+      <div class="pml">
+        <button data-pm="prof">Mon profil</button>
+        <button data-pm="friends">Amis</button>
+        <button data-pm="coll">Ma collection</button>
+        ${canInstall?`<button data-pm="install">Installer l'app</button>`:""}
+        ${logged&&inf.admin?`<button data-pm="admin">Panel admin</button>`:""}
+      </div>
+      ${sb?`<div class="pmf">${logged?`<button data-pm="out">Se déconnecter</button>`:`<button class="pmin" data-pm="in">${DISC}Se connecter avec Discord</button>`}</div>`:""}`}
+  function place(){const b=document.getElementById("profBtn");if(!b||!el)return;const r=b.getBoundingClientRect(),w=Math.min(320,innerWidth-24);
+    el.style.width=w+"px";el.style.top=Math.round(r.bottom+10)+"px";el.style.left=Math.round(Math.max(12,Math.min(innerWidth-w-12,r.right-w)))+"px"}
+  function open(){if(!el){el=document.createElement("div");el.id="pmenu";el.setAttribute("role","menu");document.body.append(el)}el.innerHTML=html();el.hidden=false;place();
+    requestAnimationFrame(()=>el.classList.add("on"))}
+  function close(){if(el){el.classList.remove("on");el.hidden=true}}
+  function toggle(){el&&!el.hidden?close():open()}
+  async function install(){if(deferred){deferred.prompt();try{await deferred.userChoice}catch(_){}deferred=null;return}
+    const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+    toast(ios?"Sur iPhone : bouton Partager ⬆️ puis « Sur l'écran d'accueil »":"Ouvre le menu du navigateur (⋮) puis « Installer l'application » ou « Ajouter à l'écran d'accueil »")}
+  document.addEventListener("click",e=>{if(!el||el.hidden)return;const b=e.target.closest("[data-pm]");
+    if(b){const k=b.dataset.pm;close();
+      if(k==="prof"){renderProf();$("#prof").showModal()}
+      else if(k==="coll")document.querySelector('.tab[data-v="coll"]').click();
+      else if(k==="friends"){document.querySelector('.tab[data-v="mkt"]').click();setTimeout(()=>{const t=document.querySelector('[data-mt="friends"]');if(t)t.click()},60)}
+      else if(k==="install")install();
+      else if(k==="admin")ADM.show();
+      else if(k==="out")SBX.logout();
+      else if(k==="in")SBX.login();
+      return}
+    if(!e.target.closest("#pmenu"))close()});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
+  addEventListener("resize",()=>{if(el&&!el.hidden)place()});
+  addEventListener("scroll",()=>{if(el&&!el.hidden)place()},{passive:true});
+  if(!window.claude&&"serviceWorker" in navigator&&location.protocol==="https:")addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+  return{open,close,toggle}})();
 </script>
