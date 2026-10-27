@@ -4371,7 +4371,6 @@ const PMENU=(()=>{
         <button data-pm="prof">Mon profil</button>
         <button data-pm="friends">Amis</button>
         <button data-pm="coll">Ma collection</button>
-        ${canInstall?`<button data-pm="install">Installer l'app</button>`:""}
         ${logged&&inf.admin?`<button data-pm="admin">Panel admin</button>`:""}
       </div>
       ${sb?`<div class="pmf">${logged?`<button data-pm="out">Se déconnecter</button>`:`<button class="pmin" data-pm="in">${DISC}Se connecter avec Discord</button>`}</div>`:""}`}
