@@ -3918,8 +3918,6 @@ var SBX=(()=>{let sb=null,user=null,dname="",avatar="",st="off",tm=0,busy=false;
     try{const r=await fetch("https://discord.com/api/users/@me",{headers:{Authorization:"Bearer "+tok}});if(!r.ok)return false;const u=await r.json();
       if(u.mfa_enabled){try{localStorage.setItem(okKey(id),"1")}catch(_){}return true}return false}catch(_){return false}}
   async function onSession(session){if(!session){user=null;st="off";paint();return}
-    const ok=await checkMfa(session);
-    if(!ok){await sb.auth.signOut();user=null;st="mfa";paint();toast("Active l'A2F (double authentification) sur ton compte Discord pour te connecter");return}
     user=session.user;const md=user.user_metadata||{};dname=(md.custom_claims&&md.custom_claims.global_name)||md.full_name||md.name||"Joueur";avatar=md.avatar_url||"";
     st="sync";paint();
     try{const {data,error}=await sb.from("saves").select("data,t").eq("user_id",user.id).maybeSingle();if(error)throw error;
@@ -3960,7 +3958,7 @@ var SBX=(()=>{let sb=null,user=null,dname="",avatar="",st="off",tm=0,busy=false;
   function html(){if(window.claude)return `<div class="dsc"><span class="dsl">${DSC}</span><div><b>Compte Discord</b><small>Disponible sur le site Rosika (pas dans claude.ai).</small></div></div>`;
     if(!ready())return `<div class="dsc"><span class="dsl">${DSC}</span><div><b>Compte Discord</b><small>Connexion bientôt disponible.</small></div></div>`;
     if(user)return `<div class="dsc on">${avatar?`<img src="${esc(avatar)}" alt="">`:`<span class="dsl">${DSC}</span>`}<div><b>${esc(dname)}</b><small>${{sync:"Synchronisation…",ok:"Sauvegardé sur ton compte Discord",err:"Sauvegarde en ligne indisponible"}[st]||"Connecté"}</small></div><button class="dsb out" data-dsc="out">Déconnexion</button></div>`;
-    return `<div class="dsc"><span class="dsl">${DSC}</span><div><b>Compte Discord</b><small>${st==="mfa"?"A2F requise : active la double authentification sur Discord.":"Connecte-toi pour sauvegarder ta progression et la retrouver partout. A2F obligatoire."}</small></div><button class="dsb" data-dsc="in">Se connecter avec Discord</button></div>`}
+    return `<div class="dsc"><span class="dsl">${DSC}</span><div><b>Compte Discord</b><small>${st==="mfa"?"A2F requise : active la double authentification sur Discord.":"Connecte-toi avec ton compte Discord pour sauvegarder ta progression et la retrouver partout."}</small></div><button class="dsb" data-dsc="in">Se connecter avec Discord</button></div>`}
   function paint(){const el=document.getElementById("dscBox");if(el)el.innerHTML=html();const hb=document.getElementById("dscHead");if(hb)hb.classList.toggle("on",!!user)}
   document.addEventListener("click",e=>{const b=e.target.closest("[data-dsc]");if(!b)return;b.dataset.dsc==="in"?login():logout()});
   document.addEventListener("visibilitychange",()=>{if(document.hidden&&user&&tm){clearTimeout(tm);tm=0;push()}});
