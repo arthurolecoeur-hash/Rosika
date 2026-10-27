@@ -4452,4 +4452,17 @@ const PMENU=(()=>{
   addEventListener("scroll",()=>{if(el&&!el.hidden)place()},{passive:true});
   if(!window.claude&&"serviceWorker" in navigator&&location.protocol==="https:")addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
   return{open,close,toggle}})();
+
+const AUTOUP=(()=>{
+  if(window.claude||location.protocol!=="https:")return{};
+  let base=null,pending=false;
+  async function sig(){try{const r=await fetch(location.pathname+"?u="+Date.now(),{method:"HEAD",cache:"no-store"});if(!r.ok)return null;return r.headers.get("etag")||r.headers.get("last-modified")||null}catch(_){return null}}
+  async function check(){if(pending)return;const s=await sig();if(!s)return;if(base===null){base=s;return}if(s!==base){pending=true;toast("✨ Nouvelle version de Rosika, mise à jour…");setTimeout(go,1800)}}
+  function busy(){const op=document.getElementById("op"),dlg=[...document.querySelectorAll("dialog")].some(d=>d.open);
+    return (op&&!op.hidden)||!!document.getElementById("arB")||!!document.getElementById("arEd")||!!document.querySelector(".cutvid")||dlg||
+      ["admDlg","mkDlg","gateDlg"].some(id=>{const e=document.getElementById(id);return e&&!e.hidden})||(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))}
+  function go(){if(busy()){setTimeout(go,3000);return}try{save()}catch(_){}location.reload()}
+  setTimeout(check,3000);setInterval(check,60e3);
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)check()});
+  return{check}})();
 </script>
