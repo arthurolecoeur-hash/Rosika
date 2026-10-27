@@ -1921,6 +1921,10 @@ body::after{background:radial-gradient(55% 42% at 90% -6%,rgb(167 139 250 / .16)
   .mkg:not(.sm) .mkp small{font-size:10.5px}
   .mkg:not(.sm) .mkgo{width:100%;padding:9px 10px;font-size:13px}
 }
+
+.ach.hid{background:repeating-linear-gradient(135deg,rgb(255 255 255 / .015) 0 10px,transparent 10px 20px),var(--panel)!important}
+.ach.hid b{color:transparent;background:var(--holo);-webkit-background-clip:text;background-clip:text}
+.ach.hid .mbar,.ach.hid small{opacity:.35}
 </style>
 
 <nav><div class="in">
@@ -2804,12 +2808,12 @@ function commitTear(){
   const P=OP.P,before={...S.own},cards=[];let gold=false;
   let god=false;
   const RK={c:0,u:1,r:2,e:3,l:4,m:5,d:6};
-  for(let i=0;i<OP.n;i++){payOne(P);const r=rollPack(P);const sorted=r.cards.map((c,j)=>[c,j]).sort((a,b)=>RK[a[0].r]-RK[b[0].r]||a[1]-b[1]).map(x=>x[0]);cards.push(...sorted);gold=gold||r.gold;god=god||!!r.god}
+  for(let i=0;i<OP.n;i++){payOne(P);const r=rollPack(P);if(r.cards.every(c=>c.r==="c"))track("allc",1);if(!r.god&&r.cards.every(c=>"elmd".includes(c.r)))track("perf",1);const sorted=r.cards.map((c,j)=>[c,j]).sort((a,b)=>RK[a[0].r]-RK[b[0].r]||a[1]-b[1]).map(x=>x[0]);cards.push(...sorted);gold=gold||r.gold;god=god||!!r.god}
   if(OP.n>1)cards.sort((a,b)=>RK[a.r]-RK[b.r]);
   const seen={},isNew=cards.map(c=>{const v=!before[c.id]&&!seen[c.id];seen[c.id]=1;return v});
   cards.forEach(c=>{S.own[c.id]=(S.own[c.id]||0)+1;if(!S.since[c.id])S.since[c.id]=today()});
   OP.god=god;
-  track("open",OP.n);{const u=UNI[P.id];if(u)track("u_"+u,OP.n);if(P.id==="mix")track("mix",OP.n);if(OP.n>1)track("x2",1);if(P.daily)track("dailyp",1);if(P.g==="shop")track("shop",OP.n);if(THP.includes(P.id))track("theme",OP.n);const cnt=r=>cards.filter(c=>r.includes(c.r)).length,ep=cnt("elmd"),ra=cnt("relmd"),my=cnt("md"),nw=isNew.filter(Boolean).length;if(ep)track("epic",ep);if(ra)track("rare",ra);if(my)track("myth",my);if(nw)track("newc",nw);if(cards.length-nw>0)track("dup",cards.length-nw)}{const lg=cards.filter(c=>c.r==="l"||c.r==="m"||c.r==="d").length;if(lg)track("legend",lg);for(let b=0;b<OP.n;b++){if(cards.slice(b*P.k,(b+1)*P.k).filter(c=>c.r==="m").length>=2)S.st.divine=1}}save();
+  track("open",OP.n);{const hr=new Date().getHours();if(hr>=2&&hr<5)track("night",1);const u=UNI[P.id];if(u)track("u_"+u,OP.n);if(P.id==="mix")track("mix",OP.n);if(OP.n>1)track("x2",1);if(P.daily)track("dailyp",1);if(P.g==="shop")track("shop",OP.n);if(THP.includes(P.id))track("theme",OP.n);const cnt=r=>cards.filter(c=>r.includes(c.r)).length,ep=cnt("elmd"),ra=cnt("relmd"),my=cnt("md"),nw=isNew.filter(Boolean).length;if(ep)track("epic",ep);if(ra)track("rare",ra);if(my)track("myth",my);if(nw)track("newc",nw);if(cards.length-nw>0)track("dup",cards.length-nw)}{const lg=cards.filter(c=>c.r==="l"||c.r==="m"||c.r==="d").length;if(lg)track("legend",lg);for(let b=0;b<OP.n;b++){if(cards.slice(b*P.k,(b+1)*P.k).filter(c=>c.r==="m").length>=2)S.st.divine=1}}save();
   Object.assign(OP,{cards,isNew,gold,i:0,up:false,splashed:{},done:false});
   const art=preloadArt(cards.map(c=>c.id)),go=f=>{let d=0;const t=setTimeout(()=>{if(!d){d=1;f()}},3500);art.then(()=>{if(!d){d=1;clearTimeout(t);f()}})};
   const nextStage=first=>stageCard(first);
@@ -3125,8 +3129,8 @@ const ownedN=()=>{let n=0;for(const id in S.own)if(S.own[id])n++;return n};
 const ownedOf=f=>{let n=0;for(const id in S.own)if(S.own[id]&&BY[id]&&BY[id].f===f)n++;return n};
 const ownedR=r=>{let n=0;for(const id in S.own)if(S.own[id]&&BY[id]&&BY[id].r===r)n++;return n};
 const albumsDone=()=>albumList().filter(a=>a.pool.every(c=>S.own[c.id])).length;
-const ACHC=[["all","Tous"],["bo","Boosters"],["co","Collection"],["un","Univers"],["ra","Raretés"],["ar","Arène & Tour"],["ma","Marché & fidélité"]];
-const achCat=id=>/^(o\d|x25|shop|dp|godp|div)/.test(id)?"bo":/^(mv|dc|sw|di|dw|hp|lo|jv|fg|tf)\d|full$/.test(id)?"un":/^(fe|e50|fl|l\d|lp|fm|m\d|mall|fd|d\d)/.test(id)?"ra":/^(aw|as|aarg|agold|aplat|adiam|amai|adiv|tw)/.test(id)?"ar":/^(c\d|call|new|dup|a\d|f\d)/.test(id)?"co":"ma";
+const ACHC=[["all","Tous"],["bo","Boosters"],["co","Collection"],["un","Univers"],["ra","Raretés"],["ar","Arène & Tour"],["ma","Marché & fidélité"],["se","Secrets"]];
+const achCat=id=>{const a=ACH.find(x=>x.id===id);return a&&a.cat?a.cat:achCat0(id)},achCat0=id=>/^(o\d|x25|shop|dp|godp|div)/.test(id)?"bo":/^(mv|dc|sw|di|dw|hp|lo|jv|fg|tf)\d|full$/.test(id)?"un":/^(fe|e50|fl|l\d|lp|fm|m\d|mall|fd|d\d)/.test(id)?"ra":/^(aw|as|aarg|agold|aplat|adiam|amai|adiv|tw)/.test(id)?"ar":/^(c\d|call|new|dup|a\d|f\d)/.test(id)?"co":"ma";
 let ACHK="all";
 const ACH=[
  {id:"o10",t:"Premiers pas",d:"Ouvrir 10 boosters",v:()=>(S.st.open||0),g:10,r:10},
@@ -3209,7 +3213,92 @@ const ACH=[
  {id:"a5",t:"Albums en série",d:"Compléter 5 albums",v:albumsDone,g:5,r:300},
  {id:"a25",t:"Relieur",d:"Compléter 25 albums",v:albumsDone,g:25,r:1000},
  {id:"f50",t:"Curieux",d:"Consulter 50 fiches",v:()=>S.st.fiche,g:50,r:50},
- {id:"f300",t:"Érudit",d:"Consulter 300 fiches",v:()=>S.st.fiche,g:300,r:200}
+ {id:"f300",t:"Érudit",d:"Consulter 300 fiches",v:()=>S.st.fiche,g:300,r:200},
+ {id:"o250",t:"Mordu",d:"Ouvrir 250 boosters",v:()=>S.st.open||0,g:250,r:100,cat:"bo"},
+ {id:"o2500",t:"Usine à boosters",d:"Ouvrir 2 500 boosters",v:()=>S.st.open||0,g:2500,r:700,cat:"bo"},
+ {id:"o5k",t:"Légende du déballage",d:"Ouvrir 5 000 boosters",v:()=>S.st.open||0,g:5000,r:1200,cat:"bo"},
+ {id:"mx100",t:"Amateur de surprises",d:"Ouvrir 100 boosters Mix",v:()=>S.st.mix||0,g:100,r:150,cat:"bo"},
+ {id:"mx500",t:"Roi du Mix",d:"Ouvrir 500 boosters Mix",v:()=>S.st.mix||0,g:500,r:500,cat:"bo"},
+ {id:"th25",t:"Thématique",d:"Ouvrir 25 boosters thématiques",v:()=>S.st.theme||0,g:25,r:120,cat:"bo"},
+ {id:"th100",t:"Collection à thème",d:"Ouvrir 100 boosters thématiques",v:()=>S.st.theme||0,g:100,r:400,cat:"bo"},
+ {id:"x100",t:"Tout ou rien",d:"Faire 100 ouvertures multiples",v:()=>S.st.x2||0,g:100,r:400,cat:"bo"},
+ {id:"shop50",t:"Carte gold",d:"Ouvrir 50 boosters de la boutique",v:()=>S.st.shop||0,g:50,r:400,cat:"bo"},
+ {id:"dp100",t:"Centenaire",d:"Ouvrir 100 packs du jour",v:()=>S.st.dailyp||0,g:100,r:800,cat:"bo"},
+ {id:"god3",t:"Chouchou des dieux",d:"Ouvrir 3 GOD PACKS",v:()=>S.st.god||0,g:3,r:3000,cat:"bo"},
+ {id:"ubmv",t:"Abonné Marvel",d:"Ouvrir 50 boosters Marvel",v:()=>S.st.u_mv||0,g:50,r:150,cat:"un"},
+ {id:"ubdc",t:"Abonné DC",d:"Ouvrir 50 boosters DC",v:()=>S.st.u_dc||0,g:50,r:150,cat:"un"},
+ {id:"ubsw",t:"Abonné de la Force",d:"Ouvrir 50 boosters Star Wars",v:()=>S.st.u_sw||0,g:50,r:150,cat:"un"},
+ {id:"ubdi",t:"Abonné Disney",d:"Ouvrir 50 boosters Disney ou Pixar",v:()=>S.st.u_di||0,g:50,r:150,cat:"un"},
+ {id:"ubdw",t:"Abonné DreamWorks",d:"Ouvrir 50 boosters DreamWorks",v:()=>S.st.u_dw||0,g:50,r:150,cat:"un"},
+ {id:"ubhp",t:"Hibou de Poudlard",d:"Ouvrir 50 boosters Harry Potter",v:()=>S.st.u_hp||0,g:50,r:150,cat:"un"},
+ {id:"ublo",t:"Voyageur de la Terre du Milieu",d:"Ouvrir 50 boosters Terre du Milieu",v:()=>S.st.u_lo||0,g:50,r:150,cat:"un"},
+ {id:"ubjv",t:"Rétro-gamer",d:"Ouvrir 50 boosters Jeux vidéo",v:()=>S.st.u_jv||0,g:50,r:150,cat:"un"},
+ {id:"ubfg",t:"Arcade addict",d:"Ouvrir 50 boosters Jeux de combat",v:()=>S.st.u_fg||0,g:50,r:150,cat:"un"},
+ {id:"ubtf",t:"Cowabunga",d:"Ouvrir 50 boosters Robots & Tortues",v:()=>S.st.u_tf||0,g:50,r:150,cat:"un"},
+ {id:"uall",t:"Tour du multivers",d:"Ouvrir au moins un booster de chaque univers",v:()=>Object.keys(FR).filter(f=>(S.st['u_'+f]||0)>0).length,g:Object.keys(FR).length,r:200,cat:"un"},
+ {id:"tffull",t:"Univers complet : Robots & Tortues",d:"Posséder tous les persos Robots & Tortues",v:()=>ownedOf("tf"),g:CARDS.filter(c=>c.f==="tf").length,r:1500,cat:"un"},
+ {id:"dwfull",t:"Univers complet : DreamWorks",d:"Posséder tous les persos DreamWorks",v:()=>ownedOf("dw"),g:CARDS.filter(c=>c.f==="dw").length,r:1500,cat:"un"},
+ {id:"fgfull",t:"Univers complet : Jeux de combat",d:"Posséder tous les persos Jeux de combat",v:()=>ownedOf("fg"),g:CARDS.filter(c=>c.f==="fg").length,r:1500,cat:"un"},
+ {id:"jvfull",t:"Univers complet : Jeux vidéo",d:"Posséder tous les persos Jeux vidéo",v:()=>ownedOf("jv"),g:CARDS.filter(c=>c.f==="jv").length,r:1500,cat:"un"},
+ {id:"difull",t:"Univers complet : Disney & Pixar",d:"Posséder tous les persos Disney & Pixar",v:()=>ownedOf("di"),g:CARDS.filter(c=>c.f==="di").length,r:3000,cat:"un"},
+ {id:"swfull",t:"Univers complet : Star Wars",d:"Posséder tous les persos Star Wars",v:()=>ownedOf("sw"),g:CARDS.filter(c=>c.f==="sw").length,r:3000,cat:"un"},
+ {id:"dcfull",t:"Univers complet : DC",d:"Posséder tous les persos DC",v:()=>ownedOf("dc"),g:CARDS.filter(c=>c.f==="dc").length,r:3000,cat:"un"},
+ {id:"mvfull",t:"Univers complet : Marvel",d:"Posséder tous les persos Marvel",v:()=>ownedOf("mv"),g:CARDS.filter(c=>c.f==="mv").length,r:3000,cat:"un"},
+ {id:"c100",t:"Petite collection",d:"Posséder 100 persos différents",v:ownedN,g:100,r:40,cat:"co"},
+ {id:"c750",t:"Grande collection",d:"Posséder 750 persos différents",v:ownedN,g:750,r:220,cat:"co"},
+ {id:"c1500",t:"Musée",d:"Posséder 1 500 persos différents",v:ownedN,g:1500,r:500,cat:"co"},
+ {id:"c2500",t:"Galerie nationale",d:"Posséder 2 500 persos différents",v:ownedN,g:2500,r:1000,cat:"co"},
+ {id:"c4000",t:"Presque tout",d:"Posséder 4 000 persos différents",v:ownedN,g:4000,r:3000,cat:"co"},
+ {id:"dup25",t:"Fan absolu",d:"Avoir 25 exemplaires d'une même carte",v:()=>Math.max(0,...Object.values(S.own)),g:25,r:200,cat:"co"},
+ {id:"dupt1k",t:"Pile de doublons",d:"Obtenir 1 000 doublons",v:()=>S.st.dup||0,g:1000,r:300,cat:"co"},
+ {id:"a10",t:"Album après album",d:"Compléter 10 albums",v:albumsDone,g:10,r:600,cat:"co"},
+ {id:"a50",t:"Bibliothèque d'albums",d:"Compléter 50 albums",v:albumsDone,g:50,r:2000,cat:"co"},
+ {id:"w50",t:"Rêveur",d:"Ajouter 50 persos à tes envies",v:()=>S.st.wish||0,g:50,r:100,cat:"co"},
+ {id:"f1k",t:"Encyclopédie vivante",d:"Consulter 1 000 fiches",v:()=>S.st.fiche||0,g:1000,r:500,cat:"co"},
+ {id:"r250",t:"Rares en série",d:"Posséder 250 Rares différentes",v:()=>ownedR("r"),g:250,r:150,cat:"ra"},
+ {id:"r600",t:"Rare n'est plus rare",d:"Posséder 600 Rares différentes",v:()=>ownedR("r"),g:600,r:500,cat:"ra"},
+ {id:"e150",t:"Galerie épique",d:"Posséder 150 Épiques différentes",v:()=>ownedR("e"),g:150,r:500,cat:"ra"},
+ {id:"e300",t:"Âge épique",d:"Posséder 300 Épiques différentes",v:()=>ownedR("e"),g:300,r:1200,cat:"ra"},
+ {id:"l100",t:"Mythes et légendes",d:"Posséder 100 Légendaires différentes",v:()=>ownedR("l"),g:100,r:1500,cat:"ra"},
+ {id:"lall",t:"Toutes les légendes",d:"Posséder toutes les Légendaires",v:()=>ownedR("l"),g:CARDS.filter(c=>c.r==="l").length,r:5000,cat:"ra"},
+ {id:"rp500",t:"Pluie de Rares",d:"Tirer 500 Rares ou mieux",v:()=>S.st.rare||0,g:500,r:150,cat:"ra"},
+ {id:"ep100",t:"Épopée sans fin",d:"Tirer 100 Épiques ou mieux",v:()=>S.st.epic||0,g:100,r:200,cat:"ra"},
+ {id:"ep500",t:"Collection d'épiques",d:"Tirer 500 Épiques ou mieux",v:()=>S.st.epic||0,g:500,r:600,cat:"ra"},
+ {id:"lp100",t:"Légendes à la chaîne",d:"Tirer 100 Légendaires ou mieux",v:()=>S.st.legend||0,g:100,r:1000,cat:"ra"},
+ {id:"myp5",t:"Mythomane",d:"Tirer 5 Mythiques ou mieux",v:()=>S.st.myth||0,g:5,r:600,cat:"ra"},
+ {id:"myp25",t:"Olympien",d:"Tirer 25 Mythiques ou mieux",v:()=>S.st.myth||0,g:25,r:2500,cat:"ra"},
+ {id:"arp1",t:"Baptême du feu",d:"Jouer un combat dans l'Arène",v:()=>S.st.arp||0,g:1,r:20,cat:"ar"},
+ {id:"arp50",t:"Habitué de l'Arène",d:"Jouer 50 combats",v:()=>S.st.arp||0,g:50,r:200,cat:"ar"},
+ {id:"arp250",t:"Vétéran",d:"Jouer 250 combats",v:()=>S.st.arp||0,g:250,r:800,cat:"ar"},
+ {id:"aw250",t:"Conquérant",d:"Gagner 250 combats",v:()=>S.st.arw||0,g:250,r:2500,cat:"ar"},
+ {id:"aw500",t:"Invincible",d:"Gagner 500 combats",v:()=>S.st.arw||0,g:500,r:5000,cat:"ar"},
+ {id:"as20",t:"Série légendaire",d:"Enchaîner 20 victoires classées",v:()=>S.arena?S.arena.bs||0:0,g:20,r:3000,cat:"ar"},
+ {id:"tw75",t:"Stratosphère",d:"Franchir l'étage 75 de la Tour",v:()=>S.arena?S.arena.twBest||0:0,g:75,r:4000,cat:"ar"},
+ {id:"tw100",t:"Toucher les étoiles",d:"Franchir l'étage 100 de la Tour",v:()=>S.arena?S.arena.twBest||0:0,g:100,r:6000,cat:"ar"},
+ {id:"twt100",t:"Alpiniste",d:"Franchir 100 étages au total",v:()=>S.st.tower||0,g:100,r:800,cat:"ar"},
+ {id:"sp10k",t:"Panier percé",d:"Dépenser 10 000 ◆",v:()=>S.st.spend||0,g:10000,r:300,cat:"ma"},
+ {id:"sp100k",t:"Mécène",d:"Dépenser 100 000 ◆",v:()=>S.st.spend||0,g:100000,r:2000,cat:"ma"},
+ {id:"rich50",t:"Magnat",d:"Avoir 50 000 ◆ en même temps",v:()=>S.coins,g:50000,r:1500,cat:"ma"},
+ {id:"rich100",t:"Coffre-fort",d:"Avoir 100 000 ◆ en même temps",v:()=>S.coins,g:100000,r:3000,cat:"ma"},
+ {id:"mk50",t:"Collectionneur averti",d:"Acheter 50 cartes au Marché",v:()=>S.st.mkbuy||0,g:50,r:600,cat:"ma"},
+ {id:"ml10",t:"Commerçant",d:"Mettre 10 cartes en vente au Marché",v:()=>S.st.mklist||0,g:10,r:150,cat:"ma"},
+ {id:"tr10",t:"Négociateur",d:"Accepter 10 échanges",v:()=>S.st.trade||0,g:10,r:400,cat:"ma"},
+ {id:"fr5",t:"Bande d'amis",d:"Envoyer 5 demandes d'ami",v:()=>S.st.friend||0,g:5,r:150,cat:"ma"},
+ {id:"code3",t:"Chasseur de trésors",d:"Utiliser 3 codes cadeaux",v:()=>Object.keys(S.codes||{}).length,g:3,r:200,cat:"ma"},
+ {id:"lg7",t:"Une semaine avec Rosika",d:"Se connecter 7 jours",v:()=>S.st.logins||0,g:7,r:100,cat:"ma"},
+ {id:"lg100",t:"Pilier de Rosika",d:"Se connecter 100 jours",v:()=>S.st.logins||0,g:100,r:1500,cat:"ma"},
+ {id:"lg365",t:"Un an de Rosika",d:"Se connecter 365 jours",v:()=>S.st.logins||0,g:365,r:5000,cat:"ma"},
+ {id:"st5",t:"Régulier",d:"Terminer 5 séries de connexion de 7 jours",v:()=>S.st.streak7||0,g:5,r:600,cat:"ma"},
+ {id:"mc10",t:"Bon élève",d:"Réclamer 10 missions",v:()=>S.st.misc||0,g:10,r:80,cat:"ma"},
+ {id:"mc100",t:"Premier de la classe",d:"Réclamer 100 missions",v:()=>S.st.misc||0,g:100,r:500,cat:"ma"},
+ {id:"mc500",t:"Bourreau de travail",d:"Réclamer 500 missions",v:()=>S.st.misc||0,g:500,r:2000,cat:"ma"},
+ {id:"wb4",t:"Semaines parfaites",d:"Finir toutes les missions de la semaine 4 fois",v:()=>S.st.wbon||0,g:4,r:1000,cat:"ma"},
+ {id:"night",t:"Nuit blanche",d:"Ouvrir un booster entre 2 h et 5 h du matin",v:()=>S.st.night||0,g:1,r:150,cat:"se",hid:1},
+ {id:"allc",t:"Pas de chance",d:"Ouvrir un booster rempli uniquement de Communes",v:()=>S.st.allc||0,g:1,r:100,cat:"se",hid:1},
+ {id:"perf",t:"Pack parfait",d:"Ouvrir un booster sans aucune carte en dessous d'Épique",v:()=>S.st.perf||0,g:1,r:1000,cat:"se",hid:1},
+ {id:"broke",t:"Fauché",d:"Descendre à moins de 10 ◆",v:()=>S.coins<10?1:0,g:1,r:50,cat:"se",hid:1},
+ {id:"dup50",t:"Obsédé",d:"Avoir 50 exemplaires d'une même carte",v:()=>Math.max(0,...Object.values(S.own)),g:50,r:500,cat:"se",hid:1},
+ {id:"sell1d",t:"Liquidation",d:"Vendre 50 cartes en une journée",v:()=>S.mis.sell||0,g:50,r:300,cat:"se",hid:1}
 ];
 let achReady=false;
 function checkAch(){if(!achReady)return;let got=[];for(const a of ACH){if(S.ach[a.id])continue;if(a.v()>=a.g){S.ach[a.id]=Date.now();S.coins+=a.r;got.push(a)}}if(got.length){save();renderTop();got.forEach((a,i)=>setTimeout(()=>toast(`Succès « ${a.t} » · +${nf(a.r)} ◆`),i*1300))}}
@@ -3255,7 +3344,7 @@ function renderMis(){
     <div class="mhead"><div><div class="eye">Succès</div><h2>Succès <span class="cnt2 mono">${nGot}/${ACH.length}</span></h2></div>
       <div class="seg light" id="achSeg"><button data-f="all" aria-pressed="${ACHF==="all"}">Tous</button><button data-f="todo" aria-pressed="${ACHF==="todo"}">À faire</button><button data-f="done" aria-pressed="${ACHF==="done"}">Obtenus</button></div></div>
     <div class="achcats">${ACHC.map(([k,n])=>{const L=ACH.filter(a=>k==="all"||achCat(a.id)===k),g=L.filter(a=>S.ach[a.id]).length;return `<button data-k="${k}" aria-pressed="${ACHK===k}">${n}<span class="mono">${g}/${L.length}</span></button>`}).join("")}</div>
-    <div class="agrid">${list.length?"":`<p class="empty">Rien ici pour l'instant.</p>`}${list.map(a=>{const v=a.v(),ok=!!S.ach[a.id];const pc=Math.min(100,v/a.g*100);return `<div class="ach${ok?" ok":pc>=75?" near":""}"><span class="aic">${ico(ok?"trophy":"lock")}</span><div><b>${esc(a.t)}</b><p>${esc(a.d)}</p><div class="mbar"><i style="width:${Math.min(100,v/a.g*100)}%"></i></div><small class="mono">${nf(Math.min(v,a.g))}/${nf(a.g)} · +${nf(a.r)} ◆</small></div></div>`}).join("")}</div>
+    <div class="agrid">${list.length?"":`<p class="empty">Rien ici pour l'instant.</p>`}${list.map(a=>{const v=a.v(),ok=!!S.ach[a.id];const pc=Math.min(100,v/a.g*100);const hd=a.hid&&!ok;return `<div class="ach${ok?" ok":pc>=75&&!hd?" near":""}${hd?" hid":""}"><span class="aic">${ico(ok?"trophy":"lock")}</span><div><b>${hd?"Succès secret":esc(a.t)}</b><p>${hd?"??? Continue à jouer pour le découvrir.":esc(a.d)}</p><div class="mbar"><i style="width:${Math.min(100,v/a.g*100)}%"></i></div><small class="mono">${nf(Math.min(v,a.g))}/${nf(a.g)} · +${nf(a.r)} ◆</small></div></div>`}).join("")}</div>
   </section>`;
   const bs=$("#bStreak");if(bs)bs.onclick=claimStreak;const ba=$("#bAll");if(ba)ba.onclick=claimAll;
   $("#misBody").querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>claimMis(b.dataset.c));
@@ -3286,10 +3375,10 @@ function claimAll(){const s0=streakState();let g=0,n=0,extra=[];if(!s0.done){con
   save();renderAll();toast(`${n} récompense${n>1?"s":""} · +${nf(g)} ◆${extra.length?" · "+extra.join(" · "):""}`)}
 function claimMis(key,quiet){
   const i=key.indexOf(":"),sc=key.slice(0,i),k=key.slice(i+1);
-  if(sc==="alb"){const a=albumList().find(x=>x.n===k);if(!a||S.albums[k]||!a.pool.every(c=>S.own[c.id]))return;S.albums[k]=1;S.coins+=a.g;toast(`Album « ${k} » · +${a.g} ◆`)}
+  if(sc==="alb"){const a=albumList().find(x=>x.n===k);if(!a||S.albums[k]||!a.pool.every(c=>S.own[c.id]))return;S.albums[k]=1;track("album",1);S.coins+=a.g;toast(`Album « ${k} » · +${a.g} ◆`)}
   else{const L=sc==="d"?misD():misW(),st=sc==="d"?S.mis:S.wk;
-    if(k==="bonus"){if(st.bonus||!L.every(m=>st.claimed.includes(m.id)))return;st.bonus=true;if(sc==="d"){S.bons=(S.bons||0)+2;quiet||toast("+2 boosters bonus")}else{S.freeBox++;quiet||toast("Coffret offert ajouté en boutique")}}
-    else{const m=L.find(x=>x.id===k);if(!m||st.claimed.includes(k)||(st[m.k]||0)<m.goal)return;st.claimed.push(k);S.coins+=m.g;quiet||toast("+"+m.g+" ◆")}}
+    if(k==="bonus"){if(st.bonus||!L.every(m=>st.claimed.includes(m.id)))return;st.bonus=true;if(sc==="d"){S.bons=(S.bons||0)+2;quiet||toast("+2 boosters bonus")}else{S.freeBox++;S.st.wbon=(S.st.wbon||0)+1;quiet||toast("Coffret offert ajouté en boutique")}}
+    else{const m=L.find(x=>x.id===k);if(!m||st.claimed.includes(k)||(st[m.k]||0)<m.goal)return;st.claimed.push(k);S.coins+=m.g;S.st.misc=(S.st.misc||0)+1;quiet||toast("+"+m.g+" ◆")}}
   if(!quiet){save();renderAll()}
 }
 let popOpen=false;
