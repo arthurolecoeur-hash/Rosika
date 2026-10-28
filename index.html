@@ -4259,7 +4259,7 @@ const GEMSVG='<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient 
 const DSC='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.6 5.3A16.6 16.6 0 0 0 15.5 4l-.5 1a15.3 15.3 0 0 0-6 0l-.5-1a16.6 16.6 0 0 0-4.1 1.3C1.8 9.2 1.1 13 1.4 16.7a16.7 16.7 0 0 0 5 2.5l1.1-1.7c-.6-.2-1.2-.5-1.7-.8l.4-.3a11.9 11.9 0 0 0 11.6 0l.4.3c-.5.3-1.1.6-1.7.8l1.1 1.7a16.6 16.6 0 0 0 5-2.5c.4-4.3-.6-8-2.9-11.4zM8.7 14.5c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2zm6.6 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2z"/></svg>';
 
 const SBCFG={url:"https://lqgmwsqvbqadblkhclez.supabase.co",key:"sb_publishable_6_nWrHxsEhCTqFZg3yrHXA_HAVh75kG"};
-var SBX=(()=>{let checked=false,sb=null,user=null,dname="",avatar="",st="off",tm=0,busy=false,ME={admin:false,banned:false,reason:""};const ready=()=>!!(SBCFG.url&&SBCFG.key)&&!window.claude;
+var SBX=(()=>{let synced=false,syncing=false,syncUid=null,checked=false,sb=null,user=null,dname="",avatar="",st="off",tm=0,busy=false,ME={admin:false,banned:false,reason:""};const ready=()=>!!(SBCFG.url&&SBCFG.key)&&!window.claude;
   const okKey=id=>"rosika-mfa-"+id;
   function load(){return new Promise((res,rej)=>{if(window.supabase)return res();const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.111.0/dist/umd/supabase.js";s.onload=res;s.onerror=rej;document.head.append(s)})}
   async function checkMfa(session){const id=session.user.id;try{if(localStorage.getItem(okKey(id))==="1")return true}catch(_){}
@@ -4268,11 +4268,19 @@ var SBX=(()=>{let checked=false,sb=null,user=null,dname="",avatar="",st="off",tm
       if(u.mfa_enabled){try{localStorage.setItem(okKey(id),"1")}catch(_){}return true}return false}catch(_){return false}}
   async function onSession(session){if(!session){user=null;st="off";paint();return}
     user=session.user;const md=user.user_metadata||{};dname=(md.custom_claims&&md.custom_claims.global_name)||md.full_name||md.name||"Joueur";avatar=md.avatar_url||"";
-    st="sync";paint();
+    if(syncUid===user.id&&(synced||syncing)){paint();return}
+    syncUid=user.id;synced=false;syncing=true;st="sync";paint();
     try{const {data,error}=await sb.from("saves").select("data,t").eq("user_id",user.id).maybeSingle();if(error)throw error;
-      if(data&&(data.t||0)>(S.t||0)){S=Object.assign(S,data.data);for(const k of["own","since","wish"])for(const id in S[k]||{})if(!BY[id])delete S[k][id];try{localStorage.setItem(KEY,JSON.stringify(S))}catch(_){}renderAll();toast("Progression récupérée depuis ton compte Discord")}
-      else await push();
-      st="ok"}catch(e){st="err"}paint();try{goOnline()}catch(_){}}
+      const srv=data&&data.data&&typeof data.data==="object"?data.data:null;
+      const score=x=>{x=x||{};const t=x.st||{};return (t.open||0)*10+Object.keys(x.own||{}).length+(x.opens||0)};
+      const fresh=()=>({st:{},ach:{},albums:{},freeBox:0,coins:300,stock:MAXS,stockT:Date.now(),own:{},since:{},wish:{},daily:"",opens:0,sinceLeg:0,pityPk:1,mis:{d:"",open:0,sell:0,img:0,claimed:[]},streak:{last:"",n:0}});
+      const replace=v=>{for(const k of Object.keys(S))delete S[k];Object.assign(S,fresh(),v);for(const k of["own","since","wish"])for(const id in S[k]||{})if(!BY[id])delete S[k][id];S.acct=user.id;try{ensureState()}catch(_){}try{localStorage.setItem(KEY,JSON.stringify(S))}catch(_){}};
+      let useSrv=false;
+      if(srv){if(S.acct===user.id)useSrv=(data.t||0)>(S.t||0);else if(S.acct&&S.acct!==user.id)useSrv=true;else useSrv=score(srv)>=score(S)}
+      if(useSrv){replace(srv);renderAll();toast("Progression récupérée depuis ton compte Discord")}
+      else{if(!srv&&S.acct&&S.acct!==user.id){replace({});renderAll()}
+        S.acct=user.id;synced=true;await push()}
+      synced=true;st="ok"}catch(e){st="err"}syncing=false;paint();try{goOnline()}catch(_){}}
 
   function mkDB(uid){
     const id36=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
@@ -4308,7 +4316,7 @@ var SBX=(()=>{let checked=false,sb=null,user=null,dname="",avatar="",st="off",tm
       if(!txt||hid===stamp){bar.hidden=true;return}
       bar.innerHTML=`<div class="in"><span class="annic">📣</span><p>${esc(txt)}</p><button class="annx" aria-label="Masquer">×</button></div>`;bar.hidden=false;
       bar.querySelector(".annx").onclick=()=>{bar.hidden=true;try{localStorage.setItem("rosika-ann-x",stamp)}catch(_){}}}catch(_){}}
-  async function push(){if(!sb||!user)return;if(busy){clearTimeout(tm);tm=setTimeout(push,1500);return}busy=true;
+  async function push(){if(!sb||!user||!synced)return;if(busy){clearTimeout(tm);tm=setTimeout(push,1500);return}busy=true;
     try{const {error}=await sb.from("saves").upsert({user_id:user.id,data:S,t:S.t||Date.now(),discord_name:dname,updated_at:new Date().toISOString()});if(error)throw error;st="ok"}catch(e){st="err"}busy=false;paint()}
   async function init(){if(!ready())return;try{await load();sb=window.supabase.createClient(SBCFG.url,SBCFG.key,{auth:{flowType:"pkce",detectSessionInUrl:true,persistSession:true}});
       announce();setInterval(announce,5*60e3);
