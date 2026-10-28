@@ -2629,13 +2629,14 @@ function rollGod(P){
 function rollPack(P){
   if(Math.random()<GOD_RATE||S.forceGod){S.forceGod=false;return rollGod(P)}
   const pool=P.pool(),w=P.w||BASEW,gold=(S.opens+1)%PITY_GOLD===0||S.forceGold,out=[];if(S.forceGold)S.forceGold=false;
+  const pity=(S.sinceLeg||0)+1>=PITY_MYT;
   for(let i=0;i<P.k;i++){
     let min=gold?"r":null;
-    if(i===P.k-1){if(P.gE)min="e";else if(P.gR&&!min)min="r"}
-    if(S.sinceLeg+1>=PITY_MYT)min="m";
+    if(i===P.k-1){if(P.gE)min="e";else if(P.gR&&!min)min="r";if(pity)min="m"}
     const p=poolBy(pool,pickR(w,min)),c=p[Math.floor(Math.random()*p.length)];
-    S.sinceLeg=c.r==="m"||c.r==="d"?0:S.sinceLeg+1;out.push(c);
+    out.push(c);
   }
+  S.sinceLeg=out.some(c=>c.r==="m"||c.r==="d")?0:(S.sinceLeg||0)+1;
   S.opens++;return{cards:out,gold};
 }
 function slotDist(P,last){
@@ -2830,7 +2831,7 @@ function renderSide(){
   <div class="kv">
     <div><b>${P.k}</b><small>cartes par booster</small></div>
     <div><b style="color:${P.gE?"var(--e)":"var(--r)"}">${gtxt}</b><small>ou mieux, garantie</small></div>
-    <div><b style="color:var(--hot)">${PITY_MYT-S.sinceLeg}</b><small>avant Mythique sûre</small></div>
+    <div><b style="color:var(--hot)">${PITY_MYT-S.sinceLeg}</b><small>boosters avant Mythique sûre</small></div>
     <div><b style="color:var(--l)">${PITY_GOLD-(S.opens%PITY_GOLD)}</b><small>avant le doré</small></div>
   </div>
   <button class="seeall" id="bSee"><span class="stack"><i style="background:var(--r)"></i><i style="background:var(--e)"></i><i style="background:var(--l)"></i><i style="background:var(--m)"></i></span>Voir les ${pool.length} persos · ${have} à toi</button>
@@ -3022,7 +3023,7 @@ function stagePack(){
   <div class="oph">Glisse le doigt le long du haut pour déchirer · ou touche « Ouvrir »</div>
   <div class="mult">${multBtns(P)}</div>
   <button class="opgo" id="opGo" ${c.ok?"":"disabled"}>Ouvrir <small>${esc(c.txt)}</small></button>
-  <div class="pity">Mythique garantie dans ${left} carte${left>1?"s":""} au plus</div>`;
+  <div class="pity">Mythique garantie dans ${left} booster${left>1?"s":""} au plus</div>`;
   $("#opStage").querySelectorAll(".mult button").forEach(b=>b.onclick=()=>{OP.n=+b.dataset.n;S.lastN=OP.n;stagePack()});
   $("#opGo").onclick=()=>{if(canTear())autoTear()};
   const k=$("#opk");let drag=null;
@@ -3222,7 +3223,7 @@ function renderChips(){renderEv();
   <div class="chip"><span class="ic" style="background:#10301e;color:#4fd18b">${ico("target")}</span><b>${md}/${misD().length}</b> missions du jour</div>
   <div class="chip"><span class="ic" style="background:#221a3d;color:var(--e)">${ico("flame")}</span><b>J${S.streak.n}/7</b> série de connexion</div>
   <div class="chip"><span class="ic" style="background:#3a300a;color:var(--l)">${ico("bolt")}</span><b>${PITY_GOLD-(S.opens%PITY_GOLD)}</b> avant le booster doré</div>
-  <div class="chip"><span class="ic" style="background:#3a1410;color:var(--hot)">${ico("crown")}</span><b>${PITY_MYT-S.sinceLeg}</b> avant Mythique sûre</div>`;
+  <div class="chip"><span class="ic" style="background:#3a1410;color:var(--hot)">${ico("crown")}</span><b>${PITY_MYT-S.sinceLeg}</b> boosters avant Mythique sûre</div>`;
 }
 function renderTop(){if(!document.querySelector("[data-snd]"))paintSnd();
   $("#nStock").textContent=S.stock+"/"+MAXS;$("#nCoins").textContent=nf(S.coins);
@@ -3357,6 +3358,7 @@ const msToMonday=()=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate
 const dur=ms=>{const m=Math.max(0,Math.floor(ms/6e4)),j=Math.floor(m/1440),h=Math.floor(m%1440/60),mi=m%60;return j?`${j} j ${h} h`:`${h} h ${String(mi).padStart(2,"0")} min`};
 const PURGE1=["mv:Scarlet Witch (Wanda Maximoff)","mv:Doctor Strange (Stephen Strange)","mv:Venom (Symbiote)"];
 function ensureState(){
+  if(!S.pityPk){S.pityPk=1;S.sinceLeg=Math.floor((S.sinceLeg||0)/5)}
   if(!S.purge1){S.purge1=1;for(const id of PURGE1)delete S.own[id]}
   S.st=Object.assign({opens:0,sold:0,fiche:0,img:0,divine:0,streak7:0,logins:0},S.st||{});
   S.ach=S.ach||{};S.albums=S.albums||{};S.freeBox=S.freeBox||0;S.freePre=S.freePre||0;S.bons=S.bons||0;S.pv=S.pv||{};S.codes=S.codes||{};if(S.gift10===1&&!S.gift10x){S.gift10x=1;S.bons=Math.max(0,S.bons-10)}else if(!S.gift10)S.gift10=2;S.forceGold=!!S.forceGold;
