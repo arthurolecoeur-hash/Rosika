@@ -3785,6 +3785,12 @@ const MK=(()=>{
   const now=()=>Date.now(),H=36e5;
   const base=r=>({c:12,u:25,r:60,e:220,l:800,m:3000,d:15000})[r];
   const ownFree=id=>(S.own[id]||0)-1-(S.lock&&S.lock[id]||0);
+  const ownAvail=id=>(S.own[id]||0)-(S.lock&&S.lock[id]||0);
+  const GLIM=5000,DMIN=15000;
+  const gLeft=()=>{if(!S.gday||S.gday.d!==today())S.gday={d:today(),n:0};return Math.max(0,GLIM-S.gday.n)};
+  const gAdd=n=>{gLeft();S.gday.n=Math.max(0,S.gday.n+n)};
+  const gBack=(o,n)=>{if(n>0&&o&&o.t&&ymd(new Date(o.t))===today())gAdd(-n)};
+  const minP=c=>c&&c.r==="d"?DMIN:1;
   const nm=id=>id===me?"Toi":(NAMES[id]||"Joueur");
   async function names(ids){ids=[...new Set(ids.filter(x=>x&&x!==me&&!x.startsWith("npc")&&NAMES[x]===undefined))];if(!ids.length||!user)return;try{const ps=await user.profiles(ids);for(const i of ids)NAMES[i]=(ps[i]&&ps[i].name)||"Joueur"}catch(_){}}
   /* marchands PNJ : renouvelés chaque jour, déterministes */
@@ -3833,7 +3839,7 @@ const MK=(()=>{
       if(o.v===2&&o.from===me){
         if(o.status==="done"&&!o.settled&&!S.orel[o.id]){for(const id of o.give||[]){unlock(id);if(S.own[id]>0){S.own[id]--;if(!S.own[id])delete S.own[id]}}for(const id of o.want||[])get(id);S.coins+=(o.wantG|0);delete S.gesc[o.id];S.orel[o.id]=1;
           db.doc("offers/"+o.id).update({settled:true}).catch(()=>{});ch=true;toast("Échange accepté par "+nm(o.to)+" !");continue}
-        if((o.status==="refused"||o.status==="cancel"||(o.status==="open"&&o.exp&&o.exp<now()))&&!S.orel[o.id]){for(const id of o.give||[])unlock(id);S.coins+=(S.gesc[o.id]|0);delete S.gesc[o.id];S.orel[o.id]=1;ch=true;
+        if((o.status==="refused"||o.status==="cancel"||(o.status==="open"&&o.exp&&o.exp<now()))&&!S.orel[o.id]){for(const id of o.give||[])unlock(id);S.coins+=(S.gesc[o.id]|0);gBack(o,S.gesc[o.id]|0);delete S.gesc[o.id];S.orel[o.id]=1;ch=true;
           if(o.status==="refused")toast(nm(o.to)+" a refusé ton échange · tout t'est rendu")}
         continue}
       if(o.v===2)continue;
@@ -3849,44 +3855,46 @@ const MK=(()=>{
   async function buy(x){
     if(isGuest()&&guestLeft()<=0)return guestGate();
     if(x.npc){if(S.coins<x.price)return toast("Pas assez de ◆");track("mkbuy",1);S.coins-=x.price;track("spend",x.price);get(x.card);S.npcBuy=S.npcBuy&&S.npcBuy.d===today()?S.npcBuy:{d:today(),ids:[]};S.npcBuy.ids.push(x.id);save();renderAll();toast(`${BY[x.card].s} acheté`);return paint()}
-    if(!db)return;if(x.seller===me)return;if(S.coins<x.price)return toast("Pas assez de ◆");
+    if(!db)return;if(x.seller===me)return;if(x.kind==="fixed"&&x.price<minP(BY[x.card]))return toast("Annonce invalide");if(S.coins<x.price)return toast("Pas assez de ◆");
     if(!await lease("listings/"+x.id))return toast("Quelqu'un est en train d'acheter, réessaie");
     const s=await db.doc("listings/"+x.id).get();if(!s.exists||s.data().status!=="open")return toast("Déjà vendu");
     try{await db.doc("listings/"+x.id).update({status:"sold",buyer:me,st:now()})}catch(_){return toast("Trop tard, la carte vient d'être vendue")}track("mkbuy",1);S.coins-=x.price;track("spend",x.price);get(x.card);save();renderAll();toast(`${BY[x.card].s} acheté · −${x.price} ◆`)}
   async function bid(x,amt){
     if(isGuest()&&guestLeft()<=0)return guestGate();
-    const min=Math.max(x.bid+1,Math.ceil(x.bid*1.05));if(!(amt>=min))return toast("Mise minimale : "+min+" ◆");
+    const min=Math.max(x.bid+1,Math.ceil(x.bid*1.05),x.npc?0:minP(BY[x.card]));if(!(amt>=min))return toast("Mise minimale : "+nf(min)+" ◆");
     const prev=(S.bids&&S.bids[x.id])||0;if(S.coins+prev<amt)return toast("Pas assez de ◆");
     if(x.npc){S.coins-=amt-prev;S.bids=S.bids||{};delete S.bids[x.id];get(x.card);S.npcBuy=S.npcBuy&&S.npcBuy.d===today()?S.npcBuy:{d:today(),ids:[]};S.npcBuy.ids.push(x.id);save();renderAll();toast(`Le marchand accepte : ${BY[x.card].s} est à toi`);return paint()}
     if(!await lease("listings/"+x.id))return toast("Mise en cours d'un autre joueur, réessaie");
-    const s=await db.doc("listings/"+x.id).get(),d=s.data();if(!s.exists||d.status!=="open"||d.ends<now())return toast("Enchère terminée");if(amt<Math.max(d.bid+1,Math.ceil(d.bid*1.05)))return toast("Quelqu'un a misé plus");
+    const s=await db.doc("listings/"+x.id).get(),d=s.data();if(!s.exists||d.status!=="open"||d.ends<now())return toast("Enchère terminée");if(amt<Math.max(d.bid+1,Math.ceil(d.bid*1.05),minP(BY[x.card])))return toast("Quelqu'un a misé plus");
     const ends=d.ends-now()<2*60e3?now()+2*60e3:d.ends;
     try{await db.doc("listings/"+x.id).update({bid:amt,bidder:me,ends,nb:(d.nb||0)+1})}catch(_){return toast("Mise refusée, l'enchère a changé")}S.bids=S.bids||{};S.coins-=amt-prev;S.bids[x.id]=amt;save();renderAll();toast("Mise placée : "+amt+" ◆")}
-  async function list(id,kind,price,hours){track("mklist",1);if(!db)return toast("Connecte-toi avec Discord (Profil) pour vendre aux joueurs");if(ownFree(id)<1)return toast("Garde au moins un exemplaire");
+  async function list(id,kind,price,hours){if(price<minP(BY[id]))return toast("Une carte Divine coûte au moins "+nf(DMIN)+" ◆");track("mklist",1);if(!db)return toast("Connecte-toi avec Discord (Profil) pour vendre aux joueurs");if(ownFree(id)<1)return toast("Garde au moins un exemplaire");
     lock(id);save();const d={seller:me,card:id,kind,price:kind==="fixed"?price:0,bid:kind==="auction"?price:0,ends:kind==="auction"?now()+hours*H:0,status:"open",t:now()};
     try{await db.collection("listings").add(d);toast(kind==="fixed"?"Mise en vente":"Enchère lancée");renderAll()}catch(e){unlock(id);save();toast("Échec de la mise en vente")}}
   async function cancel(x){if(x.bidder)return toast("Impossible : il y a déjà une mise");await db.doc("listings/"+x.id).update({status:"cancel"});unlock(x.card);save();renderAll();toast("Annonce retirée")}
-  async function offer(giveId,want,to){if(ownFree(giveId)<1)return toast("Garde au moins un exemplaire");lock(giveId);save();
+  async function offer(giveId,want,to){if(ownAvail(giveId)<1)return toast("Cette carte est déjà engagée ailleurs");lock(giveId);save();
     try{await db.collection("offers").add({from:me,give:giveId,want,to:to||null,status:"open",t:now(),exp:now()+72*H});toast(to?"Proposition envoyée à "+nm(to):"Offre publiée");renderAll()}catch(e){unlock(giveId);save();toast("Échec")}}
-  async function accept(o,gotId){track("trade",1);if(ownFree(gotId)<1)return toast("Tu n'as pas ce perso en double");
+  async function accept(o,gotId){if(ownAvail(gotId)<1)return toast("Tu n'as pas ce perso");track("trade",1);
     if(!await lease("offers/"+o.id))return toast("Échange en cours, réessaie");const s=await db.doc("offers/"+o.id).get();if(!s.exists||s.data().status!=="open")return toast("Offre déjà prise");
     try{await db.doc("offers/"+o.id).update({status:"done",taker:me,got:gotId,dt:now()})}catch(_){return toast("Échange impossible, l'offre a changé")}give(gotId);get(o.give);save();renderAll();toast(`Échange réussi : ${BY[o.give].s} rejoint ta collection`)}
   async function cancelOffer(o){await db.doc("offers/"+o.id).update({status:"cancel"});
-    if(o.v===2){S.gesc=S.gesc||{};S.orel=S.orel||{};if(!S.orel[o.id]){for(const id of o.give||[])unlock(id);S.coins+=(S.gesc[o.id]|0);delete S.gesc[o.id];S.orel[o.id]=1}}else unlock(o.give);
+    if(o.v===2){S.gesc=S.gesc||{};S.orel=S.orel||{};if(!S.orel[o.id]){for(const id of o.give||[])unlock(id);S.coins+=(S.gesc[o.id]|0);gBack(o,S.gesc[o.id]|0);delete S.gesc[o.id];S.orel[o.id]=1}}else unlock(o.give);
     save();renderAll();toast("Proposition retirée")}
   async function offer2(to,give,giveG,want,wantG){if(!db)return toast("Connecte-toi pour échanger");
-    for(const id of give)if(ownFree(id)<1)return toast("Tu dois garder au moins un exemplaire de "+BY[id].s);
+    for(const id of give)if(ownAvail(id)<1)return toast(BY[id].s+" est déjà engagée ailleurs");
     if(giveG>S.coins)return toast("Pas assez de ◆");
-    give.forEach(lock);S.coins-=giveG;save();
+    if(giveG>gLeft())return toast("Limite : "+nf(GLIM)+" ◆ donnés par jour (reste "+nf(gLeft())+" ◆)");
+    give.forEach(lock);S.coins-=giveG;gAdd(giveG);save();
     try{const r=await db.collection("offers").add({v:2,from:me,to,give,giveG,want,wantG,status:"open",t:now(),exp:now()+72*H});S.gesc=S.gesc||{};S.gesc[r.id]=giveG;save();renderAll();toast("Proposition envoyée à "+nm(to));return true}
-    catch(e){give.forEach(unlock);S.coins+=giveG;save();toast("Échec de l'envoi");return false}}
+    catch(e){give.forEach(unlock);S.coins+=giveG;gAdd(-giveG);save();toast("Échec de l'envoi");return false}}
   async function accept2(o){if(o.to!==me)return;
-    for(const id of o.want||[])if(ownFree(id)<1)return toast("Il te faut "+BY[id].s+" en double");
+    for(const id of o.want||[])if(ownAvail(id)<1)return toast("Il te faut "+BY[id].s);
     if((o.wantG|0)>S.coins)return toast("Pas assez de ◆");
+    if((o.wantG|0)>gLeft())return toast("Limite : "+nf(GLIM)+" ◆ donnés par jour (reste "+nf(gLeft())+" ◆)");
     if(!await lease("offers/"+o.id))return toast("Échange en cours, réessaie");
     const sn=await db.doc("offers/"+o.id).get();if(!sn.exists||sn.data().status!=="open")return toast("Proposition déjà traitée");
     try{await db.doc("offers/"+o.id).update({status:"done",taker:me,got:(o.want&&o.want[0])||"",dt:now()})}catch(_){return toast("Échange impossible, la proposition a changé")}
-    track("trade",1);for(const id of o.want||[])give(id);S.coins-=(o.wantG|0);for(const id of o.give||[])get(id);S.coins+=(o.giveG|0);save();renderAll();toast("Échange conclu avec "+nm(o.from)+" !")}
+    track("trade",1);for(const id of o.want||[])give(id);S.coins-=(o.wantG|0);gAdd(o.wantG|0);for(const id of o.give||[])get(id);S.coins+=(o.giveG|0);save();renderAll();toast("Échange conclu avec "+nm(o.from)+" !")}
   /* fenêtre « Proposer un échange » */
   function tradeDlg(to){if(!db)return toast("Connecte-toi pour échanger");
     const T={side:"me",give:[],want:[],gG:0,wG:0,q:"",rf:"all",dup:false,miss:false};
@@ -3895,27 +3903,27 @@ const MK=(()=>{
     const list=()=>{let ids;if(T.side==="me")ids=Object.keys(S.own).filter(id=>BY[id]&&S.own[id]>0);else ids=CARDS.filter(c=>theirOwn(to,c.id)).map(c=>c.id);
       const RK={d:0,m:1,l:2,e:3,r:4,u:5,c:6},q=T.q.trim().toLowerCase();
       return ids.filter(id=>{const c=BY[id];if(T.rf!=="all"&&c.r!==T.rf)return false;if(q&&!c.n.toLowerCase().includes(q)&&!FR[c.f].toLowerCase().includes(q))return false;
-        if(T.dup&&!(T.side==="me"?ownFree(id)>=1:theirDup(to,id)))return false;if(T.miss&&(T.side==="me"?theirOwn(to,id):!!S.own[id]))return false;return true})
+        if(T.dup&&!(T.side==="me"?ownFree(id)>=1:theirDup(to,id)))return false;if(T.side==="me"&&ownAvail(id)<1)return false;if(T.miss&&(T.side==="me"?theirOwn(to,id):!!S.own[id]))return false;return true})
         .map(id=>[id,(T.side==="me"?ownFree(id)>=1:theirDup(to,id))?0:1]).sort((a,b)=>a[1]-b[1]||RK[BY[a[0]].r]-RK[BY[b[0]].r]||BY[a[0]].n.localeCompare(BY[b[0]].n)).slice(0,150).map(x=>x[0])};
-    const tile=id=>{const c=BY[id],mine=T.side==="me",free=mine?ownFree(id):(theirDup(to,id)?1:0),sel=(mine?T.give:T.want).includes(id);
+    const tile=id=>{const c=BY[id],mine=T.side==="me",free=mine?ownAvail(id):1,dup=mine?ownFree(id)>=1:theirDup(to,id),sel=(mine?T.give:T.want).includes(id);
       const tag=mine?(theirOwn(to,id)?"":`<span class="trtag">Il lui manque</span>`):(S.own[id]?"":`<span class="trtag">Il te manque</span>`);
-      return `<button class="trt${sel?" on":""}${free<1?" off":""}" data-trp="${esc(id)}" ${free<1?"disabled":""}><span class="trc" style="--rc:var(--${c.r})">${artHTML(c)||`<em>${esc(c.s.slice(0,2))}</em>`}<i>${c.r.toUpperCase()}</i></span><b>${esc(c.s)}</b>${tag}<small class="mono">${nf(cval(c))} ◆</small><small>${free<1?(mine?"Ton seul exemplaire":"Pas en double"):(mine?"×"+free+" dispo":"En double")}</small></button>`};
+      return `<button class="trt${sel?" on":""}${free<1?" off":""}" data-trp="${esc(id)}" ${free<1?"disabled":""}><span class="trc" style="--rc:var(--${c.r})">${artHTML(c)||`<em>${esc(c.s.slice(0,2))}</em>`}<i>${c.r.toUpperCase()}</i></span><b>${esc(c.s)}</b>${tag}<small class="mono">${nf(cval(c))} ◆</small><small>${dup?(mine?"×"+free+" dispo":"En double"):(mine?"Ton seul exemplaire":"Son seul exemplaire")}</small></button>`};
     const chip=id=>`<button class="trch" data-trx="${esc(id)}" title="Retirer ${esc(BY[id].s)}">${artHTML(BY[id],1)||""}<span>${esc(BY[id].s)}</span><i>×</i></button>`;
-    const ok=()=>(T.give.length||T.gG>0)&&(T.want.length||T.wG>0)&&T.gG<=S.coins;
+    const ok=()=>(T.give.length||T.gG>0)&&(T.want.length||T.wG>0)&&T.gG<=S.coins&&T.gG<=gLeft()&&T.wG<=GLIM;
     function draw(){const who=esc(nm(to)),L=list(),RR=[["all","Toutes"],["d","Divin"],["m","Mythique"],["l","Légendaire"],["e","Épique"],["r","Rare"],["u","Peu commune"],["c","Commune"]];
       d.innerHTML=`<div class="trbox" role="dialog" aria-label="Proposer un échange"><div class="trh"><h3>Proposer un échange à ${who}</h3><button class="xbtn" data-trc="1" aria-label="Fermer">${ico("x")}</button></div>
         <div class="trbody"><div class="trsides">
           <div class="trside"><h4>Tu donnes</h4><div class="trsel">${T.give.map(chip).join("")||`<small>Choisis tes cartes ci-dessous, ou ajoute des gemmes.</small>`}</div>
-            <label class="trg">Gemmes<input type="number" min="0" step="10" data-trg="g" value="${T.gG||""}" placeholder="0"><span class="gem">◆</span></label><small class="trmax">Tu as ${nf(S.coins)} ◆</small></div>
+            <label class="trg">Gemmes<input type="number" min="0" step="10" data-trg="g" value="${T.gG||""}" placeholder="0"><span class="gem">◆</span></label><small class="trmax">Tu as ${nf(S.coins)} ◆ · max ${nf(gLeft())} ◆ donnés aujourd'hui</small></div>
           <div class="trarr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8h15l-4-4M20 16H5l4 4"/></svg></div>
           <div class="trside"><h4>Tu reçois</h4><div class="trsel">${T.want.map(chip).join("")||`<small>Choisis ses cartes ci-dessous, ou demande des gemmes.</small>`}</div>
-            <label class="trg">Gemmes<input type="number" min="0" step="10" data-trg="w" value="${T.wG||""}" placeholder="0"><span class="gem">◆</span></label></div></div>
+            <label class="trg">Gemmes<input type="number" min="0" step="10" data-trg="w" value="${T.wG||""}" placeholder="0"><span class="gem">◆</span></label><small class="trmax">Max ${nf(GLIM)} ◆ par jour</small></div></div>
           <div class="trtabs"><button data-trs="me" aria-pressed="${T.side==="me"}">Mes cartes</button><button data-trs="them" aria-pressed="${T.side==="them"}">Cartes de ${who}</button></div>
           <div class="trf"><input class="search" data-trq="1" placeholder="Chercher une carte…" value="${esc(T.q)}"><button class="rchip" data-trd="1" aria-pressed="${T.dup}">${T.side==="me"?"Mes doubles":"Ses doubles"}</button><button class="rchip" data-trm="1" aria-pressed="${T.miss}">${T.side==="me"?"Il lui manque":"Il me manque"}</button></div>
           <div class="trr">${RR.map(([k,n])=>`<button class="rchip ${k}" data-trr="${k}" aria-pressed="${T.rf===k}">${k==="all"?"":`<i class="dotr ${k}"></i>`}${n}</button>`).join("")}</div>
           ${T.side==="them"&&!(PL[to]&&PL[to].ob)?`<div class="mkempty">${who} doit ouvrir le jeu une fois (avec la nouvelle version) pour que sa collection apparaisse ici.</div>`:""}
           <div class="trgrid">${L.map(tile).join("")||`<div class="mkempty">Aucune carte ici.</div>`}</div></div>
-        <div class="trfoot"><small>${ok()?`Tu donnes ${T.give.length} carte${T.give.length>1?"s":""}${T.gG?" + "+nf(T.gG)+" ◆":""} · tu reçois ${T.want.length} carte${T.want.length>1?"s":""}${T.wG?" + "+nf(T.wG)+" ◆":""}`:T.gG>S.coins?"Tu n'as pas assez de gemmes":"Choisis ce que tu donnes et ce que tu reçois : des cartes ou des gemmes."}</small>
+        <div class="trfoot"><small>${ok()?`Tu donnes ${T.give.length} carte${T.give.length>1?"s":""}${T.gG?" + "+nf(T.gG)+" ◆":""} · tu reçois ${T.want.length} carte${T.want.length>1?"s":""}${T.wG?" + "+nf(T.wG)+" ◆":""}`:T.gG>S.coins?"Tu n'as pas assez de gemmes":T.gG>gLeft()?"Limite de "+nf(GLIM)+" ◆ donnés par jour : il te reste "+nf(gLeft())+" ◆":T.wG>GLIM?"Tu ne peux pas demander plus de "+nf(GLIM)+" ◆":"Choisis ce que tu donnes et ce que tu reçois : des cartes ou des gemmes."}</small>
           <button class="sec" data-trc="1">Annuler</button><button class="cta" data-trok="1" ${ok()?"":"disabled"}>Envoyer la proposition</button></div></div>`;
       d.hidden=false;document.body.classList.add("arlock")}
     const close=()=>{d.hidden=true;document.body.classList.remove("arlock")};
@@ -3930,7 +3938,7 @@ const MK=(()=>{
       if(b.dataset.trok){if(!ok())return;b.disabled=true;if(await offer2(to,T.give.slice(),T.gG,T.want.slice(),T.wG)){close();TAB="trade";paint()}else b.disabled=false}};
     let qt2;d.oninput=e=>{const t=e.target;
       if(t.dataset.trq){T.q=t.value;clearTimeout(qt2);qt2=setTimeout(()=>{draw();const n=d.querySelector("[data-trq]");n.focus();n.setSelectionRange(n.value.length,n.value.length)},200)}
-      if(t.dataset.trg){const v=Math.max(0,Math.min(10000000,Math.floor(+t.value||0)));if(t.dataset.trg==="g")T.gG=v;else T.wG=v;
+      if(t.dataset.trg){const v=Math.max(0,Math.min(GLIM,Math.floor(+t.value||0)));if(t.dataset.trg==="g")T.gG=v;else T.wG=v;
         draw();const n=d.querySelector(`[data-trg="${t.dataset.trg}"]`);n.focus()}};
     draw()}
   async function refuse(o){try{await db.doc("offers/"+o.id).update({status:"refused"})}catch(_){return toast("Offre déjà traitée")}toast("Proposition refusée")}
@@ -3954,14 +3962,14 @@ const MK=(()=>{
     <label>Tri <select id="mkS">${[["end","Fin imminente"],["new","Plus récentes"],["lo","Prix croissant"],["hi","Prix décroissant"],["rar","Rareté"]].map(([k,t])=>`<option value="${k}" ${SORT===k?"selected":""}>${t}</option>`).join("")}</select></label>
     <button class="rchip" id="mkMiss" aria-pressed="${ONLYMISS}">Que je n'ai pas</button><button class="rchip" id="mkWish" aria-pressed="${ONLYWISH}">♥ Que je cherche</button></div></div>`}
   function sorted(a){const RK={c:0,u:1,r:2,e:3,l:4,m:5,d:6};return a.sort((x,y)=>SORT==="lo"?priceOf(x)-priceOf(y):SORT==="hi"?priceOf(y)-priceOf(x):SORT==="rar"?RK[BY[y.card].r]-RK[BY[x.card].r]:SORT==="new"?(y.t||0)-(x.t||0):((x.ends||9e15)-(y.ends||9e15)))}
-  function lcard(x){const c=BY[x.card],mine=x.seller===me,auc=x.kind==="auction",lead=auc&&x.bidder===me,min=auc?Math.max(x.bid+1,Math.ceil(x.bid*1.05)):0;
+  function lcard(x){const c=BY[x.card],mine=x.seller===me,auc=x.kind==="auction",lead=auc&&x.bidder===me,min=auc?Math.max(x.bid+1,Math.ceil(x.bid*1.05),x.npc?0:minP(c)):0;
     return `<div class="mkc"><button class="mkz" data-z="${esc(c.id)}">${cardHTML(c,{noWish:true})}</button>
     <div class="mki"><div class="mks">${x.npc?`<span class="npc">Marchand</span>`:`par ${esc(nm(x.seller))}`}${S.own[c.id]?"":` · <b style="color:var(--hot)">Il te manque</b>`}</div>
     ${auc?`<div class="mkp"><b>${nf(x.bid)} ◆</b><small>${x.bidder?(lead?"tu mènes":"mise de "+esc(nm(x.bidder))):"mise de départ"} · ${left(x.ends-now())}</small></div>
       ${mine?`<span class="mkm">Ton enchère</span>`:`<div class="mkb"><input type="number" min="${min}" value="${min}" data-bi="${x.id}"><button class="mkgo" data-bid="${x.id}" ${lead?"disabled":""}>Miser</button></div>`}`
     :`<div class="mkp"><b>${nf(x.price)} ◆</b><small>achat immédiat</small></div>${mine?`<button class="mkgo ghost2" data-cx="${x.id}">Retirer</button>`:`<button class="mkgo" data-buy="${x.id}" ${S.coins<x.price?"disabled":""}>Acheter</button>`}`}
     </div></div>`}
-  const all=()=>[...npc().filter(x=>x.status==="open"),...Object.values(L).filter(x=>x.status==="open"&&!(x.kind==="auction"&&x.ends<now()))];
+  const all=()=>[...npc().filter(x=>x.status==="open"),...Object.values(L).filter(x=>x.status==="open"&&!(x.kind==="auction"&&x.ends<now())&&!(x.kind==="fixed"&&x.price<minP(BY[x.card])))];
   function vBuy(auc){const a=sorted(filt(all().filter(x=>auc?x.kind==="auction":x.kind==="fixed")));
     return `<p class="mkh">${auc?"Une mise dans les 2 dernières minutes prolonge l'enchère de 2 minutes. Ta mise est bloquée et remboursée si on te dépasse.":"Les marchands renouvellent leur stock chaque jour. Les annonces des joueurs apparaissent en direct."}</p>${filters()}<div class="mkn mono">${nf(a.length)} annonce${a.length>1?"s":""}</div>
     <div class="mkg">${a.slice(0,lim).map(lcard).join("")||`<div class="mkempty">Aucune annonce avec ces filtres.</div>`}</div>${a.length>lim?`<button class="sec mkmore" id="mkMore">Voir plus</button>`:""}`}
@@ -3972,17 +3980,17 @@ const MK=(()=>{
   function vProps(){const ps=Object.values(O).filter(o=>o.v===2&&o.status==="open"&&(o.to===me||o.from===me)&&(!o.exp||o.exp>now())).sort((a,b)=>(b.t||0)-(a.t||0));if(!ps.length)return "";
     const th=ids=>(ids||[]).filter(id=>BY[id]).map(id=>`<button class="mkz trmini" data-z="${esc(id)}" title="${esc(BY[id].s)}">${artHTML(BY[id],1)||esc(BY[id].s.slice(0,2))}<span>${esc(BY[id].s)}</span></button>`).join("");
     const side=(ids,g)=>`<div class="trpl">${th(ids)}${g?`<span class="trgem">+ ${nf(g)} ◆</span>`:""}${!(ids||[]).length&&!g?"<small>rien</small>":""}</div>`;
-    return `<h4 class="frh">Propositions d'échange <span class="cnt">${ps.length}</span></h4>${ps.map(o=>{const mine=o.from===me,can=!mine&&(o.want||[]).every(id=>ownFree(id)>=1)&&(o.wantG|0)<=S.coins;
+    return `<h4 class="frh">Propositions d'échange <span class="cnt">${ps.length}</span></h4>${ps.map(o=>{const mine=o.from===me,can=!mine&&(o.want||[]).every(id=>ownAvail(id)>=1)&&(o.wantG|0)<=S.coins&&(o.wantG|0)<=gLeft();
       return `<div class="trp${mine?"":" dm"}"><div class="trph"><b>${mine?"Tu proposes à "+esc(nm(o.to)):esc(nm(o.from))+" te propose"}</b><small>expire ${left((o.exp||0)-now())}</small></div>
         <div class="trpb"><div><small>${mine?"TU DONNES":"IL DONNE"}</small>${side(o.give,o.giveG)}</div><span class="trarr2" aria-hidden="true">⇄</span><div><small>${mine?"TU REÇOIS":"CONTRE"}</small>${side(o.want,o.wantG)}</div></div>
-        <div class="trb">${mine?`<button class="sec" data-ocx="${o.id}">Annuler</button>`:`${can?`<button class="mkgo" data-acc2="${o.id}">Accepter l'échange</button>`:`<span class="mkm">Il te manque des cartes en double ou des ◆</span>`}<button class="sec" data-ref="${o.id}">Refuser</button>`}</div></div>`}).join("")}`}
+        <div class="trb">${mine?`<button class="sec" data-ocx="${o.id}">Annuler</button>`:`${can?`<button class="mkgo" data-acc2="${o.id}">Accepter l'échange</button>`:`<span class="mkm">${(o.wantG|0)>gLeft()&&(o.wantG|0)<=S.coins?"Limite de "+nf(GLIM)+" ◆ donnés par jour atteinte":"Il te manque des cartes ou des ◆"}</span>`}<button class="sec" data-ref="${o.id}">Refuser</button>`}</div></div>`}).join("")}`}
   function vTrade(){const os=Object.values(O).filter(o=>o.v!==2&&o.status==="open"&&(!o.to||o.to===me||o.from===me)&&(!o.exp||o.exp>now())&&BY[o.give]);
     const q=Q.trim().toLowerCase(),f=os.filter(o=>!q||[o.give,...o.want].some(id=>BY[id]&&BY[id].n.toLowerCase().includes(q))||nm(o.from).toLowerCase().includes(q)).filter(o=>!ONLYMISS||!S.own[o.give]);
-    const row=o=>{const c=BY[o.give],can=o.want.filter(id=>BY[id]&&(ownFree(id)>=1));const mine=o.from===me;
+    const row=o=>{const c=BY[o.give],can=o.want.filter(id=>BY[id]&&(ownAvail(id)>=1));const mine=o.from===me;
       return `<div class="tr${o.to===me?" dm":""}"><div class="trl"><button class="mkz mini2" data-z="${esc(c.id)}">${cardHTML(c,{noWish:true})}</button><div><b>${esc(c.s)}</b><small>${RN[c.r]} · ${FR[c.f]}</small><small>${mine?"ton offre":"par "+esc(nm(o.from))}${o.to?` · <span style="color:var(--gold)">privée${o.to===me?" pour toi":" → "+esc(nm(o.to))}</span>`:""} · expire ${left((o.exp||0)-now())}</small></div></div>
-      <div class="trw"><small>CONTRE L'UNE DE CES CARTES</small><div>${o.want.filter(id=>BY[id]).map(id=>`<button class="mkz wn${ownFree(id)>=1?" ok":""}" data-z="${esc(id)}" title="${esc(BY[id].s)}">${artHTML(BY[id],1)||esc(BY[id].s.slice(0,2))}</button>`).join("")}</div></div>
-      <div class="trb">${mine?`<button class="sec" data-ocx="${o.id}">Retirer</button>`:can.map(id=>`<button class="mkgo" data-acc="${o.id}" data-g="${esc(id)}">Donner ${esc(BY[id].s)}</button>`).join("")+(o.to===me?`<button class="sec" data-ref="${o.id}">Refuser</button>`:"")||`<span class="mkm">Tu n'as aucune carte demandée en double</span>`}</div></div>`};
-    return `${vProps()}<div class="mkhead"><div><h3>Cartes proposées à l'échange</h3><p class="mkh">« Je donne celle-ci contre l'une de celles-là. » Si tu as une des cartes demandées en double, tu échanges en un clic.</p></div><button class="cta mkcta" id="mkNewO">Proposer une carte</button></div>
+      <div class="trw"><small>CONTRE L'UNE DE CES CARTES</small><div>${o.want.filter(id=>BY[id]).map(id=>`<button class="mkz wn${ownAvail(id)>=1?" ok":""}" data-z="${esc(id)}" title="${esc(BY[id].s)}">${artHTML(BY[id],1)||esc(BY[id].s.slice(0,2))}</button>`).join("")}</div></div>
+      <div class="trb">${mine?`<button class="sec" data-ocx="${o.id}">Retirer</button>`:can.map(id=>`<button class="mkgo" data-acc="${o.id}" data-g="${esc(id)}">Donner ${esc(BY[id].s)}</button>`).join("")+(o.to===me?`<button class="sec" data-ref="${o.id}">Refuser</button>`:"")||`<span class="mkm">Tu n'as aucune carte demandée</span>`}</div></div>`};
+    return `${vProps()}<div class="mkhead"><div><h3>Cartes proposées à l'échange</h3><p class="mkh">« Je donne celle-ci contre l'une de celles-là. » Si tu as une des cartes demandées, tu échanges en un clic.</p></div><button class="cta mkcta" id="mkNewO">Proposer une carte</button></div>
     <input class="mksr" id="mkQ" placeholder="Chercher une carte ou un joueur…" value="${esc(Q)}"><div class="mkrow"><button class="rchip" id="mkMiss" aria-pressed="${ONLYMISS}">Que je n'ai pas</button></div>
     <div class="mkn mono">${nf(f.length)} offre${f.length>1?"s":""} ouvertes</div>${f.map(row).join("")||`<div class="mkempty">Aucune offre pour l'instant. Lance la première !</div>`}`}
   function vFriends(){const fr=friends(),inc=incoming(),out=outgoing(),others=Object.keys(PL).filter(id=>id!==me&&!fr.includes(id));
@@ -4009,24 +4017,24 @@ const MK=(()=>{
     $("#mkWallet").innerHTML=`<span class="gem">◆</span> ${nf(S.coins)}`}
   /* dialogue vente / offre */
   function dlg(html,wire){let d=$("#mkDlg");if(!d){d=document.createElement("div");d.id="mkDlg";d.className="mkdlg";document.body.append(d)}d.innerHTML=`<div class="mkbox">${html}<button class="mkx" aria-label="Fermer">×</button></div>`;d.hidden=false;d.onclick=e=>{if(e.target===d||e.target.closest(".mkx"))d.hidden=true};wire(d)}
-  function sellDlg(id,to){const c=BY[id],b=base(c.r);let mode=to?"trade":"fixed",want=[];
+  function sellDlg(id,to,tr){const c=BY[id],b=base(c.r);let mode=to||tr?"trade":"fixed",want=[];
     const draw=d=>{const q=(d.querySelector("#wq")||{}).value||"";const cand=q.length>1?CARDS.filter(x=>x.n.toLowerCase().includes(q.toLowerCase())&&!want.includes(x.id)).slice(0,12):[];
       d.querySelector(".mkbody").innerHTML=mode==="trade"?`<label>Cartes que tu veux en échange (1 à 5)</label><input id="wq" class="mksr" placeholder="Chercher un perso…" value="${esc(q)}"><div class="wl">${cand.map(x=>`<button class="wc" data-w="${esc(x.id)}">${esc(x.s)} <small>${RN[x.r]}</small></button>`).join("")}</div>
         <div class="wl sel">${want.map(id=>`<button class="wc on" data-wr="${esc(id)}">${esc(BY[id].s)} ×</button>`).join("")||`<small>Astuce : tes ♥ envies et cartes manquantes de même rareté sont ajoutées automatiquement si tu ne choisis rien.</small>`}</div>
         <button class="cta" id="okT">${to?"Envoyer à "+esc(nm(to)):"Publier l'offre"}</button>`
-      :`<label>${mode==="fixed"?"Prix de vente":"Mise de départ"} (◆)</label><input id="pr" type="number" min="1" value="${mode==="fixed"?b:Math.round(b*.6)}"><small class="hint">Prix conseillé : ${nf(Math.round(b*.8))}–${nf(Math.round(b*1.3))} ◆ · vente directe au jeu : ${SELL[c.r]} ◆</small>
+      :`<label>${mode==="fixed"?"Prix de vente":"Mise de départ"} (◆)</label><input id="pr" type="number" min="${minP(c)}" value="${Math.max(minP(c),mode==="fixed"?b:Math.round(b*.6))}"><small class="hint">${c.r==="d"?`Divine : ${nf(DMIN)} ◆ minimum · `:""}Prix conseillé : ${nf(Math.max(minP(c),Math.round(b*.8)))}–${nf(Math.round(b*1.3))} ◆ · vente directe au jeu : ${SELL[c.r]} ◆</small>
         ${mode==="auction"?`<label>Durée</label><select id="du"><option value="1">1 h</option><option value="6">6 h</option><option value="24" selected>24 h</option><option value="48">48 h</option></select>`:""}
         <button class="cta" id="okS">${mode==="fixed"?"Mettre en vente":"Lancer l'enchère"}</button>`;
       d.querySelectorAll("[data-md]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.md===mode));
       const wq=d.querySelector("#wq");if(wq){wq.oninput=()=>{draw(d);const n=d.querySelector("#wq");n.focus();n.setSelectionRange(n.value.length,n.value.length)}}
       d.querySelectorAll("[data-w]").forEach(x=>x.onclick=()=>{if(want.length<5)want.push(x.dataset.w);draw(d)});
       d.querySelectorAll("[data-wr]").forEach(x=>x.onclick=()=>{want=want.filter(i=>i!==x.dataset.wr);draw(d)});
-      const ok=d.querySelector("#okS");if(ok)ok.onclick=()=>{const p=Math.round(+d.querySelector("#pr").value);if(!(p>0))return toast("Prix invalide");d.hidden=true;list(id,mode,p,+((d.querySelector("#du")||{}).value||24))};
+      const ok=d.querySelector("#okS");if(ok)ok.onclick=()=>{const p=Math.round(+d.querySelector("#pr").value);if(!(p>0))return toast("Prix invalide");if(p<minP(c))return toast("Une carte Divine coûte au moins "+nf(DMIN)+" ◆");d.hidden=true;list(id,mode,p,+((d.querySelector("#du")||{}).value||24))};
       const okt=d.querySelector("#okT");if(okt)okt.onclick=()=>{let w=want;if(!w.length)w=CARDS.filter(x=>x.r===c.r&&x.id!==id&&(S.wish[x.id]||!S.own[x.id])).sort(()=>Math.random()-.5).slice(0,5).map(x=>x.id);if(!w.length)return toast("Choisis au moins une carte");d.hidden=true;offer(id,w,to)}};
-    dlg(`<div class="mkdh">${cardHTML(c,{noWish:true})}<div><h3>${esc(c.s)}</h3><small>${RN[c.r]} · ${FR[c.f]} · ${ownFree(id)} libre${ownFree(id)>1?"s":""}</small>
-      <div class="mkchips">${to?"":`<button class="rchip" data-md="fixed">Prix fixe</button><button class="rchip" data-md="auction">Enchère</button>`}<button class="rchip" data-md="trade">Échange</button></div></div></div><div class="mkbody"></div>`,d=>{d.querySelectorAll("[data-md]").forEach(b=>b.onclick=()=>{mode=b.dataset.md;draw(d)});draw(d)})}
-  function pickToGive(to){const ids=Object.keys(S.own).filter(id=>ownFree(id)>=1&&BY[id]);
-    dlg(`<h3>Que veux-tu donner${to?" à "+esc(nm(to)):""} ?</h3><p class="mkh">Choisis un de tes doublons libres.</p><div class="mkg sm">${ids.map(id=>`<button class="mksl" data-pg="${esc(id)}">${cardHTML(BY[id],{noWish:true})}<span>×${ownFree(id)}</span></button>`).join("")||`<div class="mkempty">Aucun doublon libre.</div>`}</div>`,d=>d.querySelectorAll("[data-pg]").forEach(b=>b.onclick=()=>sellDlg(b.dataset.pg,to||"")))}
+    dlg(`<div class="mkdh">${cardHTML(c,{noWish:true})}<div><h3>${esc(c.s)}</h3><small>${RN[c.r]} · ${FR[c.f]} · ${mode==="trade"?ownAvail(id)+" dispo":ownFree(id)+" libre"+(ownFree(id)>1?"s":"")}</small>
+      <div class="mkchips">${to||tr?"":`<button class="rchip" data-md="fixed">Prix fixe</button><button class="rchip" data-md="auction">Enchère</button>`}<button class="rchip" data-md="trade">Échange</button></div></div></div><div class="mkbody"></div>`,d=>{d.querySelectorAll("[data-md]").forEach(b=>b.onclick=()=>{mode=b.dataset.md;draw(d)});draw(d)})}
+  function pickToGive(to){const RK={c:0,u:1,r:2,e:3,l:4,m:5,d:6};const ids=Object.keys(S.own).filter(id=>ownAvail(id)>=1&&BY[id]).sort((a,b)=>ownFree(b)-ownFree(a)||RK[BY[b].r]-RK[BY[a].r]);
+    dlg(`<h3>Que veux-tu donner${to?" à "+esc(nm(to)):""} ?</h3><p class="mkh">Choisis n'importe laquelle de tes cartes.</p><div class="mkg sm">${ids.map(id=>`<button class="mksl" data-pg="${esc(id)}">${cardHTML(BY[id],{noWish:true})}<span>${ownFree(id)>=1?"×"+ownAvail(id):"Seul exemplaire"}</span></button>`).join("")||`<div class="mkempty">Aucune carte disponible.</div>`}</div>`,d=>d.querySelectorAll("[data-pg]").forEach(b=>b.onclick=()=>sellDlg(b.dataset.pg,to||"",1)))}
   /* événements */
   document.addEventListener("click",e=>{const t=e.target;if(!t.closest)return;const inM=t.closest("#vMkt");
     const z=t.closest("[data-z]");if(z&&(inM||t.closest("#mkDlg"))&&!t.closest("#mkDlg .mkdh")){if(t.closest("#mkDlg"))$("#mkDlg").hidden=true;openZoom(z.dataset.z);return}
