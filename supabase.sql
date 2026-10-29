@@ -1,4 +1,4 @@
--- Rosika : base de données sécurisée (v3 : pseudos uniques + panel admin). À coller dans Supabase > SQL Editor > Run.
+-- Rosika : base de données sécurisée (v4 : pseudos uniques + panel admin + 1 compte par appareil). À coller dans Supabase > SQL Editor > Run.
 -- Peut être relancé sans risque : ne supprime aucune donnée.
 
 -- ========== Sauvegardes des joueurs ==========
@@ -470,6 +470,7 @@ begin
       where owner = p_user and col = 'offers' and data->>'status' = 'open';
   else
     delete from bans where user_id = p_user;
+    insert into device_ok(user_id) values (p_user) on conflict do nothing;
   end if;
 end $$;
 
@@ -547,6 +548,43 @@ begin
     execute format('grant execute on function %s to authenticated', f);
   end loop;
 end $$;
+
+-- ========== Un seul compte par appareil ==========
+create table if not exists public.devices (
+  fp text not null,
+  user_id uuid not null references auth.users on delete cascade,
+  created_at timestamptz default now(),
+  primary key (fp, user_id)
+);
+alter table public.devices enable row level security;
+create table if not exists public.device_ok (
+  user_id uuid primary key references auth.users on delete cascade
+);
+alter table public.device_ok enable row level security;
+
+create or replace function public.register_device(p_fp text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare
+  uid uuid := auth.uid();
+  mine timestamptz;
+  other uuid;
+begin
+  if uid is null or p_fp is null or char_length(p_fp) not between 16 and 128 then return jsonb_build_object('ok', true); end if;
+  insert into devices(fp, user_id) values (p_fp, uid) on conflict do nothing;
+  if exists (select 1 from admins where user_id = uid) or exists (select 1 from device_ok where user_id = uid) then
+    return jsonb_build_object('ok', true);
+  end if;
+  select created_at into mine from auth.users where id = uid;
+  select d.user_id into other from devices d join auth.users u on u.id = d.user_id
+    where d.fp = p_fp and d.user_id <> uid and u.created_at < mine
+    order by u.created_at limit 1;
+  if other is null then return jsonb_build_object('ok', true); end if;
+  insert into bans(user_id, reason) values (uid, 'Multi-compte : un autre compte utilise déjà cet appareil')
+    on conflict (user_id) do nothing;
+  return jsonb_build_object('ok', false, 'other', (select name from names where user_id = other));
+end $$;
+revoke all on function public.register_device(text) from public, anon;
+grant execute on function public.register_device(text) to authenticated;
 
 -- ========== Admin : le compte dont le pseudo est « Rosix » ==========
 -- (connecte-toi d'abord une fois sur le site avec Discord, puis relance ce script)

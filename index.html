@@ -4304,11 +4304,27 @@ var SBX=(()=>{let synced=false,syncing=false,syncUid=null,checked=false,sb=null,
   let BK=null;
   async function goOnline(){const uid=user.id,db=mkDB(uid);
     try{const r=await sb.rpc("claim_name",{p_base:dname});if(!r.error&&r.data)dname=r.data}catch(_){}
+    try{const fp=await deviceFP();if(fp)await sb.rpc("register_device",{p_fp:fp})}catch(_){}
     try{const r=await sb.rpc("my_status");if(!r.error&&r.data){ME=Object.assign(ME,r.data);if(r.data.name)dname=r.data.name}}catch(_){}
-    paint();if(ME.banned)toast("Compte suspendu"+(ME.reason?" : "+ME.reason:""));
+    paint();if(ME.banned){if(/^Multi-compte/.test(ME.reason||""))multiLock();else toast("Compte suspendu"+(ME.reason?" : "+ME.reason:""))}
     const uapi={id:async()=>uid,profiles:async ids=>{const o={};ids=ids.filter(Boolean);if(!ids.length)return o;const r=await sb.from("docs").select("id,data").eq("col","profiles").in("id",ids);for(const x of r.data||[])o[x.id]={name:x.data&&x.data.name};return o}};
     BK=[db,uapi];if(!ME.banned)db.doc("profiles/"+uid).set({name:dname,avatar,t:Date.now()}).catch(()=>{});
     window.dispatchEvent(new Event("rosika-online"));grants();setInterval(grants,5*60e3)}
+  async function deviceFP(){try{
+      const fonts=["Arial","Arial Black","Calibri","Cambria","Candara","Comic Sans MS","Consolas","Constantia","Corbel","Courier New","Ebrima","Franklin Gothic Medium","Gabriola","Gadugi","Georgia","Impact","Ink Free","Javanese Text","Leelawadee UI","Lucida Console","Lucida Sans Unicode","Malgun Gothic","Marlett","Microsoft Himalaya","Microsoft JhengHei","Microsoft YaHei","MV Boli","Myanmar Text","Nirmala UI","Palatino Linotype","Segoe Print","Segoe Script","Segoe UI","SimSun","Sitka Text","Sylfaen","Tahoma","Times New Roman","Trebuchet MS","Verdana","Yu Gothic","Helvetica Neue","Menlo","Monaco","Avenir","Futura","Gill Sans","Optima","Ubuntu","DejaVu Sans","Liberation Sans","Noto Sans","Roboto","Open Sans","Lato","Montserrat","Bahnschrift","Agency FB","Bodoni MT","Century Gothic","Garamond","Rockwell","Segoe UI Emoji"];
+      const cv=document.createElement("canvas").getContext("2d"),txt="mmmmmmmmmmlliWW@#ÉÀ1",base={};
+      for(const b of["monospace","serif","sans-serif"]){cv.font="72px "+b;base[b]=cv.measureText(txt).width}
+      const has=fonts.filter(f=>["monospace","serif","sans-serif"].some(b=>{cv.font=`72px "${f}",${b}`;return Math.abs(cv.measureText(txt).width-base[b])>.5}));
+      let gpu="";try{const gl=document.createElement("canvas").getContext("webgl");const e=gl&&gl.getExtension("WEBGL_debug_renderer_info");gpu=((e&&gl.getParameter(e.UNMASKED_RENDERER_WEBGL))||(gl&&gl.getParameter(gl.RENDERER))||"").toLowerCase();gpu=(gpu.match(/nvidia|geforce|radeon|amd|intel|apple|mali|adreno|powervr/)||[""])[0].replace("geforce","nvidia").replace("radeon","amd")}catch(_){}
+      const sc=[screen.width,screen.height].sort((a,b)=>a-b).join("x");
+      const raw=[navigator.platform||"",Intl.DateTimeFormat().resolvedOptions().timeZone||"",navigator.hardwareConcurrency||0,sc,screen.colorDepth||0,gpu,has.join(",")].join("|");
+      const h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(raw));
+      return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,"0")).join("").slice(0,40)}catch(_){return null}}
+  function multiLock(){let d=document.getElementById("gateDlg");if(!d){d=document.createElement("div");d.id="gateDlg";document.body.append(d)}
+    d.innerHTML=`<div class="gatebox" role="dialog" aria-label="Compte bloqué"><div class="gateic">🔒</div><h2>Un seul compte par appareil</h2>
+      <p>Un autre compte Rosika est déjà utilisé sur cet appareil. Déconnecte-toi et reconnecte-toi avec ton compte principal.</p>
+      <button class="dsb gatego" data-dsc="out">Se déconnecter</button><small>Erreur ? Contacte l'admin pour débloquer ton compte.</small></div>`;
+    d.hidden=false;d.onclick=null}
   async function grants(){if(!sb||!user||ME.banned)return;try{const r=await sb.rpc("claim_grants");if(r.error||!Array.isArray(r.data)||!r.data.length)return;
       r.data.forEach((g,i)=>{const got=giveRewards(g.rewards||[]);setTimeout(()=>toast("🎁 Cadeau de l'admin : "+(g.msg?g.msg+" · ":"")+got.join(", ")),i*2600)});save();renderAll();try{SND.coin()}catch(_){}}catch(_){}}
   async function announce(){if(!sb)return;try{const r=await sb.from("config").select("value,updated_at").eq("key","announce").maybeSingle();const bar=document.getElementById("annBar");if(!bar)return;
