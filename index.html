@@ -2619,7 +2619,10 @@ function loadArt(b){if(AB[b])return AB[b];return AB[b]=fetch("art/a"+b+".json").
   document.querySelectorAll("img[data-art]").forEach(im=>{const u=AU[im.dataset.art];if(u){im.onload=()=>im.classList.remove("ld");im.src=u;im.removeAttribute("data-art")}})}).catch(()=>{delete AB[b]})}
 function preloadArt(ids){const bs=[...new Set(ids.map(id=>SHEET[id]).filter(v=>v!==undefined).map(v=>v/ABN|0))];
   return Promise.all(bs.map(loadArt)).then(()=>Promise.all([...new Set(ids)].filter(id=>AU[id]).map(id=>{const i=new Image();i.src=AU[id];return i.decode?i.decode().catch(()=>{}):0})))}
-function artHTML(c,sm){const v=SHEET[c.id];if(v===undefined)return "";const u=AU[c.id];if(u)return `<img class="ai" alt="" decoding="async" src="${u}">`;loadArt(v/ABN|0);return `<img class="ai ld" alt="" decoding="async" data-art="${esc(c.id)}">`}
+let ARTLAZY=false;
+function artHTML(c,sm){const v=SHEET[c.id];if(v===undefined)return "";
+  if(ARTLAZY){const d=Object.getOwnPropertyDescriptor(AU,c.id);if(!d||!("value" in d))return `<img class="ai ld" alt="" decoding="async" data-art="${esc(c.id)}" data-lz="${v/ABN|0}">`}
+  const u=AU[c.id];if(u)return `<img class="ai" alt="" decoding="async" src="${u}">`;loadArt(v/ABN|0);return `<img class="ai ld" alt="" decoding="async" data-art="${esc(c.id)}">`}
 const hasArt=id=>SHEET[id]!==undefined;
 function cardHTML(c,o={}){
   const img=IMG[c.id],tag=o.tag||"div";
@@ -2871,7 +2874,7 @@ function renderSide(){
   <button class="cta kxgo" id="bOpen" ${canOpen(P)?"":"disabled"}><b>Ouvrir</b><i aria-hidden="true"></i><small>${esc(priceTxt(P))}</small></button>
   ${P.g==="free"?`<div class="nextfree" id="nextFree"></div>`:""}`;
   nextFree();
-  {const mx=canOpen(P)?maxN(P):0;if(mx>1){const b=document.createElement("button");b.className="cta maxb";b.id="bMax";b.innerHTML=`Ouvrir le max · ×${mx} <small>${esc(costN(P,mx).txt)}</small>`;$("#bOpen").after(b);b.onclick=()=>{openPack(P);if(OP){OP.n=mx;S.lastN=mx;stagePack()}}}}
+  {const m0=canOpen(P)?maxN(P):0,mx=m0>=100?100:Math.min(m0,10);if(mx>1){const b=document.createElement("button");b.className="cta maxb";b.id="bMax";b.innerHTML=`Ouvrir le max · ×${mx} <small>${esc(costN(P,mx).txt)}</small>`;$("#bOpen").after(b);b.onclick=()=>{openPack(P);if(OP){OP.n=mx;S.lastN=Math.min(mx,10);stagePack()}}}}
   $("#bOpen").onclick=()=>openPack(P);
   $("#bSee").onclick=()=>openList(P);
 }
@@ -3021,7 +3024,7 @@ function openPack(P){if(!P.pool().length){toast("Aucun perso dans ce booster pou
   if(guestLeft()<=0)return guestGate();
   regen();
   const pn=P.daily?theme().n:P.n;
-  OP={P,n:P.daily?1:(S.lastN||1),pn};
+  OP={P,n:P.daily?1:Math.min(10,S.lastN||1),pn};
   $("#op").style.setProperty("--pc",P.p1);
   $("#opTitle").textContent=pn;
   $("#op").hidden=false;document.body.style.overflow="hidden";document.body.classList.add("opmode");
@@ -3039,7 +3042,7 @@ function lineAt(X){const P=OP.tg.pts;for(let i=1;i<P.length;i++){if(P[i][0]>=X){
 function stagePack(){
   $("#op").classList.remove("godmode");opPill();$("#opCount").innerHTML="";
   const P=OP.P;
-  if(!costN(P,OP.n).ok)OP.n=Math.max(1,maxN(P));
+  if(!costN(P,OP.n).ok)OP.n=Math.max(1,Math.min(10,maxN(P)));
   const c=costN(P,OP.n),left=PITY_MYT-S.sinceLeg,G=tearGeom();OP.tg=G;OP.t=0;OP.torn=false;
   $("#opStage").innerHTML=`<div class="opk${c.ok?"":" off"}" id="opk">
     <div class="stackout" id="stackout"><div class="cb"><i>${LGM}</i><b>ROSIKA</b></div></div>
@@ -3053,7 +3056,7 @@ function stagePack(){
   <div class="mult">${multBtns(P)}</div>
   <button class="opgo" id="opGo" ${c.ok?"":"disabled"}>Ouvrir <small>${esc(c.txt)}</small></button>
   <div class="pity">Mythique garantie dans ${left} booster${left>1?"s":""} au plus</div>`;
-  $("#opStage").querySelectorAll(".mult button").forEach(b=>b.onclick=()=>{OP.n=+b.dataset.n;S.lastN=OP.n;stagePack()});
+  $("#opStage").querySelectorAll(".mult button").forEach(b=>b.onclick=()=>{OP.n=+b.dataset.n;S.lastN=Math.min(OP.n,10);stagePack()});
   $("#opGo").onclick=()=>{if(canTear())autoTear()};
   const k=$("#opk");let drag=null;
   k.onpointerdown=e=>{if(!canTear())return;const r=k.getBoundingClientRect();drag={x:e.clientX,y:e.clientY,w:r.width,moved:false,last:0};k.setPointerCapture(e.pointerId);k.classList.add("grab")};
@@ -3065,8 +3068,8 @@ function stagePack(){
   setTear(0);
 }
 function maxN(P){if(P.daily)return costN(P,1).ok?1:0;let n=0;while(n<MAXOPEN&&costN(P,n+1).ok)n++;return n}
-const MAXOPEN=10;
-function multBtns(P){const mx=maxN(P),L=P.daily?[1]:[...new Set([1,5,10].map(n=>Math.max(1,Math.min(n,mx))))];
+const MAXOPEN=100;
+function multBtns(P){const mx=maxN(P),L=P.daily?[1]:[...new Set([1,5,10].map(n=>Math.max(1,Math.min(n,mx))))];if(!P.daily&&mx>=100)L.push(100);
   return L.map(n=>`<button data-n="${n}" aria-pressed="${OP.n===n}" ${n<=Math.max(mx,1)?"":"disabled"}>×${n}</button>`).join("")}
 function canTear(){return OP&&!OP.busy&&!OP.torn&&costN(OP.P,OP.n).ok}
 function setTear(t){
@@ -3227,8 +3230,8 @@ function stageSum(){
   const RK={c:0,u:1,r:2,e:3,l:4,m:5,d:6},idx=OP.cards.map((c,j)=>j).sort((a,b)=>RK[OP.cards[b].r]-RK[OP.cards[a].r]||a-b);
   const nN=OP.isNew.filter(Boolean).length;
   $("#opCount").innerHTML=`Récap <small>· ${OP.cards.length} cartes · ${nN} nouvelle${nN>1?"s":""}</small>`;
-  const P=OP.P,rn=Math.min(OP.n,Math.max(1,maxN(P))),again=costN(P,rn),cnt={};OP.cards.forEach(c=>cnt[c.r]=(cnt[c.r]||0)+1);
-  const big=OP.cards.length>20,gm={},grp=[];idx.forEach(j=>{const id=OP.cards[j].id;if(gm[id])gm[id].n++,gm[id].nw=gm[id].nw||OP.isNew[j];else grp.push(gm[id]={j,n:1,nw:OP.isNew[j]})});
+  const mxS=maxN(OP.P),P=OP.P,rn=OP.n===100&&mxS>=100?100:Math.min(OP.n,10,Math.max(1,mxS)),again=costN(P,rn),cnt={};OP.cards.forEach(c=>cnt[c.r]=(cnt[c.r]||0)+1);
+  const big=OP.cards.length>20,gm={},grp=[];ARTLAZY=OP.cards.length>60;idx.forEach(j=>{const id=OP.cards[j].id;if(gm[id])gm[id].n++,gm[id].nw=gm[id].nw||OP.isNew[j];else grp.push(gm[id]={j,n:1,nw:OP.isNew[j]})});
   const sm=OP.cards.length>10,dupN=OP.cards.length-nN,dupV=OP.cards.reduce((a,c,j)=>a+(OP.isNew[j]?0:SELL[c.r]),0),PN=P.daily?theme().n:P.n;
   $("#opStage").innerHTML=`<div class="sumtop">${OP.gold?`<span class="sgold">Un booster doré dans le lot</span>`:""}<h2>${esc(PN)}</h2><small class="mono">${OP.n} booster${OP.n>1?"s":""} · ${OP.cards.length} cartes</small><span class="spill">${nN} nouvelle${nN>1?"s":""} carte${nN>1?"s":""}${dupN?`, ${dupN} doublon${dupN>1?"s":""} (+${nf(dupV)} ◆ si recyclés)`:""}</span></div><div class="sumh">${ORD_R.filter(k=>cnt[k]).map(k=>`<span class="rc ${k}" style="color:var(--${k})">${cnt[k]} ${RN[k]}</span>`).join("")}${nN&&nN<OP.cards.length?`<button id="onlyNew" aria-pressed="false">Nouvelles seulement</button>`:""}</div>
   <div class="sum${sm?" sm":""}">${grp.map((g,k)=>{const j=g.j,c=OP.cards[j];return `<div class="w${g.nw?" isn":""}" style="animation-delay:${big?0:Math.min(k,20)*55}ms${big?";animation:none":""}"><button data-id="${esc(c.id)}">${cardHTML(c,{isNew:g.nw&&!sm})}</button>${g.nw&&sm?`<span class="nwt">Nouveau</span>`:""}${g.n>1?`<span class="dupn">×${g.n}</span>`:""}</div>`}).join("")}</div>
@@ -3236,6 +3239,10 @@ function stageSum(){
     <button class="opgo" id="opAgain" ${again.ok?"":"disabled"}>Rouvrir${rn>1?" ×"+rn:""} <small>${esc(again.txt)}</small></button>
     <button class="sec" id="opDone">Retour aux boosters</button>
   </div>`;
+  ARTLAZY=false;
+  {const L=[...$("#opStage").querySelectorAll(".sum img[data-lz]")];if(L.length){const io=new IntersectionObserver(es=>{for(const e of es){if(!e.isIntersecting)continue;const im=e.target;io.unobserve(im);
+      const b=+im.dataset.lz;im.removeAttribute("data-lz");Promise.resolve(loadArt(b)).then(()=>{const id=im.dataset.art;if(!id)return;const u=AU[id];if(u){im.onload=()=>im.classList.remove("ld");im.src=u;im.removeAttribute("data-art")}})}},{rootMargin:"300px"});
+    L.forEach(im=>io.observe(im))}}
   $("#opStage").querySelectorAll(".sum [data-id]").forEach(b=>b.onclick=()=>openZoom(b.dataset.id));
   const on=$("#onlyNew");if(on)on.onclick=()=>{const v=on.getAttribute("aria-pressed")!=="true";on.setAttribute("aria-pressed",v);$("#opStage").querySelectorAll(".sum .w").forEach(w=>w.hidden=v&&!w.classList.contains("isn"))};
   $("#opAgain").onclick=()=>{OP.n=rn;OP.done=false;stagePack()};
