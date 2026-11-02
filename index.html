@@ -3131,7 +3131,7 @@ function stageCard(first,nx){try{if(typeof CUT!=="undefined")OP.cards.forEach(x=
 }
 const RKO=["c","u","r","e","l","m","d"],RKT={3:"Épique",4:"Légendaire",5:"Mythique",6:"Divine"};
 function revThr(st){let b=-1;for(let j=0;j<st;j++)b=Math.max(b,RKO.indexOf(OP.cards[j].r));return Math.max(3,b+1)}
-function toEpic(){if(!OP||OP.done)return -1;const st=OP.i+(OP.up?1:0),t=revThr(st);if(t>6)return -1;for(let j=st;j<OP.cards.length;j++)if(RKO.indexOf(OP.cards[j].r)>=t)return j>st?j:-1;return -1}
+function toEpic(){if(!OP||OP.done)return -1;const st=OP.i+(OP.up?1:0),t=revThr(st);if(t>4)return -1;for(let j=st;j<OP.cards.length;j++)if(RKO.indexOf(OP.cards[j].r)>=t)return j>st?j:-1;return -1}
 function epSync(){const old=$("#opEp");if(old)old.remove();const all=$("#opAll");if(!all||toEpic()<0)return;
   const st=OP.i+(OP.up?1:0),b=document.createElement("button");b.id="opEp";b.textContent="Révéler jusqu'à "+RKT[revThr(st)];all.before(b);
   b.onclick=e=>{e.stopPropagation();const j=toEpic();if(j<0||OP.lock)return;OP.i=j;OP.up=false;OP.charged=false;stageCard(false,true);OP.lock=true;setTimeout(()=>{OP.lock=false;advance()},380)}}
