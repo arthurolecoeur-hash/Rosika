@@ -3107,7 +3107,7 @@ function commitTear(){
   cards.forEach(c=>{S.own[c.id]=(S.own[c.id]||0)+1;if(!S.since[c.id])S.since[c.id]=today()});
   OP.god=god;
   track("open",OP.n);{const hr=new Date().getHours();if(hr>=2&&hr<5)track("night",1);const u=UNI[P.id];if(u)track("u_"+u,OP.n);if(P.id==="mix")track("mix",OP.n);if(OP.n>1)track("x2",1);if(P.daily)track("dailyp",1);if(P.g==="shop")track("shop",OP.n);if(THP.includes(P.id))track("theme",OP.n);const cnt=r=>cards.filter(c=>r.includes(c.r)).length,ep=cnt("elmd"),ra=cnt("relmd"),my=cnt("md"),nw=isNew.filter(Boolean).length;if(ep)track("epic",ep);if(ra)track("rare",ra);if(my)track("myth",my);if(nw)track("newc",nw);if(cards.length-nw>0)track("dup",cards.length-nw)}{const lg=cards.filter(c=>c.r==="l"||c.r==="m"||c.r==="d").length;if(lg)track("legend",lg);for(let b=0;b<OP.n;b++){if(cards.slice(b*P.k,(b+1)*P.k).filter(c=>c.r==="m").length>=2)S.st.divine=1}}save();
-  Object.assign(OP,{cards,isNew,gold,i:0,up:false,splashed:{},done:false});
+  Object.assign(OP,{cards,isNew,gold,i:0,up:false,splashed:{},cuts:{},charged:false,done:false});
   const art=preloadArt(cards.slice(0,3).map(c=>c.id)),go=f=>{let d=0;const t=setTimeout(()=>{if(!d){d=1;f()}},1500);art.then(()=>{if(!d){d=1;clearTimeout(t);f()}})};
   const nextStage=first=>stageCard(first);
   if(god)$("#opTitle").textContent=OP.pn+" · GOD PACK";else if(gold)$("#opTitle").textContent=OP.pn+" · Booster doré";
@@ -3162,7 +3162,7 @@ function stageCard(first,nx){try{if(typeof CUT!=="undefined")OP.cards.forEach(x=
   dk.onclick=advance;
   dk.onpointermove=e=>{if(e.pointerType!=="mouse")return;const r=dk.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;tl.style.transform=`rotateY(${x*18}deg) rotateX(${-y*18}deg)`;dk.style.setProperty("--gx",(x+.5)*100+"%");dk.style.setProperty("--gy",(y+.5)*100+"%");dk.style.setProperty("--go",".9")};
   dk.onpointerleave=()=>{tl.style.transform="";dk.style.setProperty("--go","0")};
-  $("#opAll").onclick=e=>{e.stopPropagation();if(!OP.lock)sumGo()};
+  $("#opAll").onclick=e=>{e.stopPropagation();const o=OP,t0=Date.now(),go=()=>{if(OP!==o||!OP||OP.done)return;if(OP.lock){if(Date.now()-t0<30000)setTimeout(go,120);return}sumGo()};go()};
   epSync();
 }
 const RKO=["c","u","r","e","l","m","d"],RKT={3:"Épique",4:"Légendaire",5:"Mythique",6:"Divine"};
