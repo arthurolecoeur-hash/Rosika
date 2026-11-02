@@ -2302,7 +2302,7 @@ html{scroll-behavior:smooth}
 
 @media (max-width:600px){#arVer{font-size:12.5px!important;padding:3px 10px;white-space:nowrap}.arvsb{width:46px!important;height:46px!important;margin:8px 0!important}.arvsb::after{font-size:16px}.arvs b.arstat{font-size:17px!important}}
 
-.cut3d{background:#000}.cut3d .cutskip{top:calc(11vh + 12px);bottom:auto}.cut3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cut3d{background:#000}.cutsus3 .susl{bottom:7vh}.cut3d .cutskip{top:calc(11vh + 12px);bottom:auto}.cut3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .cut3d .cuttx{bottom:9vh}
 </style>
 
@@ -4640,16 +4640,16 @@ const CUT=(()=>{
   const VID={"mv:Spider-Man (Peter Parker)":"spider","mv:Iron Man (Anthony 'Tony' Stark)":"iron","dc:Batman (Bruce Wayne)":"bat","dc:Superman (Clark Kent)":"sup","sw:Darth Vader":"vader","sw:Luke Skywalker":"luke"};
   let M3=null;const load3=()=>M3||(M3=import("./cut3d.js").catch(e=>{M3=null;throw e}));
   const gl3=(()=>{let v;return()=>{if(v===undefined){try{const c=document.createElement("canvas");v=!!(c.getContext("webgl2")||c.getContext("webgl"))}catch(_){v=false}}return v}})();
-  function play3D(c,done){const sc=SC[c.id],fb=()=>{if(VID[c.id]&&!window.__noVid)return playVid(c,done);return playCanvas(c,done)};if(!sc||!gl3()||window.__no3d)return fb();
+  function play3D(c,done,fromSus){const sc=SC[c.id],fb=()=>{if(VID[c.id]&&!window.__noVid)return playVid(c,done);return playCanvas(c,done)};if(!sc||!gl3()||window.__no3d)return fb();
     let gone=false;const to=setTimeout(()=>{gone=true;fb()},6000);
     const art=SHEET[c.id]!==undefined&&!AU[c.id]?Promise.race([preloadArt([c.id]),new Promise(r=>setTimeout(r,2500))]):Promise.resolve();
-    Promise.all([load3(),art]).then(([m])=>{if(gone)return;clearTimeout(to);if(!m.has(c.id))return fb();run3(m,c,sc,done,fb)}).catch(()=>{if(gone)return;clearTimeout(to);fb()})}
-  function run3(m,c,sc,done,fb){const ov=document.createElement("div");ov.className="cut cut3d";ov.style.setProperty("--cc",sc.col);ov.style.setProperty("--cc2",sc.col2);
+    Promise.all([load3(),art]).then(([m])=>{if(gone)return;clearTimeout(to);if(!m.has(c.id))return fb();run3(m,c,sc,done,fb,fromSus)}).catch(()=>{if(gone)return;clearTimeout(to);fb()})}
+  function run3(m,c,sc,done,fb,fromSus){const ov=document.createElement("div");ov.className="cut cut3d";ov.style.setProperty("--cc",sc.col);ov.style.setProperty("--cc2",sc.col2);
     ov.innerHTML=`<canvas></canvas><i class="cutbar t"></i><i class="cutbar b"></i><div class="cuttx"><small>Divin</small><h2>${esc(c.s)}</h2><p>${esc(sc.sub)}</p></div><span class="cutskip">Toucher pour passer</span>`;
     document.body.append(ov);document.body.classList.add("arlock");let ctl=null,ended=false;const t0=performance.now();
     const fin=()=>{if(ended)return;ended=true;try{ctl&&ctl.stop()}catch(_){}ov.classList.add("out");setTimeout(()=>{ov.remove();document.body.classList.remove("arlock");done()},420)};
     ov.addEventListener("click",()=>{if(performance.now()-t0>600)fin()});
-    try{ctl=m.run({host:ov,id:c.id,name:c.s,uni:FR[c.f],img:AU[c.id]||"",col:sc.col,col2:sc.col2,onCard:()=>{ov.classList.add("cin");try{SND.fx("hit")}catch(_){}},onText:()=>ov.classList.add("txin"),onEnd:fin});try{sc.sfx&&sc.sfx()}catch(_){}}
+    try{ctl=m.run({host:ov,id:c.id,name:c.s,uni:FR[c.f],img:AU[c.id]||"",col:sc.col,col2:sc.col2,fromSus:!!fromSus,onCard:()=>{ov.classList.add("cin");try{SND.fx("hit")}catch(_){}},onPulse:()=>{try{SND.rar("m")}catch(_){}},onText:()=>ov.classList.add("txin"),onEnd:fin});try{sc.sfx&&sc.sfx()}catch(_){}}
     catch(e){ended=true;ov.remove();document.body.classList.remove("arlock");fb()}}
   const pre={};function preload(id){try{if(SC[id]&&gl3())load3().catch(()=>{})}catch(_){}const k=VID[id];if(!k||pre[k])return;const v=document.createElement("video");v.muted=true;v.playsInline=true;v.preload="auto";vsrc(v,k);try{v.load()}catch(_){}pre[k]=v}
   function vsrc(v,k){v.innerHTML=`<source src="cut/${k}.webm" type="video/webm"><source src="cut/${k}.mp4" type="video/mp4">`}
@@ -4689,7 +4689,16 @@ const CUT=(()=>{
       const wf=E(dur-1,dur,t);if(wf>0){g.fillStyle=`rgba(255,255,255,${wf})`;g.fillRect(0,0,W,H)}
       if(t>=dur)return fin();raf=requestAnimationFrame(fr)};
     raf=requestAnimationFrame(fr)}
-  function play(c,done,opt={}){preload(c.id);const go=()=>play3D(c,done);if(opt.noSus||RMOT())return go();suspense(go)}
+  function play(c,done,opt={}){preload(c.id);const go=f=>play3D(c,done,f);if(opt.noSus||RMOT())return go();
+    if(SC[c.id]&&gl3()&&!window.__no3d){let gone=false;const to=setTimeout(()=>{gone=true;suspense(go)},2500);
+      load3().then(m=>{if(gone)return;clearTimeout(to);sus3(m,go)}).catch(()=>{if(gone)return;clearTimeout(to);suspense(go)});return}
+    suspense(go)}
+  function sus3(m,next){const ov=document.createElement("div");ov.className="cut cut3d cutsus3";ov.innerHTML=`<canvas></canvas><p class="susl"></p><span class="cutskip">Toucher pour passer</span>`;
+    document.body.append(ov);document.body.classList.add("arlock");let ended=false,ctl=null;const t0=performance.now(),lab=ov.querySelector(".susl");
+    const fin=()=>{if(ended)return;ended=true;try{ctl&&ctl.stop()}catch(_){}ov.style.background="#fff";next(true);const t1=Date.now(),rm=()=>{const l=[...document.querySelectorAll(".cut")].pop();if(l!==ov||Date.now()-t1>5000)ov.remove();else setTimeout(rm,100)};setTimeout(rm,300)};
+    ov.addEventListener("click",()=>{if(performance.now()-t0>800)fin()});
+    try{ctl=m.suspense({host:ov,line:t=>{lab.classList.remove("on");if(t)setTimeout(()=>{if(!ended){lab.textContent=t;lab.classList.add("on")}},250)},sfx:(k,v)=>{try{k==="rar"?SND.rar(v):SND.fx(k,v)}catch(_){}},onEnd:fin})}
+    catch(e){ended=true;ov.remove();document.body.classList.remove("arlock");suspense(next)}}
   function playCanvas(c,done){const sc=SC[c.id];if(!sc){done();return}
     const ov=document.createElement("div");ov.className="cut cut-"+sc.mode;ov.style.setProperty("--cc",sc.col);ov.style.setProperty("--cc2",sc.col2);
     ov.innerHTML=`<canvas></canvas><i class="cutbar t"></i><i class="cutbar b"></i><div class="cutcard"><div class="cutimg" style="background-image:url('${AU[c.id]||""}')"></div><i class="cutsh"></i></div><div class="cuttx"><small>Divin</small><h2>${esc(c.s)}</h2><p>${esc(sc.sub)}</p></div><span class="cutskip">Toucher pour passer</span>`;
