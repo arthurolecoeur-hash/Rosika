@@ -4974,13 +4974,14 @@ var SBX=(()=>{let synced=false,syncing=false,syncUid=null,checked=false,sb=null,
       <button class="dsb gatego" data-dsc="out">Se déconnecter</button><small>Erreur ? Contacte l'admin pour débloquer ton compte.</small></div>`;
     d.hidden=false;d.onclick=null}
   function adminFix(){const md=(user&&user.user_metadata)||{},ns=[dname,md.full_name,md.user_name,md.name,md.custom_claims&&md.custom_claims.global_name].filter(Boolean).map(x=>String(x).toLowerCase().replace(/#0+$/,"").trim());
-    if(!ns.includes("trixou")||S.fixTrix1)return;const out=[],free=id=>(S.own[id]||0)-((S.lock&&S.lock[id])||0);
-    const take=id=>{if(free(id)<1)return false;S.own[id]--;if(S.own[id]<=0){delete S.own[id];if(S.since)delete S.since[id]}out.push(id);return true};
-    ["fg:Sub-Zero","mv:Scarlet Witch (Wanda Maximoff)"].forEach(take);
-    for(const[r,n]of[["l",10],["e",50],["r",100]]){let k=0;const ids=()=>Object.keys(S.own).filter(id=>BY[id]&&BY[id].r===r).sort((a,b)=>((S.since||{})[b]||"").localeCompare((S.since||{})[a]||""));
-      for(const id of ids()){while(k<n&&free(id)>1&&take(id))k++;if(k>=n)break}
-      for(const id of ids()){if(k>=n)break;if(take(id))k++}}
-    S.fixTrix1={t:Date.now(),n:out.length,ids:out};save();renderAll();toast("Correction de l'admin appliquée sur ton compte")}
+    if(!ns.includes("trixou")||S.fixTrix2)return;S.since=S.since||{};
+    if(S.fixTrix1&&Array.isArray(S.fixTrix1.ids)&&!S.fixTrix1.undone){for(const id of S.fixTrix1.ids)if(BY[id]){S.own[id]=(S.own[id]||0)+1;if(!S.since[id])S.since[id]=today()}S.fixTrix1.undone=1}
+    const out=[],locked=id=>!!(S.lock&&S.lock[id]);
+    const drop=id=>{if(!S.own[id]||locked(id))return false;out.push([id,S.own[id]]);delete S.own[id];delete S.since[id];if(S.wish)delete S.wish[id];return true};
+    ["fg:Sub-Zero","mv:Scarlet Witch (Wanda Maximoff)"].forEach(drop);
+    for(const[r,n]of[["l",10],["e",50],["r",100]]){let k=0;const ids=Object.keys(S.own).filter(id=>BY[id]&&BY[id].r===r).sort((a,b)=>(S.since[b]||"").localeCompare(S.since[a]||""));
+      for(const id of ids){if(k>=n)break;if(drop(id))k++}}
+    S.fixTrix2={t:Date.now(),n:out.length,cards:out};save();renderAll();toast("Correction de l'admin appliquée sur ton compte")}
   async function grants(){if(!sb||!user||ME.banned)return;try{const r=await sb.rpc("claim_grants");if(r.error||!Array.isArray(r.data)||!r.data.length)return;
       r.data.forEach((g,i)=>{const got=giveRewards(g.rewards||[]);setTimeout(()=>toast("🎁 Cadeau de l'admin : "+(g.msg?g.msg+" · ":"")+got.join(", ")),i*2600)});save();renderAll();try{SND.coin()}catch(_){}}catch(_){}}
   async function announce(){if(!sb)return;try{const r=await sb.from("config").select("value,updated_at").eq("key","announce").maybeSingle();const bar=document.getElementById("annBar");if(!bar)return;
