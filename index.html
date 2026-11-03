@@ -2357,6 +2357,10 @@ html{scroll-behavior:smooth}
 .trbal b{font-size:14px;color:var(--bc)}.trbal small{color:var(--mute);font-size:12.5px;line-height:1.45}
 .trbal.ok{--bc:#22c55e}.trbal.warn{--bc:#f59e0b}.trbal.bad{--bc:#ff4d5a;box-shadow:inset 0 0 0 1px rgb(255 77 90 / .6)}
 @media (max-width:700px){.trsel{grid-template-columns:repeat(auto-fill,minmax(72px,1fr))}}
+.rchip:not(.c):not(.u):not(.r):not(.e):not(.l):not(.m):not(.d)::before{display:none}
+.trsel .trch2>i{top:5px;right:5px;width:24px;height:24px;background:rgb(10 10 12 / .72);border:1px solid rgb(255 255 255 / .28);color:#fff;font-size:15px;font-weight:700;box-shadow:0 2px 8px rgb(0 0 0 / .6);transition:background-color .15s,transform .15s}
+@media (hover:hover){.trsel .trch2>i{opacity:.85}.trsel .trch2:hover>i{background:#e11d2e;border-color:#e11d2e;opacity:1;transform:scale(1.08)}}
+.trch2>i{z-index:5}.trch2 .trci{position:relative;z-index:0}
 </style>
 
 <nav><div class="in">
