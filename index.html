@@ -2361,6 +2361,86 @@ html{scroll-behavior:smooth}
 .trsel .trch2>i{top:5px;right:5px;width:24px;height:24px;background:rgb(10 10 12 / .72);border:1px solid rgb(255 255 255 / .28);color:#fff;font-size:15px;font-weight:700;box-shadow:0 2px 8px rgb(0 0 0 / .6);transition:background-color .15s,transform .15s}
 @media (hover:hover){.trsel .trch2>i{opacity:.85}.trsel .trch2:hover>i{background:#e11d2e;border-color:#e11d2e;opacity:1;transform:scale(1.08)}}
 .trch2>i{z-index:5}.trch2 .trci{position:relative;z-index:0}
+@media (min-width:900px){
+  nav .in{gap:8px 28px!important}
+  nav .tabs{gap:2px;align-self:stretch;align-items:stretch}
+  nav .tab{flex:none!important;padding:0 12px!important;height:100%;min-height:56px;font-size:14.5px;font-weight:600;color:#a3a3ad;background:none!important;border-radius:0!important;gap:6px}
+  nav .tab .tico{display:none}
+  nav .tab:hover{color:#f5f5f6}
+  nav .tab[aria-current="true"]{color:#fff;font-weight:800}
+  nav .tab::after{left:12px!important;right:12px!important;bottom:0!important;top:auto!important;height:2.5px!important;border-radius:2px 2px 0 0!important;background:#e11d2e!important}
+  nav .tab.tabsm{align-self:center;height:auto;min-height:0;margin-left:6px;padding:5px 11px 5px 9px!important;font-size:12px;font-weight:700;border-radius:999px!important;background:#18181b!important;box-shadow:inset 0 0 0 1px #2c2c31;color:#a3a3ad}
+  nav .tab.tabsm .tico{display:block;width:14px;height:14px;opacity:.8;filter:none}
+  nav .tab.tabsm::after{display:none}
+  nav .tab.tabsm:hover{color:#fff;box-shadow:inset 0 0 0 1px #45454c}
+  nav .tab.tabsm[aria-current="true"]{color:#fff;font-weight:800;background:rgb(225 29 46 / .14)!important;box-shadow:inset 0 0 0 1px #e11d2e}
+  nav .tab.tabsm .mkdot{position:static;margin:0 0 0 2px}
+}
+.right .popw{order:0}
+#ntfBtn{position:relative}
+#ntfBtn .ico{width:19px;height:19px}
+.nbadge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#e11d2e;color:#fff;font:800 10.5px/18px var(--ui);text-align:center;box-shadow:0 0 0 2px #09090b}
+#ntfBtn.bring .ico{animation:bellring .9s cubic-bezier(.36,.07,.19,.97)}
+@keyframes bellring{0%,100%{transform:rotate(0)}15%{transform:rotate(16deg)}30%{transform:rotate(-14deg)}45%{transform:rotate(10deg)}60%{transform:rotate(-6deg)}75%{transform:rotate(3deg)}}
+#ntfPan{position:fixed;z-index:240;display:flex;flex-direction:column;max-height:min(70vh,560px);background:#141416;border-radius:18px;box-shadow:0 0 0 1px #2c2c31,0 30px 70px -20px #000;overflow:hidden;animation:ntfin .18s ease-out}
+#ntfPan[hidden]{display:none}
+@keyframes ntfin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.ntfh{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid #26262b}
+.ntfh b{font-size:16px}
+.ntfh button{font:700 12px var(--ui);color:#ff8a94;padding:4px 6px;border-radius:8px}
+.ntfh button:hover{background:rgb(255 255 255 / .05)}
+.ntfl{overflow-y:auto;padding:6px;display:flex;flex-direction:column;gap:2px}
+.ntfi{text-transform:none!important;letter-spacing:normal;font:inherit;position:relative;display:flex;align-items:center;gap:12px;padding:10px 12px 10px 10px;border-radius:12px;text-align:left;color:var(--fg);width:100%}
+.ntfi:hover{background:rgb(255 255 255 / .05)}
+.ntfi.unr{background:rgb(225 29 46 / .07)}
+.ntfi.unr::after{content:"";position:absolute;right:12px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:#e11d2e;box-shadow:0 0 8px #e11d2e}
+.ntfa{position:relative;flex:none;width:44px;height:52px;display:grid;place-items:center}
+.ntfc{display:block;width:40px;height:52px;border-radius:7px;overflow:hidden;position:relative;box-shadow:0 0 0 1.5px var(--rc,#444)}
+.ntfc .ai{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover;border-radius:0!important}
+.ntfo{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#1f1f23;color:#a3a3ad}
+.ntfo .ico{width:18px;height:18px}
+.ntfk{position:absolute;z-index:3;right:-4px;bottom:-2px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:#3a3a40;color:#fff;box-shadow:0 0 0 2px #141416}
+.ntfk .ico{width:11px;height:11px;stroke-width:2.4}
+.ntfk.k-wish{background:#e11d48}.ntfk.k-sold{background:#d97706}.ntfk.k-outbid{background:#7c3aed}.ntfk.k-freq,.ntfk.k-facc{background:#2563eb}.ntfk.k-tprop{background:#0891b2}.ntfk.k-tacc{background:#16a34a}.ntfk.k-tref{background:#52525b}
+.ntft{display:flex;flex-direction:column;gap:3px;min-width:0;padding-right:16px;font-size:13.5px;line-height:1.35;color:#d4d4d8}
+.ntft b{color:#fff;font-weight:800}
+.ntft small{font-size:11.5px;color:var(--mute)}
+.ntfe{display:flex;flex-direction:column;align-items:center;gap:6px;padding:28px 20px;text-align:center;color:var(--mute)}
+.ntfe .ico{width:28px;height:28px;color:#4ade80}.ntfe b{color:var(--fg);font-size:15px}.ntfe small{font-size:12.5px;line-height:1.5}
+.amav{position:relative;flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:hsl(var(--h,0) 45% 18%);box-shadow:0 0 0 2px hsl(var(--h,0) 70% 55%);color:hsl(var(--h,0) 80% 72%);overflow:hidden}
+.amav b{font:900 17px var(--ui)}
+.amav img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.amav.on::after{content:"";position:absolute;right:1px;bottom:1px;width:11px;height:11px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 2px #141416;z-index:1}
+.ntfa .amav{width:40px;height:40px}
+.amtabs{display:flex;gap:4px;border-bottom:1px solid #26262b;margin:4px 0 18px;overflow-x:auto;scrollbar-width:none}
+.amtabs button{position:relative;padding:12px 16px;font:700 14px var(--ui);color:#a3a3ad;white-space:nowrap}
+.amtabs button:hover{color:#fff}
+.amtabs button[aria-current="true"]{color:#fff}
+.amtabs button[aria-current="true"]::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:2.5px;border-radius:2px 2px 0 0;background:#e11d2e}
+.amtabs .cnt,.amh .cnt{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;margin-left:4px;border-radius:999px;background:#26262b;color:#d4d4d8;font:800 11px var(--ui)}
+.amcnt{color:var(--mute);font-size:12.5px;margin-bottom:10px}
+.amh{display:flex;align-items:center;margin:20px 0 10px;font-size:15px}
+.amh:first-child{margin-top:0}
+.aml{max-width:900px;border-radius:16px;background:#111113;box-shadow:inset 0 0 0 1px #26262b;overflow:hidden}
+.amr{display:flex;align-items:center;gap:14px;padding:12px 16px;border-top:1px solid #222226}
+.amr:first-child{border-top:0}
+.amr:hover{background:rgb(255 255 255 / .02)}
+.amn{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.amn b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.amn small{font-size:12px;color:var(--mute)}
+.amb{display:flex;gap:8px;align-items:center;flex:none}
+.ambtn{padding:10px 16px;border-radius:11px;font:700 13.5px var(--ui);color:#f5f5f6;background:transparent;box-shadow:inset 0 0 0 1px #3a3a40;transition:background-color .15s,box-shadow .15s}
+.ambtn:hover{background:rgb(255 255 255 / .05);box-shadow:inset 0 0 0 1px #55555c}
+.ambtn.pri{background:#f4f4f6;color:#0a0a0b;box-shadow:none}
+.ambtn.pri:hover{background:#fff}
+.ammut{font-size:12.5px;color:var(--mute);padding:0 4px}
+.amq{max-width:420px;margin-bottom:14px}
+@media (max-width:560px){.amr{padding:12px;gap:10px}.amav{width:40px;height:40px}.ambtn{padding:8px 11px;font-size:12.5px}.amb{gap:6px}.amn small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+.trsel .trch2>i.trxb{position:absolute!important;top:6px!important;right:6px!important;left:auto!important;bottom:auto!important;z-index:5;width:24px!important;height:24px!important;padding:0!important;margin:0!important;display:flex!important;align-items:center;justify-content:center;border-radius:50%;background:rgb(12 12 14 / .78)!important;border:1px solid rgb(255 255 255 / .22)!important;box-shadow:0 2px 8px rgb(0 0 0 / .55)!important;font-size:0!important;line-height:0!important;opacity:1!important;transform:none;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);transition:background-color .15s,border-color .15s,transform .15s}
+.trxb svg{display:block;width:12px;height:12px;fill:none;stroke:#fff;stroke-width:2.8;stroke-linecap:round}
+@media (hover:hover){.trsel .trch2:hover>i.trxb{background:#e11d2e!important;border-color:#e11d2e!important;transform:scale(1.1)}}
+#amBody .mkempty{max-width:900px}
+@media (max-width:899px){nav .tabs{grid-template-columns:repeat(6,1fr)!important;gap:0!important;padding-inline:4px!important}nav .tab{font-size:10px!important;padding-inline:0!important}nav .tab .mkdot{left:calc(50% + 6px)!important}}
 </style>
 
 <nav><div class="in">
@@ -2371,14 +2451,14 @@ html{scroll-behavior:smooth}
     <button class="tab" data-v="mis" aria-current="false">Missions <span class="dot" id="tabDot" hidden></span></button>
     <button class="tab" data-v="ar" aria-current="false">Arène</button>
     <button class="tab" data-v="mkt" aria-current="false">Marché <span class="mkdot" id="mkDot" hidden></span></button>
+    <button class="tab tabsm" data-v="ami" aria-current="false">Amis <span class="mkdot" id="amDot" hidden></span></button>
   </div>
   <div class="right">
-    <button class="misbtn" id="misBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>Missions<b class="mbadge" id="misBadge" hidden></b></button>
-    <span data-snd-slot></span>
-    <button class="icob" id="codeBtn" aria-label="Code cadeau" title="Code cadeau"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M7.5 8a2.5 2.5 0 1 1 4.5-1.5V8M16.5 8A2.5 2.5 0 1 0 12 6.5V8"/></svg></button>
-    <button class="icob" id="profBtn" aria-label="Profil" title="Profil"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button>
     <div class="popw"><button class="pill mono" id="pillBtn" aria-expanded="false"><span class="sbar"><i id="sbarI"></i></span><span id="nStock">10/10</span><span class="sep"></span><span class="gem">◆</span><span id="nCoins">0</span></button>
     <div class="spop" id="pop" hidden></div></div>
+    <button class="misbtn" id="misBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>Missions<b class="mbadge" id="misBadge" hidden></b></button>
+    <button class="icob" id="ntfBtn" aria-label="Notifications" title="Notifications"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><b class="nbadge" id="ntfBadge" hidden></b></button>
+    <button class="icob" id="profBtn" aria-label="Profil" title="Profil"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></button>
   </div>
 </div></nav>
 <div class="annbar" id="annBar" hidden></div>
@@ -2423,6 +2503,10 @@ html{scroll-behavior:smooth}
 <main id="vMkt" hidden><div class="in">
   <section class="mtop"><div class="eyebrow mono" style="color:var(--hot)">Hôtel des ventes · échanges · amis</div><h1>Le marché</h1><p>Achète la carte qui te manque, vends tes doublons au plus offrant, échange avec tes amis. <span class="mkw mono" id="mkWallet"></span></p></section>
   <div id="mkBody"></div>
+</div></main>
+<main id="vAmi" hidden><div class="in">
+  <section class="mtop"><div class="eyebrow mono" style="color:var(--hot)">Amis · collectionneurs</div><h1>Tes amis</h1><p>Ajoute d'autres collectionneurs, échange avec eux et montre-leur tes plus belles cartes.</p></section>
+  <div id="amBody"></div>
 </div></main>
 <main id="vMis" hidden><div class="in">
   <section class="mtop"><div class="eyebrow mono" style="color:var(--hot)">Missions · défis</div><h1>Missions <span>&amp;</span> succès</h1><p>Reviens chaque jour : la série de connexion, le pack du jour et les missions donnent des crédits et des boosters en plus des gratuits.</p></section>
@@ -3309,7 +3393,7 @@ const SND=(()=>{let ac=null;const ctx=()=>{if(S.mute)return null;try{ac=ac||new 
 function sndBtnHTML(){return `<button class="sndb" data-snd aria-label="${S.mute?"Activer le son":"Couper le son"}" title="${S.mute?"Activer le son":"Couper le son"}"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z"/>${S.mute?'<path d="M17 9l5 6M22 9l-5 6"/>':'<path d="M17 8.5a5 5 0 0 1 0 7M19.5 6a8.5 8.5 0 0 1 0 12"/>'}</svg></button>`}
 function paintSnd(){document.querySelectorAll("[data-snd-slot]").forEach(e=>e.innerHTML=sndBtnHTML())}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-snd]");if(!b)return;e.stopPropagation();S.mute=!S.mute;save();paintSnd();if(!S.mute)SND.coin()},true);
-const SVGI={swords:'<path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/><path d="M14.5 6.5 18 3h3v3l-3.5 3.5M5 14l4 4M7 17l-3 3M3 19l2 2"/>',pack:'<path d="M6 3.5l2 1.5 2-1.5 2 1.5 2-1.5 2 1.5 2-1.5v17l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5z"/><path d="M12 9.5l2.5 2.5-2.5 2.5-2.5-2.5z"/>',
+const SVGI={users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',swords:'<path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/><path d="M14.5 6.5 18 3h3v3l-3.5 3.5M5 14l4 4M7 17l-3 3M3 19l2 2"/>',pack:'<path d="M6 3.5l2 1.5 2-1.5 2 1.5 2-1.5 2 1.5 2-1.5v17l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5z"/><path d="M12 9.5l2.5 2.5-2.5 2.5-2.5-2.5z"/>',
  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
  gift:'<rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 12h18M12 8v13M12 8c-2-4-6-4-6-1.5S9 8 12 8c3 0 6-1 6-1.5S14 4 12 8"/>',
  target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
@@ -3700,9 +3784,9 @@ function renderColl(){
     return `<div class="cell">${q>1?`<i class="qty" title="${q} exemplaires">×${q}</i>`:""}<button data-id="${esc(c.id)}">${cardHTML(c)}</button><div class="under"><span>≈ ${nf(SELL[c.r])} ◆</span>${q>1?`<button class="sellb" data-sell="${esc(c.id)}">Vendre</button>`:""}</div></div>`}).join("")+(list.length>CLIM?`<div style="grid-column:1/-1;display:flex;justify-content:center"><button class="btn" id="cMore">Afficher plus · ${nf(list.length-CLIM)} restantes</button></div>`:""):`<p class="empty">Aucune carte ne correspond.</p>`;
   const cm=$("#cMore");if(cm)cm.onclick=()=>{CLIM+=240;renderColl()};
 }
-let VIEW="boost",DIRTY={boost:false,coll:false,mis:true,mkt:true,ar:true},raQ=0;
+let VIEW="boost",DIRTY={boost:false,coll:false,mis:true,mkt:true,ar:true,ami:true},raQ=0;
 function renderNow(){raQ=0;regen();ensureState();checkAch();renderTop();for(const k in DIRTY)DIRTY[k]=true;renderView(VIEW);DIRTY[VIEW]=false;renderPop()}
-function renderView(v){if(v==="boost"){renderHero();renderChips();renderPacks()}else if(v==="coll")renderColl();else if(v==="mkt")MK.paint();else if(v==="ar")AR.paint();else renderMis()}
+function renderView(v){if(v==="boost"){renderHero();renderChips();renderPacks()}else if(v==="coll")renderColl();else if(v==="mkt")MK.paint();else if(v==="ami")MK.paintAmi();else if(v==="ar")AR.paint();else renderMis()}
 function renderAll(){if(raQ)return;raQ=requestAnimationFrame(renderNow)}
 
 const STREAK0=[20,30,40,50,60,80,100],STREAK=[];STREAK0.forEach((v,i)=>Object.defineProperty(STREAK,i,{get(){return v*(evIs("str2")?2:1)},enumerable:true}));STREAK.length=7;
@@ -4163,7 +4247,7 @@ let tt;function toast(t){clearTimeout(tt);let e=$(".toast");if(!e){e=document.cr
 function view(v){
   document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-current",b.dataset.v===v));
   VIEW=v;if(DIRTY[v]){renderView(v);DIRTY[v]=false}
-  $("#vBoost").hidden=v!=="boost";$("#vColl").hidden=v!=="coll";$("#vMis").hidden=v!=="mis";$("#vMkt").hidden=v!=="mkt";$("#vAr").hidden=v!=="ar";window.scrollTo({top:0,behavior:"instant"});
+  $("#vBoost").hidden=v!=="boost";$("#vColl").hidden=v!=="coll";$("#vMis").hidden=v!=="mis";$("#vMkt").hidden=v!=="mkt";$("#vAmi").hidden=v!=="ami";$("#vAr").hidden=v!=="ar";window.scrollTo({top:0,behavior:"instant"});
 }
 document.addEventListener("click",e=>{
   const tb=e.target.closest(".tab");if(tb){view(tb.dataset.v);return}
@@ -4257,8 +4341,8 @@ const MK=(()=>{
   const gAdd=n=>{gLeft();S.gday.n=Math.max(0,S.gday.n+n)};
   const gBack=(o,n)=>{if(n>0&&o&&o.t&&ymd(new Date(o.t))===today())gAdd(-n)};
   const minP=c=>c&&c.r==="d"?DMIN:1;
-  const nm=id=>id===me?"Toi":(NAMES[id]||"Joueur");
-  async function names(ids){ids=[...new Set(ids.filter(x=>x&&x!==me&&!x.startsWith("npc")&&NAMES[x]===undefined))];if(!ids.length||!user)return;try{const ps=await user.profiles(ids);for(const i of ids)NAMES[i]=(ps[i]&&ps[i].name)||"Joueur"}catch(_){}}
+  const nm=id=>id==="npc"?"Un marchand":id===me?"Toi":(NAMES[id]||"Joueur");
+  const AVS={};async function names(ids){ids=[...new Set(ids.filter(x=>x&&x!==me&&!x.startsWith("npc")&&NAMES[x]===undefined))];if(!ids.length||!user)return;ids.forEach(i=>NAMES[i]=null);try{const ps=await user.profiles(ids);for(const i of ids){NAMES[i]=(ps[i]&&ps[i].name)||"Joueur";if(ps[i]&&ps[i].avatar)AVS[i]=ps[i].avatar}paint();paintAmi();NTF.paint()}catch(_){ids.forEach(i=>{if(NAMES[i]===null)delete NAMES[i]})}}
   /* marchands PNJ : renouvelés chaque jour, déterministes */
   function rnd(seed){let s=seed>>>0;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
   function npc(){const d=today(),seed=[...d].reduce((a,c)=>a*31+c.charCodeAt(0),7),R=rnd(seed),out=[];const sold=(S.npcBuy&&S.npcBuy.d===d)?S.npcBuy.ids:[];
@@ -4270,10 +4354,10 @@ const MK=(()=>{
   window.addEventListener("rosika-online",()=>{if(!ready)init()});
   async function init(){try{if(ready)return;[db,user]=await getBackend();if(!db||!user)return;me=await user.id();if(!me)return;
     pushPlayer(true);
-    unsub.push(db.collection("listings").where("status","in",["open","sold","done"]).orderBy("t","desc").limit(800).onSnapshot(s=>{for(const k in L)delete L[k];s.docs.forEach(d=>L[d.id]={id:d.id,...d.data()});settle();names(Object.values(L).map(x=>x.seller));paint()},()=>{}));
-    unsub.push(db.collection("offers").orderBy("t","desc").limit(600).onSnapshot(s=>{for(const k in O)delete O[k];s.docs.forEach(d=>O[d.id]={id:d.id,...d.data()});settle();names(Object.values(O).flatMap(x=>[x.from,x.to,x.taker]));paint()},()=>{}));
-    unsub.push(db.collection("friends").limit(800).onSnapshot(s=>{for(const k in FRQ)delete FRQ[k];s.docs.forEach(d=>FRQ[d.id]={id:d.id,...d.data()});names(Object.values(FRQ).flatMap(x=>[x.from,x.to]));paint();badge()},()=>{}));
-    unsub.push(db.collection("players").orderBy("t","desc").limit(300).onSnapshot(s=>{for(const k in PL)delete PL[k];s.docs.forEach(d=>PL[d.id]=d.data());names(Object.keys(PL));paint()},()=>{}));
+    unsub.push(db.collection("listings").where("status","in",["open","sold","done"]).orderBy("t","desc").limit(800).onSnapshot(s=>{for(const k in L)delete L[k];s.docs.forEach(d=>L[d.id]={id:d.id,...d.data()});settle();names(Object.values(L).flatMap(x=>[x.seller,x.buyer,x.bidder]));NTF.scan();paint()},()=>{}));
+    unsub.push(db.collection("offers").orderBy("t","desc").limit(600).onSnapshot(s=>{for(const k in O)delete O[k];s.docs.forEach(d=>O[d.id]={id:d.id,...d.data()});settle();names(Object.values(O).flatMap(x=>[x.from,x.to,x.taker]));NTF.scan();paint();paintAmi()},()=>{}));
+    unsub.push(db.collection("friends").limit(800).onSnapshot(s=>{for(const k in FRQ)delete FRQ[k];s.docs.forEach(d=>FRQ[d.id]={id:d.id,...d.data()});names(Object.values(FRQ).flatMap(x=>[x.from,x.to]));NTF.scan();paint();paintAmi();badge()},()=>{}));
+    unsub.push(db.collection("players").orderBy("t","desc").limit(300).onSnapshot(s=>{for(const k in PL)delete PL[k];s.docs.forEach(d=>PL[d.id]=d.data());names(Object.keys(PL));paint();paintAmi()},()=>{}));
     ready=true;paint()}catch(e){}}
   /* collection visible par les amis : 2 bitsets (possédées / en double libre) */
   const IDX=Object.fromEntries(CARDS.map((c,i)=>[c.id,i]));
@@ -4282,8 +4366,8 @@ const MK=(()=>{
   function bits(){const o=new Uint8Array(Math.ceil(CARDS.length/8)),d=new Uint8Array(o.length);
     for(const id in S.own){const i=IDX[id];if(i===undefined||!(S.own[id]>0))continue;o[i>>3]|=1<<(i&7);if(ownFree(id)>=1)d[i>>3]|=1<<(i&7)}return{ob:b64(o),db:b64(d)}}
   const BC={};const bitHas=(t,i)=>{const u=BC[t]||(BC[t]=unb64(t));return !!(u[i>>3]&(1<<(i&7)))};
-  let lastPub="";
-  function pushPlayer(force){if(!db||!me)return;const b=bits(),k=b.ob+"|"+b.db;if(!force&&k===lastPub)return;lastPub=k;
+  let lastPub="",lastPubT=0;
+  function pushPlayer(force){if(!db||!me)return;const b=bits(),k=b.ob+"|"+b.db;if(!force&&k===lastPub&&now()-lastPubT<5*60e3)return;lastPub=k;lastPubT=now();
     db.doc("players/"+me).set({id:me,t:now(),n:Object.keys(S.own).length,ob:b.ob,db:b.db}).catch(()=>{lastPub=""})}
   setInterval(()=>{if(ready)pushPlayer(false)},60e3);
   const theirOwn=(id,cid)=>{const p=PL[id];return !!(p&&p.ob&&bitHas(p.ob,IDX[cid]))};
@@ -4299,7 +4383,7 @@ const MK=(()=>{
         else if(x.seller===me&&!x.bidder){unlock(x.card);db.doc("listings/"+x.id).update({status:"done",paid:true,expired:true}).catch(()=>{});ch=true}}
     }
     for(const lid in S.bids){const x=L[lid];if(!x)continue;if(x.status!=="open"&&x.buyer===me){get(x.card);delete S.bids[lid];ch=true;toast(`Enchère gagnée : ${BY[x.card].s}`);continue}
-      if(x.bidder!==me){S.coins+=S.bids[lid];delete S.bids[lid];ch=true;toast("Enchère dépassée · mise remboursée")}}
+      if(x.bidder!==me){NTF.add("o:"+lid+":"+x.bid,"outbid",now(),x.bidder,x.card,{p:x.bid,lid});S.coins+=S.bids[lid];delete S.bids[lid];ch=true;toast("Enchère dépassée par "+nm(x.bidder)+" · mise remboursée")}}
     S.gesc=S.gesc||{};S.orel=S.orel||{};
     for(const o of Object.values(O)){
       if(o.v===2&&o.from===me){
@@ -4382,7 +4466,7 @@ const MK=(()=>{
     const tile=id=>{const c=BY[id],mine=T.side==="me",free=mine?ownAvail(id):1,dup=mine?ownFree(id)>=1:theirDup(to,id),sel=(mine?T.give:T.want).includes(id);
       const tag=mine?(theirOwn(to,id)?"":`<span class="trtag">Il lui manque</span>`):(S.own[id]?"":`<span class="trtag">Il te manque</span>`);
       return `<button class="trt${sel?" on":""}${free<1?" off":""}" data-trp="${esc(id)}" ${free<1?"disabled":""}><span class="trc" style="--rc:var(--${c.r})">${artHTML(c)||`<em>${esc(c.s.slice(0,2))}</em>`}<i>${c.r.toUpperCase()}</i></span><b>${esc(c.s)}</b>${tag}<small class="mono">${nf(cval(c))} ◆</small><small>${dup?(mine?"×"+free+" dispo":"En double"):(mine?"Ton seul exemplaire":"Son seul exemplaire")}</small></button>`};
-    const chip=id=>`<button class="trch2" data-trx="${esc(id)}" title="Retirer ${esc(BY[id].s)}" style="--rc:var(--${BY[id].r})"><span class="trci">${artHTML(BY[id],1)||`<em>${esc(BY[id].s.slice(0,2))}</em>`}</span><span class="trcn">${esc(BY[id].s)}</span><span class="trcv mono">${nf(cval(BY[id]))} ◆</span><i aria-hidden="true">×</i></button>`;
+    const chip=id=>`<button class="trch2" data-trx="${esc(id)}" title="Retirer ${esc(BY[id].s)}" style="--rc:var(--${BY[id].r})"><span class="trci">${artHTML(BY[id],1)||`<em>${esc(BY[id].s.slice(0,2))}</em>`}</span><span class="trcn">${esc(BY[id].s)}</span><span class="trcv mono">${nf(cval(BY[id]))} ◆</span><i class="trxb" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7 7 17"/></svg></i></button>`;
     const sval=(ids,g)=>ids.reduce((a,id)=>a+cval(BY[id]),0)+(g|0);
     const bal=who=>{const gv=sval(T.give,T.gG),wv=sval(T.want,T.wG),net=gv-wv,mg=Math.max(0,net),tg=Math.max(0,-net),left=gLeft(),tot=Math.max(gv,wv,1);let cls,tt,tx,pct;
       if(!gv&&!wv)return{empty:true,ok:false};
@@ -4441,7 +4525,7 @@ const MK=(()=>{
     try{await db.doc("friends/"+k).set({from:me,to:id,status:"pending",t:now()})}catch(_){return toast("Demande impossible pour l'instant")}toast("Demande envoyée à "+nm(id))}
   async function acceptFriend(f){try{await db.doc("friends/"+f.id).update({status:"ok",at:now()})}catch(_){return toast("Demande expirée")}toast("Vous êtes maintenant amis")}
   async function removeFriend(id){await db.doc("friends/"+fid(me,id)).delete();toast("Ami retiré")}
-  function badge(){const n=incoming().length+Object.values(O).filter(o=>o.to===me&&o.status==="open"&&(!o.exp||o.exp>now())).length;const d=$("#mkDot");if(d){d.hidden=!n;d.textContent=n||""}}
+  function badge(){const n=Object.values(O).filter(o=>o.to===me&&o.status==="open"&&(!o.exp||o.exp>now())).length,fi=incoming().length;const d=$("#mkDot");if(d){d.hidden=!n;d.textContent=n||""}const a=$("#amDot");if(a){a.hidden=!fi;a.textContent=fi||""}}
   /* rendu */
   const priceOf=x=>x.kind==="auction"?x.bid:x.price;
   function filt(arr){const q=Q.trim().toLowerCase();return arr.filter(x=>{const c=BY[x.card];if(!c||PURGE1.includes(x.card)||(PURGE2.includes(x.card)&&(x.t||0)<CUT2))return false;if(RF!=="all"&&c.r!==RF)return false;if(UF!=="all"&&c.f!==UF)return false;if(ONLYMISS&&S.own[c.id])return false;if(ONLYWISH&&!S.wish[c.id])return false;return !q||c.n.toLowerCase().includes(q)||c.s.toLowerCase().includes(q)||FR[c.f].toLowerCase().includes(q)})}
@@ -4500,12 +4584,75 @@ const MK=(()=>{
       return `<div class="act"><span class="ai2">${f?artHTML(BY[f],1):""}</span><div><b>${esc(lab)}</b><small>${o.from===me?"tu donnes"+(o.to?" à "+esc(nm(o.to)):""):esc(nm(o.from))+" donne"}${ag?" · contre "+esc(ag):""}</small></div><span class="sti">${{open:"Ouverte",done:"Conclue",cancel:"Retirée",refused:"Refusée",expired:"Expirée"}[o.status]||""}</span>${o.status==="open"&&o.from===me?`<button class="sec" data-ocx="${o.id}">Retirer</button>`:""}</div>`}).join("");
     return `<div class="mkchips">${tab.map(([k,t])=>`<button class="rchip" data-sub="${k}" aria-pressed="${SUB===k}">${t}</button>`).join("")}</div>${body||`<div class="mkempty">Rien ici pour l'instant.</div>`}`}
   function paint(){badge();if(VIEW!=="mkt")return;const el=$("#mkBody");if(!el)return;const f=document.activeElement&&document.activeElement.id==="mkQ",pos=f?document.activeElement.selectionStart:0;
-    const tabs=[["buy","Acheter"],["auc","Enchères"],["sell","Vendre"],["trade","Échanges"],["friends","Amis"],["act","Mon activité"]];
+    if(TAB==="friends")TAB="buy";const tabs=[["buy","Acheter"],["auc","Enchères"],["sell","Vendre"],["trade","Échanges"],["act","Mon activité"]];
     const inc=incoming().length,dm=Object.values(O).filter(o=>o.to===me&&o.status==="open").length;
     el.innerHTML=`<div class="mktabs">${tabs.map(([k,t])=>`<button data-mt="${k}" aria-current="${TAB===k}">${t}${k==="friends"&&inc?` <span class="cnt">${inc}</span>`:""}${k==="trade"&&dm?` <span class="cnt">${dm}</span>`:""}</button>`).join("")}</div>
     ${!db&&TAB!=="buy"&&TAB!=="auc"&&TAB!=="sell"?`<div class="mkempty">${typeof SBX!=="undefined"&&SBX&&SBX.on()?`<b>Marché entre joueurs, échanges et amis</b><br>Connecte-toi avec ton compte Discord pour y accéder.<br><button class="dsb" data-dsc="in" style="margin-top:12px">Se connecter avec Discord</button>`:"Le marché entre joueurs, les échanges et les amis arrivent bientôt."}</div>`:TAB==="buy"?vBuy(0):TAB==="auc"?vBuy(1):TAB==="sell"?vSell():TAB==="trade"?vTrade():TAB==="friends"?vFriends():vAct()}`;
     if(f){const q=$("#mkQ");if(q){q.focus();q.setSelectionRange(pos,pos)}}
     $("#mkWallet").innerHTML=`<span class="gem">◆</span> ${nf(S.coins)}`}
+  /* ===== Page Amis ===== */
+  let ATAB="list",AQ="";
+  const seen=id=>{const p=PL[id];if(!p||!p.t)return "";const m=now()-p.t;return m<6*60e3?"En ligne":"Vu il y a "+left(m).replace(/ \d+ min$/,"").replace(/ 0 h$/,"")};
+  const avHTML=id=>{const n=nm(id)||"?",hue=[...String(id)].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,7)%360,on=PL[id]&&now()-(PL[id].t||0)<6*60e3;return `<span class="amav${on?" on":""}" style="--h:${hue}"><b>${esc(n.trim().charAt(0).toUpperCase()||"?")}</b>${AVS[id]?`<img src="${esc(AVS[id])}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:""}</span>`};
+  function paintAmi(){if(VIEW!=="ami")return;const el=$("#amBody");if(!el)return;const f=document.activeElement&&document.activeElement.id==="amQ",pos=f?document.activeElement.selectionStart:0;
+    if(!db){el.innerHTML=`<div class="mkempty">${typeof SBX!=="undefined"&&SBX&&SBX.on()?`<b>Amis et échanges</b><br>Connecte-toi avec ton compte Discord pour ajouter des amis.<br><button class="dsb" data-dsc="in" style="margin-top:12px">Se connecter avec Discord</button>`:"Les amis arrivent bientôt."}</div>`;return}
+    const fr=friends().sort((a,b)=>(PL[b]&&PL[b].t||0)-(PL[a]&&PL[a].t||0)),inc=incoming(),out=outgoing(),q=AQ.trim().toLowerCase();
+    const row=(id,btns)=>`<div class="amr">${avHTML(id)}<div class="amn"><b>${esc(nm(id))}</b><small>${seen(id)||"&nbsp;"}${PL[id]?` · ${nf(PL[id].n||0)} cartes`:""}</small></div><div class="amb">${btns}</div></div>`;
+    const tabs=[["list","Amis",fr.length],["req","Demandes",inc.length],["add","Ajouter",0]];
+    let body="";
+    if(ATAB==="list")body=`<div class="amcnt mono">${nf(fr.length)} ami${fr.length>1?"s":""}</div>${fr.length?`<div class="aml">${fr.map(id=>row(id,`<button class="ambtn pri" data-dm="${id}">Échanger</button><button class="ambtn" data-fr="${id}">Retirer</button>`)).join("")}</div>`:`<div class="mkempty">Pas encore d'amis. Va dans « Ajouter » pour en trouver.</div>`}`;
+    else if(ATAB==="req")body=`<h4 class="amh">Reçues <span class="cnt">${inc.length}</span></h4>${inc.length?`<div class="aml">${inc.map(f=>row(f.from,`<button class="ambtn pri" data-fa="${f.id}">Accepter</button><button class="ambtn" data-fd="${f.id}">Refuser</button>`)).join("")}</div>`:`<div class="mkempty">Aucune demande reçue.</div>`}
+      <h4 class="amh">Envoyées <span class="cnt">${out.length}</span></h4>${out.length?`<div class="aml">${out.map(f=>row(f.to,`<span class="ammut">En attente</span><button class="ambtn" data-fd="${f.id}">Annuler</button>`)).join("")}</div>`:`<div class="mkempty">Aucune demande envoyée.</div>`}`;
+    else{const others=Object.keys(PL).filter(id=>id!==me&&!fr.includes(id)&&(!q||(nm(id)||"").toLowerCase().includes(q))).sort((a,b)=>(PL[b].t||0)-(PL[a].t||0));
+      body=`<input class="mksr amq" id="amQ" placeholder="Chercher un joueur…" value="${esc(AQ)}">${others.length?`<div class="aml">${others.slice(0,80).map(id=>{const p=out.find(f=>f.to===id),r=inc.find(f=>f.from===id);return row(id,r?`<button class="ambtn pri" data-fa="${r.id}">Accepter sa demande</button>`:p?`<span class="ammut">Demande envoyée</span>`:`<button class="ambtn pri" data-fadd="${id}">Ajouter</button>`)}).join("")}</div>`:`<div class="mkempty">${q?"Aucun joueur trouvé.":"Aucun autre joueur pour l'instant. Partage le jeu avec tes amis !"}</div>`}`}
+    el.innerHTML=`<div class="amtabs">${tabs.map(([k,t,n])=>`<button data-at="${k}" aria-current="${ATAB===k}">${t}${n?` <span class="cnt">${n}</span>`:""}</button>`).join("")}</div>${body}`;
+    if(f){const x=$("#amQ");if(x){x.focus();x.setSelectionRange(pos,pos)}}}
+  /* ===== Notifications ===== */
+  const NTF=(()=>{let el=null;
+    const st=()=>{if(!S.ntf||!S.ntf.l)S.ntf={l:[],k:{},t0:now()};return S.ntf};
+    let bt=0;function bump(){clearTimeout(bt);bt=setTimeout(()=>{save();paint()},60);const b=$("#ntfBtn");if(b){b.classList.remove("bring");void b.offsetWidth;b.classList.add("bring")}}
+    function add(key,k,t,who,card,x){const N=st();if(N.k[key])return false;N.k[key]=now();t=t||now();const it={id:key,k,t,who:who||"",card:card||"",x:x||{},r:t<N.t0-24*H?1:0};N.l.push(it);N.l.sort((a,b)=>b.t-a.t);if(N.l.length>60)N.l.length=60;
+      const lim=now()-30*24*H;for(const kk in N.k)if(N.k[kk]<lim)delete N.k[kk];if(!it.r)bump();return true}
+    function scan(){if(!S.wish)return;const day=new Date(today()+"T00:00:00").getTime();
+      for(const x of all())if(x.seller!==me&&S.wish[x.card])add("w:"+x.id,"wish",x.npc?day:(x.t||now()),x.npc?"npc":x.seller,x.card,{p:x.kind==="auction"?x.bid:x.price,a:x.kind==="auction"?1:0});
+      if(me){
+      for(const x of Object.values(L))if(x.seller===me&&(x.status==="sold"||x.status==="done")&&!x.expired&&x.buyer)add("s:"+x.id,"sold",x.st||x.t,x.buyer,x.card,{p:x.kind==="auction"?x.bid:x.price});
+      for(const f of Object.values(FRQ)){if(f.status==="pending"&&f.to===me)add("fq:"+f.id+":"+(f.t||0),"freq",f.t,f.from);if(f.status==="ok"&&f.from===me)add("fa:"+f.id+":"+(f.at||f.t||0),"facc",f.at||f.t,f.to)}
+      for(const o of Object.values(O)){const gv=(Array.isArray(o.give)?o.give:[o.give]).filter(id=>BY[id]);
+        if(o.status==="open"&&o.to===me&&(!o.exp||o.exp>now()))add("tp:"+o.id,"tprop",o.t,o.from,gv[0]||"",{n:gv.length,gg:o.giveG|0});
+        if(o.from===me&&o.status==="done")add("ta:"+o.id,"tacc",o.dt||o.t,o.taker||o.to,gv[0]||"");
+        if(o.from===me&&o.status==="refused")add("tr:"+o.id,"tref",o.t,o.to,gv[0]||"")}}
+      paint()}
+    const cn=id=>BY[id]?`<b>${esc(BY[id].s)}</b>`:"une carte";
+    const W=id=>`<b>${esc(nm(id))}</b>`;
+    const txt=it=>{const x=it.x||{};switch(it.k){
+      case "wish":return `${W(it.who)} ${x.a?"met aux enchères":"vend"} ${cn(it.card)}, une carte de tes envies · ${nf(x.p||0)} ◆`;
+      case "sold":return `${W(it.who)} a acheté ton ${cn(it.card)} · +${nf(x.p||0)} ◆`;
+      case "outbid":return `${W(it.who)} a misé plus que toi sur ${cn(it.card)} · ${nf(x.p||0)} ◆`;
+      case "freq":return `${W(it.who)} veut être ton ami`;
+      case "facc":return `${W(it.who)} a accepté ta demande d'ami`;
+      case "tprop":return `${W(it.who)} te propose un échange${it.card?` : ${cn(it.card)}${x.n>1?` + ${x.n-1} autre${x.n>2?"s":""}`:""}`:x.gg?` : ${nf(x.gg)} ◆`:""}`;
+      case "tacc":return `${W(it.who)} a accepté ton échange`;
+      case "tref":return `${W(it.who)} a refusé ton échange`}return ""};
+    const icoK={wish:"heart",sold:"coin",outbid:"clock",freq:"users",facc:"users",tprop:"cards",tacc:"check",tref:"x"};
+    const ago=t=>{const m=now()-t;return m<6e4?"à l'instant":m<H?"il y a "+Math.floor(m/6e4)+" min":m<24*H?"il y a "+Math.floor(m/H)+" h":"il y a "+Math.floor(m/(24*H))+" j"};
+    function unread(){return st().l.filter(i=>!i.r).length}
+    const thumb=it=>{const c=BY[it.card],a=c?artHTML(c,1):"";return a?`<span class="ntfc" style="--rc:var(--${c.r})">${a}</span>`:it.who&&it.who!=="npc"?avHTML(it.who):`<span class="ntfo">${ico(icoK[it.k]||"star")}</span>`};
+    function paint(){const n=unread(),b=$("#ntfBadge");if(b){b.hidden=!n;b.textContent=n>9?"9+":n}if(!el||el.hidden)return;const N=st();
+      el.innerHTML=`<div class="ntfh"><b>Notifications</b>${n?`<button data-nall>Tout marquer comme lu</button>`:""}</div><div class="ntfl">${N.l.length?N.l.map(it=>`<button class="ntfi${it.r?"":" unr"}" data-ni="${esc(it.id)}"><span class="ntfa">${thumb(it)}<span class="ntfk k-${it.k}">${ico(icoK[it.k]||"star")}</span></span><span class="ntft"><span>${txt(it)}</span><small>${ago(it.t)}</small></span></button>`).join(""):`<div class="ntfe">${ico("check")}<b>Rien de nouveau</b><small>Tu seras prévenu ici quand un joueur vend une carte de tes envies, achète ta carte, te dépasse aux enchères, t'ajoute en ami ou te propose un échange.</small></div>`}</div>`}
+    function place(){const b=$("#ntfBtn");if(!b||!el)return;const r=b.getBoundingClientRect(),w=Math.min(380,innerWidth-16);el.style.width=w+"px";el.style.top=Math.round(r.bottom+10)+"px";el.style.left=Math.round(Math.max(8,Math.min(innerWidth-w-8,r.right-w)))+"px"}
+    function open(){if(!el){el=document.createElement("div");el.id="ntfPan";el.setAttribute("role","dialog");el.setAttribute("aria-label","Notifications");document.body.append(el)}el.hidden=false;paint();place();try{PMENU.close()}catch(_){}}
+    function close(){if(el)el.hidden=true}
+    function go(it){const k=it.k,c=BY[it.card];const toMkt=(tab,q,sub)=>{if(sub)SUB=sub;TAB=tab;Q=q||"";lim=36;DIRTY.mkt=true;view("mkt");paintM()};
+      if(k==="wish")toMkt(it.x&&it.x.a?"auc":"buy",c?c.s:"");else if(k==="sold")toMkt("act","","sales");else if(k==="outbid")toMkt("auc",c?c.s:"");
+      else if(k==="freq"||k==="facc"){ATAB=k==="freq"?"req":"list";DIRTY.ami=true;view("ami");paintAmi()}else if(k==="tprop")toMkt("trade");else toMkt("act","","trades")}
+    document.addEventListener("click",e=>{const t=e.target;if(!t.closest)return;if(t.closest("#ntfBtn")){e.stopPropagation();el&&!el.hidden?close():open();return}
+      if(!el||el.hidden)return;if(t.closest("[data-nall]")){st().l.forEach(i=>i.r=1);save();paint();return}
+      const b=t.closest("[data-ni]");if(b){const it=st().l.find(i=>i.id===b.dataset.ni);if(it){it.r=1;save();close();go(it);paint()}return}
+      if(!t.closest("#ntfPan"))close()});
+    document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});addEventListener("resize",()=>{if(el&&!el.hidden)place()});
+    return{scan,add,paint,open,close,unread}})();
+  const paintM=()=>paint();
   /* dialogue vente / offre */
   function dlg(html,wire){let d=$("#mkDlg");if(!d){d=document.createElement("div");d.id="mkDlg";d.className="mkdlg";document.body.append(d)}d.innerHTML=`<div class="mkbox">${html}<button class="mkx" aria-label="Fermer">×</button></div>`;d.hidden=false;d.onclick=e=>{if(e.target===d||e.target.closest(".mkx"))d.hidden=true};wire(d)}
   function sellDlg(id,to,tr){const c=BY[id],b=base(c.r);let mode=to||tr?"trade":"fixed",want=[];
@@ -4527,11 +4674,12 @@ const MK=(()=>{
   function pickToGive(to){const RK={c:0,u:1,r:2,e:3,l:4,m:5,d:6};const ids=Object.keys(S.own).filter(id=>ownAvail(id)>=1&&BY[id]).sort((a,b)=>ownFree(b)-ownFree(a)||RK[BY[b].r]-RK[BY[a].r]);
     dlg(`<h3>Que veux-tu donner${to?" à "+esc(nm(to)):""} ?</h3><p class="mkh">Choisis n'importe laquelle de tes cartes.</p><div class="mkg sm">${ids.map(id=>`<button class="mksl" data-pg="${esc(id)}">${cardHTML(BY[id],{noWish:true})}<span>${ownFree(id)>=1?"×"+ownAvail(id):"Seul exemplaire"}</span></button>`).join("")||`<div class="mkempty">Aucune carte disponible.</div>`}</div>`,d=>d.querySelectorAll("[data-pg]").forEach(b=>b.onclick=()=>sellDlg(b.dataset.pg,to||"",1)))}
   /* événements */
-  document.addEventListener("click",e=>{const t=e.target;if(!t.closest)return;const inM=t.closest("#vMkt");
+  document.addEventListener("click",e=>{const t=e.target;if(!t.closest)return;const inM=t.closest("#vMkt,#vAmi");
     const z=t.closest("[data-z]");if(z&&(inM||t.closest("#mkDlg"))&&!t.closest("#mkDlg .mkdh")){if(t.closest("#mkDlg"))$("#mkDlg").hidden=true;openZoom(z.dataset.z);return}
     if(!inM)return;
     const g=k=>t.closest("["+k+"]"),A=(k)=>g(k)&&g(k).getAttribute(k);
     if(g("data-mt")){TAB=A("data-mt");lim=36;Q="";paint();return}
+    if(g("data-at")){ATAB=A("data-at");AQ="";paintAmi();return}
     if(g("data-mr")){RF=A("data-mr");paint();return}
     if(g("data-sub")){SUB=A("data-sub");paint();return}
     if(t.closest("#mkMiss")){ONLYMISS=!ONLYMISS;paint();return}
@@ -4553,10 +4701,10 @@ const MK=(()=>{
     if(g("data-dm")){tradeDlg(A("data-dm"));return}
     if(g("data-acc2")){const o=O[A("data-acc2")];if(o)accept2(o).then(paint);return}
   });
-  let qt;document.addEventListener("input",e=>{if(e.target.id==="mkQ"){Q=e.target.value;clearTimeout(qt);qt=setTimeout(paint,180)}});
+  let qt;document.addEventListener("input",e=>{if(e.target.id==="mkQ"){Q=e.target.value;clearTimeout(qt);qt=setTimeout(paint,180)}if(e.target.id==="amQ"){AQ=e.target.value;clearTimeout(qt);qt=setTimeout(paintAmi,180)}});
   document.addEventListener("change",e=>{if(e.target.id==="mkU"){UF=e.target.value;paint()}if(e.target.id==="mkS"){SORT=e.target.value;paint()}});
-  setInterval(()=>{if(ready)settle();if(VIEW==="mkt"&&(TAB==="auc"||TAB==="act")&&!document.querySelector("#vMkt input:focus"))paint()},30000);
-  return{init,paint,ownFree,tradeDlg}})();
+  setTimeout(()=>NTF.scan(),1500);setInterval(()=>{if(ready)settle();NTF.scan();if(VIEW==="mkt"&&(TAB==="auc"||TAB==="act")&&!document.querySelector("#vMkt input:focus"))paint()},30000);
+  return{init,paint,paintAmi,ownFree,tradeDlg,ntf:NTF}})();
 setTimeout(()=>MK.init(),400);
 
 const AR=(()=>{
@@ -4590,7 +4738,7 @@ const AR=(()=>{
   const teamPow=ids=>ids.reduce((s,id)=>s+(BY[id]?score(BY[id]):0),0);
   const BOTN=["Nova","Kaze","Mira","Blaze","Orion","Luna","Zed","Kira","Axel","Nyx","Rook","Vega","Sora","Ivy","Jinx","Atlas","Echo","Rex"];
   const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-  const nm=id=>id===me?"Toi":(NAMES[id]||"Joueur");
+  const nm=id=>id==="npc"?"Un marchand":id===me?"Toi":(NAMES[id]||"Joueur");
 
   function botDeck(my,t){const L=Math.min(1,t/2600),up=.12+.3*L,dn=.38-.28*L,out=[];
     for(const id of my){const c=BY[id];let k=ORD.indexOf(c.r);const x=Math.random();if(x<up)k=Math.max(0,k-1);else if(x<up+dn)k=Math.min(ORD.length-1,k+1);
@@ -4806,7 +4954,7 @@ var SBX=(()=>{let synced=false,syncing=false,syncUid=null,checked=false,sb=null,
     try{const fp=await deviceFP();if(fp)await sb.rpc("register_device",{p_fp:fp})}catch(_){}
     try{const r=await sb.rpc("my_status");if(!r.error&&r.data){ME=Object.assign(ME,r.data);if(r.data.name)dname=r.data.name}}catch(_){}
     paint();if(ME.banned){if(/^Multi-compte/.test(ME.reason||""))multiLock();else toast("Compte suspendu"+(ME.reason?" : "+ME.reason:""))}
-    const uapi={id:async()=>uid,profiles:async ids=>{const o={};ids=ids.filter(Boolean);if(!ids.length)return o;const r=await sb.from("docs").select("id,data").eq("col","profiles").in("id",ids);for(const x of r.data||[])o[x.id]={name:x.data&&x.data.name};return o}};
+    const uapi={id:async()=>uid,profiles:async ids=>{const o={};ids=ids.filter(Boolean);if(!ids.length)return o;const r=await sb.from("docs").select("id,data").eq("col","profiles").in("id",ids);for(const x of r.data||[])o[x.id]={name:x.data&&x.data.name,avatar:x.data&&x.data.avatar};return o}};
     BK=[db,uapi];if(!ME.banned)db.doc("profiles/"+uid).set({name:dname,avatar,t:Date.now()}).catch(()=>{});
     window.dispatchEvent(new Event("rosika-online"));grants();setInterval(grants,5*60e3)}
   async function deviceFP(){try{
@@ -5080,7 +5228,7 @@ const CODEX=(()=>{
   document.addEventListener("click",e=>{if(e.target.closest("#codeBtn"))open()});
   return{open,redeem}})();
 
-(()=>{const TI={boost:"pack",coll:"cards",mis:"target",ar:"swords",mkt:"bag"};
+(()=>{const TI={boost:"pack",coll:"cards",mis:"target",ar:"swords",mkt:"bag",ami:"users"};
   document.querySelectorAll("nav .tab").forEach(t=>{if(t.querySelector(".tico"))return;t.insertAdjacentHTML("afterbegin",ico(TI[t.dataset.v]||"star","tico"));
     const tn=[...t.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(tn){const sp=document.createElement("span");sp.className="tlb";sp.textContent=tn.textContent.trim();tn.replaceWith(sp)}});
   document.addEventListener("click",e=>{const u=e.target.closest(".ub[data-uf]");if(!u)return;const s=$("#fU");s.value=s.value===u.dataset.uf?"all":u.dataset.uf;renderColl();
@@ -5206,7 +5354,8 @@ const PMENU=(()=>{
       <div class="pms"><div><small>Gemmes</small><b class="mono">${nf(S.coins)}</b></div><div><small>Cartes</small><b class="mono">${nf(ownedN())}</b></div><div><small>Pitié M</small><b class="mono">${Math.min(S.sinceLeg||0,PITY_MYT)}/${PITY_MYT}</b></div></div>
       <div class="pml">
         <button data-pm="prof">Mon profil</button>
-        <button data-pm="friends">Amis</button>
+        <button data-pm="code">Code cadeau</button>
+        <button data-pm="snd">${S.mute?"Activer le son":"Couper le son"}</button>
         <button data-pm="coll">Ma collection</button>
         ${logged&&inf.admin?`<button data-pm="admin">Panel admin</button>`:""}
       </div>
@@ -5224,7 +5373,8 @@ const PMENU=(()=>{
     if(b){const k=b.dataset.pm;close();
       if(k==="prof"){renderProf();$("#prof").showModal()}
       else if(k==="coll")document.querySelector('.tab[data-v="coll"]').click();
-      else if(k==="friends"){document.querySelector('.tab[data-v="mkt"]').click();setTimeout(()=>{const t=document.querySelector('[data-mt="friends"]');if(t)t.click()},60)}
+      else if(k==="code")CODEX.open();
+      else if(k==="snd"){S.mute=!S.mute;save();paintSnd();if(!S.mute)SND.coin();toast(S.mute?"Son coupé":"Son activé")}
       else if(k==="install")install();
       else if(k==="admin")ADM.show();
       else if(k==="out")SBX.logout();
