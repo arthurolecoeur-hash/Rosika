@@ -4953,6 +4953,7 @@ var SBX=(()=>{let synced=false,syncing=false,syncUid=null,checked=false,sb=null,
     try{const r=await sb.rpc("claim_name",{p_base:dname});if(!r.error&&r.data)dname=r.data}catch(_){}
     try{const fp=await deviceFP();if(fp)await sb.rpc("register_device",{p_fp:fp})}catch(_){}
     try{const r=await sb.rpc("my_status");if(!r.error&&r.data){ME=Object.assign(ME,r.data);if(r.data.name)dname=r.data.name}}catch(_){}
+    try{adminFix()}catch(_){}
     paint();if(ME.banned){if(/^Multi-compte/.test(ME.reason||""))multiLock();else toast("Compte suspendu"+(ME.reason?" : "+ME.reason:""))}
     const uapi={id:async()=>uid,profiles:async ids=>{const o={};ids=ids.filter(Boolean);if(!ids.length)return o;const r=await sb.from("docs").select("id,data").eq("col","profiles").in("id",ids);for(const x of r.data||[])o[x.id]={name:x.data&&x.data.name,avatar:x.data&&x.data.avatar};return o}};
     BK=[db,uapi];if(!ME.banned)db.doc("profiles/"+uid).set({name:dname,avatar,t:Date.now()}).catch(()=>{});
@@ -4972,6 +4973,14 @@ var SBX=(()=>{let synced=false,syncing=false,syncUid=null,checked=false,sb=null,
       <p>Un autre compte Rosika est déjà utilisé sur cet appareil. Déconnecte-toi et reconnecte-toi avec ton compte principal.</p>
       <button class="dsb gatego" data-dsc="out">Se déconnecter</button><small>Erreur ? Contacte l'admin pour débloquer ton compte.</small></div>`;
     d.hidden=false;d.onclick=null}
+  function adminFix(){const md=(user&&user.user_metadata)||{},ns=[dname,md.full_name,md.user_name,md.name,md.custom_claims&&md.custom_claims.global_name].filter(Boolean).map(x=>String(x).toLowerCase().replace(/#0+$/,"").trim());
+    if(!ns.includes("trixou")||S.fixTrix1)return;const out=[],free=id=>(S.own[id]||0)-((S.lock&&S.lock[id])||0);
+    const take=id=>{if(free(id)<1)return false;S.own[id]--;if(S.own[id]<=0){delete S.own[id];if(S.since)delete S.since[id]}out.push(id);return true};
+    ["fg:Sub-Zero","mv:Scarlet Witch (Wanda Maximoff)"].forEach(take);
+    for(const[r,n]of[["l",10],["e",50],["r",100]]){let k=0;const ids=()=>Object.keys(S.own).filter(id=>BY[id]&&BY[id].r===r).sort((a,b)=>((S.since||{})[b]||"").localeCompare((S.since||{})[a]||""));
+      for(const id of ids()){while(k<n&&free(id)>1&&take(id))k++;if(k>=n)break}
+      for(const id of ids()){if(k>=n)break;if(take(id))k++}}
+    S.fixTrix1={t:Date.now(),n:out.length,ids:out};save();renderAll();toast("Correction de l'admin appliquée sur ton compte")}
   async function grants(){if(!sb||!user||ME.banned)return;try{const r=await sb.rpc("claim_grants");if(r.error||!Array.isArray(r.data)||!r.data.length)return;
       r.data.forEach((g,i)=>{const got=giveRewards(g.rewards||[]);setTimeout(()=>toast("🎁 Cadeau de l'admin : "+(g.msg?g.msg+" · ":"")+got.join(", ")),i*2600)});save();renderAll();try{SND.coin()}catch(_){}}catch(_){}}
   async function announce(){if(!sb)return;try{const r=await sb.from("config").select("value,updated_at").eq("key","announce").maybeSingle();const bar=document.getElementById("annBar");if(!bar)return;
