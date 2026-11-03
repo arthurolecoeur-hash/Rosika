@@ -2347,6 +2347,16 @@ html{scroll-behavior:smooth}
 @media (max-width:700px){.trch2{width:66px}.trch2 .trci{width:66px;height:88px}.trpc,.trpc .trci{width:78px}.trpc .trci{height:104px}.trsel{min-height:110px}}
 .trpb>div>small.trv{color:#fbbf24;letter-spacing:0;font:700 12px var(--ui)}
 .trsides>*,.trside{min-width:0}.trside .trg input{min-width:0}
+.trsel{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:12px 10px;overflow:visible!important;min-height:0!important;padding:8px 8px 2px 2px!important;align-content:start}
+.trsel>small{grid-column:1/-1}
+.trsel .trch2{width:auto!important}.trsel .trch2 .trci{width:100%!important;height:auto!important;aspect-ratio:3/4}
+.trcv{font:700 11px var(--mono,monospace);color:var(--mute)}
+.trside h4 .trv{color:#ff4d5a;font-size:14px;font-weight:800}
+.trbal{display:flex;flex-direction:column;gap:6px;padding:14px 16px;border-radius:16px;background:#0f0f11;box-shadow:inset 0 0 0 1px #2c2c31}
+.trbar{height:6px;border-radius:999px;background:#26262b;overflow:hidden}.trbar i{display:block;height:100%;border-radius:inherit;background:var(--bc);transition:width .25s}
+.trbal b{font-size:14px;color:var(--bc)}.trbal small{color:var(--mute);font-size:12.5px;line-height:1.45}
+.trbal.ok{--bc:#22c55e}.trbal.warn{--bc:#f59e0b}.trbal.bad{--bc:#ff4d5a;box-shadow:inset 0 0 0 1px rgb(255 77 90 / .6)}
+@media (max-width:700px){.trsel{grid-template-columns:repeat(auto-fill,minmax(72px,1fr))}}
 </style>
 
 <nav><div class="in">
@@ -4292,7 +4302,7 @@ const MK=(()=>{
         if(o.status==="done"&&!o.settled&&!S.orel[o.id]){for(const id of o.give||[]){unlock(id);if(S.own[id]>0){S.own[id]--;if(!S.own[id])delete S.own[id]}}for(const id of o.want||[])get(id);S.coins+=(o.wantG|0);delete S.gesc[o.id];S.orel[o.id]=1;
           db.doc("offers/"+o.id).update({settled:true}).catch(()=>{});ch=true;toast("Échange accepté par "+nm(o.to)+" !");continue}
         if(o.status==="open"&&o.exp&&o.exp<now()){expire(o);continue}
-        if((o.status==="refused"||o.status==="cancel"||o.status==="expired")&&!S.orel[o.id]){for(const id of o.give||[])unlock(id);S.coins+=(S.gesc[o.id]|0);gBack(o,S.gesc[o.id]|0);delete S.gesc[o.id];S.orel[o.id]=1;ch=true;
+        if((o.status==="refused"||o.status==="cancel"||o.status==="expired")&&!S.orel[o.id]){for(const id of o.give||[])unlock(id);S.coins+=(S.gesc[o.id]|0);gBack(o,o.gift!=null?o.gift:(S.gesc[o.id]|0));delete S.gesc[o.id];S.orel[o.id]=1;ch=true;
           if(o.status==="refused")toast(nm(o.to)+" a refusé ton échange · tout t'est rendu");if(o.status==="expired")toast("Proposition expirée · tout t'est rendu")}
         continue}
       if(o.v===2)continue;
@@ -4329,28 +4339,32 @@ const MK=(()=>{
     lock(id);save();const d={seller:me,card:id,kind,price:kind==="fixed"?price:0,bid:kind==="auction"?price:0,ends:kind==="auction"?now()+hours*H:0,status:"open",t:now()};
     try{await db.collection("listings").add(d);toast(kind==="fixed"?"Mise en vente":"Enchère lancée");renderAll()}catch(e){unlock(id);save();toast("Échec de la mise en vente")}}
   async function cancel(x){if(x.bidder)return toast("Impossible : il y a déjà une mise");await db.doc("listings/"+x.id).update({status:"cancel"});unlock(x.card);save();renderAll();toast("Annonce retirée")}
-  async function offer(giveId,want,to){if(ownAvail(giveId)<1)return toast("Cette carte est déjà engagée ailleurs");lock(giveId);save();
+  async function offer(giveId,want,to){if(ownAvail(giveId)<1)return toast("Cette carte est déjà engagée ailleurs");const wmin=Math.min(...want.filter(id=>BY[id]).map(id=>cval(BY[id])));if(BY[giveId]&&isFinite(wmin)&&cval(BY[giveId])-wmin>gLeft())return toast("Trop déséquilibré : une des cartes demandées vaut beaucoup moins (dons limités à "+nf(GLIM)+" ◆ par jour, cartes comprises)");lock(giveId);save();
     try{await db.collection("offers").add({from:me,give:giveId,want,to:to||null,status:"open",t:now(),exp:now()+72*H});toast(to?"Proposition envoyée à "+nm(to):"Offre publiée");renderAll()}catch(e){unlock(giveId);save();toast("Échec")}}
-  async function accept(o,gotId){if(ownAvail(gotId)<1)return toast("Tu n'as pas ce perso");track("trade",1);
+  async function accept(o,gotId){if(ownAvail(gotId)<1)return toast("Tu n'as pas ce perso");const rg=BY[gotId]&&BY[o.give]?Math.max(0,cval(BY[gotId])-cval(BY[o.give])):0;if(rg>gLeft())return toast("Trop déséquilibré : tu donnerais ≈ "+nf(rg)+" ◆ de plus, au-delà de ta limite de dons ("+nf(gLeft())+" ◆ restants)");track("trade",1);
     if(!await fresh(o))return;
-    try{await db.doc("offers/"+o.id).update({status:"done",taker:me,got:gotId,dt:now()})}catch(_){return toast("Échange impossible, l'offre a changé")}give(gotId);get(o.give);save();renderAll();toast(`Échange réussi : ${BY[o.give].s} rejoint ta collection`)}
+    try{await db.doc("offers/"+o.id).update({status:"done",taker:me,got:gotId,dt:now()})}catch(_){return toast("Échange impossible, l'offre a changé")}gAdd(rg);give(gotId);get(o.give);save();renderAll();toast(`Échange réussi : ${BY[o.give].s} rejoint ta collection`)}
   async function cancelOffer(o){if(!await fresh(o))return;try{await db.doc("offers/"+o.id).update({status:"cancel"})}catch(_){return toast("Impossible de retirer pour l'instant")}
-    S.gesc=S.gesc||{};S.orel=S.orel||{};if(!S.orel[o.id]){if(o.v===2){for(const id of o.give||[])unlock(id);S.coins+=(S.gesc[o.id]|0);gBack(o,S.gesc[o.id]|0);delete S.gesc[o.id]}else unlock(o.give);S.orel[o.id]=1}
+    S.gesc=S.gesc||{};S.orel=S.orel||{};if(!S.orel[o.id]){if(o.v===2){for(const id of o.give||[])unlock(id);S.coins+=(S.gesc[o.id]|0);gBack(o,o.gift!=null?o.gift:(S.gesc[o.id]|0));delete S.gesc[o.id]}else unlock(o.give);S.orel[o.id]=1}
     save();renderAll();toast("Proposition retirée")}
+  const tval=(ids,g)=>(ids||[]).filter(id=>BY[id]).reduce((a,id)=>a+cval(BY[id]),0)+(g|0);
+  const rGift=o=>Math.max(0,tval(o.want,o.wantG)-tval(o.give,o.giveG));
   async function offer2(to,give,giveG,want,wantG){if(!db)return toast("Connecte-toi pour échanger");
     for(const id of give)if(ownAvail(id)<1)return toast(BY[id].s+" est déjà engagée ailleurs");
     if(giveG>S.coins)return toast("Pas assez de ◆");
-    if(giveG>gLeft())return toast("Limite : "+nf(GLIM)+" ◆ donnés par jour (reste "+nf(gLeft())+" ◆)");
-    give.forEach(lock);S.coins-=giveG;gAdd(giveG);save();
-    try{const r=await db.collection("offers").add({v:2,from:me,to,give,giveG,want,wantG,status:"open",t:now(),exp:now()+72*H});S.gesc=S.gesc||{};S.gesc[r.id]=giveG;save();renderAll();toast("Proposition envoyée à "+nm(to));return true}
-    catch(e){give.forEach(unlock);S.coins+=giveG;gAdd(-giveG);save();toast("Échec de l'envoi");return false}}
+    const gv=tval(give,giveG),wv=tval(want,wantG),gift=Math.max(0,gv-wv);
+    if(gift>gLeft())return toast("Trop déséquilibré : dons limités à "+nf(GLIM)+" ◆ par jour, cartes comprises (reste "+nf(gLeft())+" ◆)");
+    if(wv-gv>GLIM)return toast("Trop déséquilibré : il ne peut pas te donner plus de "+nf(GLIM)+" ◆ par jour");
+    give.forEach(lock);S.coins-=giveG;gAdd(gift);save();
+    try{const r=await db.collection("offers").add({v:2,from:me,to,give,giveG,want,wantG,gift,gv,wv,status:"open",t:now(),exp:now()+72*H});S.gesc=S.gesc||{};S.gesc[r.id]=giveG;save();renderAll();toast("Proposition envoyée à "+nm(to));return true}
+    catch(e){give.forEach(unlock);S.coins+=giveG;gAdd(-gift);save();toast("Échec de l'envoi");return false}}
   async function accept2(o){if(o.to!==me)return;
     for(const id of o.want||[])if(ownAvail(id)<1)return toast("Il te faut "+BY[id].s);
     if((o.wantG|0)>S.coins)return toast("Pas assez de ◆");
-    if((o.wantG|0)>gLeft())return toast("Limite : "+nf(GLIM)+" ◆ donnés par jour (reste "+nf(gLeft())+" ◆)");
+    const rg=rGift(o);if(rg>gLeft())return toast("Trop déséquilibré pour toi : dons limités à "+nf(GLIM)+" ◆ par jour, cartes comprises (reste "+nf(gLeft())+" ◆)");
     if(!await fresh(o))return;
     try{await db.doc("offers/"+o.id).update({status:"done",taker:me,got:(o.want&&o.want[0])||"",dt:now()})}catch(_){return toast("Échange impossible, la proposition a changé")}
-    track("trade",1);for(const id of o.want||[])give(id);S.coins-=(o.wantG|0);gAdd(o.wantG|0);for(const id of o.give||[])get(id);S.coins+=(o.giveG|0);save();renderAll();toast("Échange conclu avec "+nm(o.from)+" !")}
+    track("trade",1);for(const id of o.want||[])give(id);S.coins-=(o.wantG|0);gAdd(rg);for(const id of o.give||[])get(id);S.coins+=(o.giveG|0);save();renderAll();toast("Échange conclu avec "+nm(o.from)+" !")}
   /* fenêtre « Proposer un échange » */
   function tradeDlg(to){if(!db)return toast("Connecte-toi pour échanger");
     const T={side:"me",give:[],want:[],gG:0,wG:0,q:"",rf:"all",uf:"all",so:"rar",lim:60,dup:false,miss:false};
@@ -4364,17 +4378,26 @@ const MK=(()=>{
     const tile=id=>{const c=BY[id],mine=T.side==="me",free=mine?ownAvail(id):1,dup=mine?ownFree(id)>=1:theirDup(to,id),sel=(mine?T.give:T.want).includes(id);
       const tag=mine?(theirOwn(to,id)?"":`<span class="trtag">Il lui manque</span>`):(S.own[id]?"":`<span class="trtag">Il te manque</span>`);
       return `<button class="trt${sel?" on":""}${free<1?" off":""}" data-trp="${esc(id)}" ${free<1?"disabled":""}><span class="trc" style="--rc:var(--${c.r})">${artHTML(c)||`<em>${esc(c.s.slice(0,2))}</em>`}<i>${c.r.toUpperCase()}</i></span><b>${esc(c.s)}</b>${tag}<small class="mono">${nf(cval(c))} ◆</small><small>${dup?(mine?"×"+free+" dispo":"En double"):(mine?"Ton seul exemplaire":"Son seul exemplaire")}</small></button>`};
-    const chip=id=>`<button class="trch2" data-trx="${esc(id)}" title="Retirer ${esc(BY[id].s)}" style="--rc:var(--${BY[id].r})"><span class="trci">${artHTML(BY[id],1)||`<em>${esc(BY[id].s.slice(0,2))}</em>`}</span><span class="trcn">${esc(BY[id].s)}</span><i aria-hidden="true">×</i></button>`;
+    const chip=id=>`<button class="trch2" data-trx="${esc(id)}" title="Retirer ${esc(BY[id].s)}" style="--rc:var(--${BY[id].r})"><span class="trci">${artHTML(BY[id],1)||`<em>${esc(BY[id].s.slice(0,2))}</em>`}</span><span class="trcn">${esc(BY[id].s)}</span><span class="trcv mono">${nf(cval(BY[id]))} ◆</span><i aria-hidden="true">×</i></button>`;
     const sval=(ids,g)=>ids.reduce((a,id)=>a+cval(BY[id]),0)+(g|0);
-    const ok=()=>(T.give.length||T.gG>0)&&(T.want.length||T.wG>0)&&T.gG<=S.coins&&T.gG<=gLeft()&&T.wG<=GLIM;
+    const bal=who=>{const gv=sval(T.give,T.gG),wv=sval(T.want,T.wG),net=gv-wv,mg=Math.max(0,net),tg=Math.max(0,-net),left=gLeft(),tot=Math.max(gv,wv,1);let cls,tt,tx,pct;
+      if(!gv&&!wv)return{empty:true,ok:false};
+      if(mg>left){cls="bad";tt="Trop déséquilibré pour passer";tx=`Les dons sont limités à ${nf(GLIM)} ◆ par jour, cartes comprises : encore ${nf(left)} ◆ possibles. Retire une carte, ou demande plus en face.`;pct=100}
+      else if(tg>GLIM){cls="bad";tt="Trop déséquilibré pour passer";tx=`${who} ne peut pas te donner plus de ${nf(GLIM)} ◆ de valeur par jour, cartes comprises. Retire une carte de son côté, ou ajoute quelque chose du tien.`;pct=100}
+      else if(Math.abs(net)<=Math.max(50,tot*.15)){cls="ok";tt="Échange équilibré";tx=mg?`Écart de ≈ ${nf(mg)} ◆ compté dans ta limite de dons.`:tg?`Écart de ≈ ${nf(tg)} ◆ compté dans sa limite de dons.`:"Les deux côtés valent autant.";pct=Math.abs(net)/GLIM*100}
+      else if(mg){cls="warn";tt=`Tu donnes plus · don de ≈ ${nf(mg)} ◆`;tx=`Les cartes comptent comme des gemmes : il te restera ${nf(left-mg)} ◆ de dons possibles aujourd'hui.`;pct=mg/Math.max(1,left)*100}
+      else{cls="warn";tt=`Tu reçois plus · don de ≈ ${nf(tg)} ◆ de sa part`;tx=`Ça compte dans sa limite de ${nf(GLIM)} ◆ de dons par jour : ${who} pourra refuser si sa limite est atteinte.`;pct=tg/GLIM*100}
+      return{cls,tt,tx,pct:Math.max(4,Math.min(100,pct)),ok:cls!=="bad"}};
+    const ok=()=>(T.give.length||T.gG>0)&&(T.want.length||T.wG>0)&&T.gG<=S.coins&&T.wG<=GLIM&&bal("").ok;
     function draw(){const who=esc(nm(to)),LA=list(),L=LA.slice(0,T.lim),RR=[["all","Toutes"],["d","Divin"],["m","Mythique"],["l","Légendaire"],["e","Épique"],["r","Rare"],["u","Peu commune"],["c","Commune"]];
       d.innerHTML=`<div class="trbox" role="dialog" aria-label="Proposer un échange"><div class="trh"><h3>Proposer un échange à ${who}</h3><button class="xbtn" data-trc="1" aria-label="Fermer">${ico("x")}</button></div>
         <div class="trbody"><div class="trsides">
           <div class="trside"><h4>Tu donnes <small class="trv">≈ ${nf(sval(T.give,T.gG))} ◆</small></h4><div class="trsel">${T.give.map(chip).join("")||`<small>Choisis tes cartes ci-dessous, ou ajoute des gemmes.</small>`}</div>
-            <label class="trg">Gemmes<input type="number" min="0" step="10" data-trg="g" value="${T.gG||""}" placeholder="0"><span class="gem">◆</span></label><small class="trmax">Tu as ${nf(S.coins)} ◆ · max ${nf(gLeft())} ◆ donnés aujourd'hui</small></div>
+            <label class="trg">Gemmes<input type="number" min="0" step="10" data-trg="g" value="${T.gG||""}" placeholder="0"><span class="gem">◆</span></label><small class="trmax">Tu as ${nf(S.coins)} ◆ · dons encore possibles aujourd'hui : ${nf(gLeft())} ◆ (cartes comprises)</small></div>
           <div class="trarr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8h15l-4-4M20 16H5l4 4"/></svg></div>
           <div class="trside"><h4>Tu reçois <small class="trv">≈ ${nf(sval(T.want,T.wG))} ◆</small></h4><div class="trsel">${T.want.map(chip).join("")||`<small>Choisis ses cartes ci-dessous, ou demande des gemmes.</small>`}</div>
-            <label class="trg">Gemmes<input type="number" min="0" step="10" data-trg="w" value="${T.wG||""}" placeholder="0"><span class="gem">◆</span></label><small class="trmax">Max ${nf(GLIM)} ◆ par jour</small></div></div>
+            <label class="trg">Gemmes<input type="number" min="0" step="10" data-trg="w" value="${T.wG||""}" placeholder="0"><span class="gem">◆</span></label><small class="trmax">Sa limite de dons : ${nf(GLIM)} ◆ par jour (cartes comprises)</small></div></div>
+          ${(B=>B.empty?"":`<div class="trbal ${B.cls}"><div class="trbar"><i style="width:${B.pct.toFixed(1)}%"></i></div><b>${B.tt}</b><small>${B.tx}</small></div>`)(bal(who))}
           <div class="trtabs"><button data-trs="me" aria-pressed="${T.side==="me"}">Mes cartes</button><button data-trs="them" aria-pressed="${T.side==="them"}">Cartes de ${who}</button></div>
           <div class="trf"><input class="search" data-trq="1" placeholder="Chercher une carte…" value="${esc(T.q)}"><button class="rchip" data-trd="1" aria-pressed="${T.dup}">${T.side==="me"?"Mes doubles":"Ses doubles"}</button><button class="rchip" data-trm="1" aria-pressed="${T.miss}">${T.side==="me"?"Il lui manque":"Il me manque"}</button>
             <select class="trsl" data-tru="1" aria-label="Univers"><option value="all">Tous les univers</option>${Object.keys(FR).map(f=>`<option value="${f}" ${T.uf===f?"selected":""}>${FR[f]}</option>`).join("")}</select>
@@ -4383,7 +4406,7 @@ const MK=(()=>{
           ${T.side==="them"&&!(PL[to]&&PL[to].ob)?`<div class="mkempty">${who} doit ouvrir le jeu une fois (avec la nouvelle version) pour que sa collection apparaisse ici.</div>`:""}
           <div class="trn mono">${nf(LA.length)} carte${LA.length>1?"s":""}</div>
           <div class="trgrid">${L.map(tile).join("")||`<div class="mkempty">Aucune carte ici.</div>`}</div>${LA.length>L.length?`<button class="sec trmore" data-trmore="1">Voir plus · ${nf(LA.length-L.length)} restante${LA.length-L.length>1?"s":""}</button>`:""}</div>
-        <div class="trfoot"><small>${ok()?`Tu donnes ${T.give.length} carte${T.give.length>1?"s":""}${T.gG?" + "+nf(T.gG)+" ◆":""} · tu reçois ${T.want.length} carte${T.want.length>1?"s":""}${T.wG?" + "+nf(T.wG)+" ◆":""}`:T.gG>S.coins?"Tu n'as pas assez de gemmes":T.gG>gLeft()?"Limite de "+nf(GLIM)+" ◆ donnés par jour : il te reste "+nf(gLeft())+" ◆":T.wG>GLIM?"Tu ne peux pas demander plus de "+nf(GLIM)+" ◆":"Choisis ce que tu donnes et ce que tu reçois : des cartes ou des gemmes."}</small>
+        <div class="trfoot"><small>${!bal(who).ok&&!bal(who).empty?"Trop déséquilibré : rééquilibre l'échange pour pouvoir l'envoyer.":ok()?`Tu donnes ${T.give.length} carte${T.give.length>1?"s":""}${T.gG?" + "+nf(T.gG)+" ◆":""} · tu reçois ${T.want.length} carte${T.want.length>1?"s":""}${T.wG?" + "+nf(T.wG)+" ◆":""}`:T.gG>S.coins?"Tu n'as pas assez de gemmes":T.wG>GLIM?"Tu ne peux pas demander plus de "+nf(GLIM)+" ◆":"Choisis ce que tu donnes et ce que tu reçois : des cartes ou des gemmes."}</small>
           <button class="sec" data-trc="1">Annuler</button><button class="cta" data-trok="1" ${ok()?"":"disabled"}>Envoyer la proposition</button></div></div>`;
       d.hidden=false;document.body.classList.add("arlock")}
     const close=()=>{d.hidden=true;document.body.classList.remove("arlock")};
@@ -4443,10 +4466,10 @@ const MK=(()=>{
   function vProps(){const ps=Object.values(O).filter(o=>o.v===2&&o.status==="open"&&(o.to===me||o.from===me)&&(!o.exp||o.exp>now())).sort((a,b)=>(b.t||0)-(a.t||0));if(!ps.length)return "";
     const th=ids=>(ids||[]).filter(id=>BY[id]).map(id=>{const c=BY[id];return `<button class="mkz trch2 trpc" data-z="${esc(id)}" title="${esc(c.s)}" style="--rc:var(--${c.r})"><span class="trci">${artHTML(c,1)||`<em>${esc(c.s.slice(0,2))}</em>`}</span><span class="trcn">${esc(c.s)}</span><span class="trcr">${RN[c.r]}${S.own[id]?"":" · <b>nouvelle</b>"}</span></button>`}).join("");
     const side=(ids,g)=>`<div class="trpl">${th(ids)}${g?`<span class="trgem">+ ${nf(g)} ◆</span>`:""}${!(ids||[]).length&&!g?"<small>rien</small>":""}</div><small class="trv">≈ ${nf((ids||[]).filter(id=>BY[id]).reduce((a,id)=>a+cval(BY[id]),0)+(g|0))} ◆</small>`;
-    return `<h4 class="frh">Propositions d'échange <span class="cnt">${ps.length}</span></h4>${ps.map(o=>{const mine=o.from===me,can=!mine&&(o.want||[]).every(id=>ownAvail(id)>=1)&&(o.wantG|0)<=S.coins&&(o.wantG|0)<=gLeft();
+    return `<h4 class="frh">Propositions d'échange <span class="cnt">${ps.length}</span></h4>${ps.map(o=>{const mine=o.from===me,rg=rGift(o),can=!mine&&(o.want||[]).every(id=>ownAvail(id)>=1)&&(o.wantG|0)<=S.coins&&rg<=gLeft();
       return `<div class="trp${mine?"":" dm"}"><div class="trph"><b>${mine?"Tu proposes à "+esc(nm(o.to)):esc(nm(o.from))+" te propose"}</b><small>expire ${left((o.exp||0)-now())}</small></div>
         <div class="trpb"><div><small>${mine?"TU DONNES":"IL DONNE"}</small>${side(o.give,o.giveG)}</div><span class="trarr2" aria-hidden="true">⇄</span><div><small>${mine?"TU REÇOIS":"CONTRE"}</small>${side(o.want,o.wantG)}</div></div>
-        <div class="trb">${mine?`<button class="sec" data-ocx="${o.id}">Annuler</button>`:`${can?`<button class="mkgo" data-acc2="${o.id}">Accepter l'échange</button>`:`<span class="mkm">${(o.wantG|0)>gLeft()&&(o.wantG|0)<=S.coins?"Limite de "+nf(GLIM)+" ◆ donnés par jour atteinte":"Il te manque des cartes ou des ◆"}</span>`}<button class="sec" data-ref="${o.id}">Refuser</button>`}</div></div>`}).join("")}`}
+        <div class="trb">${mine?`<button class="sec" data-ocx="${o.id}">Annuler</button>`:`${can?`<button class="mkgo" data-acc2="${o.id}">Accepter l'échange</button>`:`<span class="mkm">${rg>gLeft()&&(o.wantG|0)<=S.coins?"Trop déséquilibré : ta limite de dons ("+nf(gLeft())+" ◆ restants, cartes comprises) est dépassée":"Il te manque des cartes ou des ◆"}</span>`}<button class="sec" data-ref="${o.id}">Refuser</button>`}</div></div>`}).join("")}`}
   function vTrade(){const os=Object.values(O).filter(o=>o.v!==2&&o.status==="open"&&(!o.to||o.to===me||o.from===me)&&(!o.exp||o.exp>now())&&BY[o.give]);
     const q=Q.trim().toLowerCase(),f=os.filter(o=>!q||[o.give,...o.want].some(id=>BY[id]&&BY[id].n.toLowerCase().includes(q))||nm(o.from).toLowerCase().includes(q)).filter(o=>!ONLYMISS||!S.own[o.give]);
     const row=o=>{const c=BY[o.give],can=o.want.filter(id=>BY[id]&&(ownAvail(id)>=1));const mine=o.from===me;
