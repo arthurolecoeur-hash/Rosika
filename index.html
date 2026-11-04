@@ -3790,7 +3790,7 @@ function renderView(v){if(v==="boost"){renderHero();renderChips();renderPacks()}
 function renderAll(){if(raQ)return;raQ=requestAnimationFrame(renderNow)}
 
 const STREAK0=[20,30,40,50,60,80,100],STREAK=[];STREAK0.forEach((v,i)=>Object.defineProperty(STREAK,i,{get(){return v*(evIs("str2")?2:1)},enumerable:true}));STREAK.length=7;
-const UNI={mv:"mv",avg:"mv",xm:"mv",spd:"mv",cos:"mv",dc:"dc",gth:"dc",jla:"dc",sw:"sw",cln:"sw",drk:"sw",dis:"di",pix:"di",udw:"dw",uhp:"hp",ulo:"lo",ujv:"jv",ufg:"fg",utf:"tf",utn:"tf"},THP=["avg","xm","spd","cos","gth","jla","cln","drk"];
+const UNI={mv:"mv",avg:"mv",xm:"mv",spd:"mv",cos:"mv",dc:"dc",gth:"dc",jla:"dc",sw:"sw",cln:"sw",drk:"sw",dis:"di",pix:"di",udw:"dw",uhp:"hp",ulo:"lo",ujv:"jv",ufg:"fg",utf:"tf",utn:"tf"},THP=PACKS.filter(p=>p.g==="free"&&p.id!=="mix"&&!p.daily).map(p=>p.id);
 const MPOOL_D=[
  {id:"o3",k:"open",goal:3,t:"Ouvre 3 boosters",g:30,base:1},
  {id:"o5",k:"open",goal:5,t:"Ouvre 5 boosters",g:50,base:1},
@@ -3819,7 +3819,7 @@ const MPOOL_D=[
  {id:"ujv",k:"u_jv",goal:2,t:"Ouvre 2 boosters Jeux vidéo",g:35},
  {id:"ufg",k:"u_fg",goal:2,t:"Ouvre 2 boosters Jeux de combat",g:35},
  {id:"utf",k:"u_tf",goal:2,t:"Ouvre 2 boosters Transformers ou Tortues Ninja",g:35},
- {id:"th2",k:"theme",goal:2,t:"Ouvre 2 boosters thématiques (Avengers, Gotham…)",g:40},
+ {id:"th2",k:"theme",goal:2,t:"Ouvre 2 boosters thématiques (tous sauf Mix)",g:40},
  {id:"w2",k:"wish",goal:2,t:"Ajoute 2 persos à tes envies",g:20},
  {id:"x2",k:"x2",goal:1,t:"Ouvre plusieurs boosters d'un coup",g:40},
  {id:"x3",k:"x2",goal:3,t:"Fais 3 ouvertures multiples",g:80},
@@ -3861,7 +3861,7 @@ const MPOOL_W=[
  {id:"wdi",k:"u_di",goal:8,t:"Ouvre 8 boosters Disney ou Pixar",g:160},
  {id:"whp",k:"u_hp",goal:6,t:"Ouvre 6 boosters Harry Potter",g:150},
  {id:"wjv",k:"u_jv",goal:6,t:"Ouvre 6 boosters Jeux vidéo",g:150},
- {id:"th10",k:"theme",goal:10,t:"Ouvre 10 boosters thématiques",g:200},
+ {id:"th10",k:"theme",goal:10,t:"Ouvre 10 boosters thématiques (tous sauf Mix)",g:200},
  {id:"mx10",k:"mix",goal:10,t:"Ouvre 10 boosters Mix",g:150},
  {id:"x10",k:"x2",goal:10,t:"Fais 10 ouvertures multiples",g:220},
  {id:"sh2",k:"shop",goal:2,t:"Achète 2 boosters en boutique",g:180},
