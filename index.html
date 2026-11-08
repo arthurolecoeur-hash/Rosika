@@ -2441,6 +2441,7 @@ html{scroll-behavior:smooth}
 @media (hover:hover){.trsel .trch2:hover>i.trxb{background:#e11d2e!important;border-color:#e11d2e!important;transform:scale(1.1)}}
 #amBody .mkempty{max-width:900px}
 @media (max-width:899px){nav .tabs{grid-template-columns:repeat(6,1fr)!important;gap:0!important;padding-inline:4px!important}nav .tab{font-size:10px!important;padding-inline:0!important}nav .tab .mkdot{left:calc(50% + 6px)!important}}
+.twreset{flex-basis:100%;font-size:12px;color:var(--mute);margin-top:2px}
 </style>
 
 <nav><div class="in">
@@ -4714,7 +4715,7 @@ const AR=(()=>{
   const LG=[[0,"Bronze","#c98a5a"],[400,"Argent","#c9d2e0"],[800,"Or","#f5c518"],[1200,"Platine","#5ee0d0"],[1600,"Diamant","#7ab8ff"],[2000,"Maître","#c18bff"],[2600,"Divin","#ffe08a"]];
   const lg=t=>{let r=LG[0];for(const x of LG)if(t>=x[0])r=x;return r};
   const nextLg=t=>LG.find(x=>x[0]>t);
-  const A=()=>{if(!S.arena)S.arena={tr:0,w:0,l:0,dr:0,deck:[],best:0,fw:"",streak:0,hist:[]};if(!S.arena.tw)S.arena.tw=1;return S.arena};
+  const A=()=>{if(!S.arena)S.arena={tr:0,w:0,l:0,dr:0,deck:[],best:0,fw:"",streak:0,hist:[]};if(!S.arena.tw)S.arena.tw=1;if(S.arena.twD!==today()){S.arena.tw=1;S.arena.twD=today();S.arena.twDay=0}return S.arena};
   let MODE="rk";
   const RS=["c","u","r","e","l","m","d"];
   function srnd(seed){let x=seed>>>0||1;return()=>{x=(x*1664525+1013904223)>>>0;return x/4294967296}}
@@ -4805,7 +4806,7 @@ const AR=(()=>{
     if(B.ranked){const diff=o.tr-a.tr;if(res>0){dt=Math.max(18,Math.min(45,Math.round(30+diff/25)));a.w++;a.streak=(a.streak||0)+1;a.bs=Math.max(a.bs||0,a.streak);if(a.streak>=3)dt+=5}else if(res<0){dt=-Math.max(10,Math.min(32,Math.round(20-diff/25)));a.l++;a.streak=0}else{a.dr=(a.dr||0)+1}
       a.tr=Math.max(0,a.tr+dt);a.best=Math.max(a.best||0,a.tr);
       if(res>0){dc=30;if(a.fw!==today()){a.fw=today();dc+=100;first=true}}else if(!res)dc=10;else if(!quit)dc=5}
-    else if(B.tower){if(res>0){B.rew=towerRew(B.floor);giveRew(B.rew);dc=10+B.floor*2;a.tw=B.floor+1;a.twBest=Math.max(a.twBest||0,B.floor);track("tower",1)}}
+    else if(B.tower){if(res>0){B.rew=towerRew(B.floor);giveRew(B.rew);dc=10+B.floor*2;a.tw=B.floor+1;a.twDay=Math.max(a.twDay||0,B.floor);a.twBest=Math.max(a.twBest||0,B.floor);track("tower",1)}}
     else if(res>0)dc=5;
     S.coins+=dc;a.hist=[{t:Date.now(),o:o.n,r:res,dt,s:B.sc.slice(),rk:B.ranked,tw:B.tower?B.floor:0},...(a.hist||[])].slice(0,15);
     track("arp",1);if(res>0)track("arw",1);save();renderTop();checkAch();push();
@@ -4862,10 +4863,10 @@ const AR=(()=>{
     const fl=[];for(let k=f+6;k>=Math.max(1,f-3);k--){const r=towerRew(k),cl=k<f,cu=k===f,bs=isBoss(k);
       fl.push(`<div class="twf${cl?" cl":""}${cu?" cu":""}${bs?" bs":""}${k%10===0?" b10":""}"><span class="twn">${k}</span><span class="twt">${cu?"Tu es ici":cl?"Franchi":bs?(k%10===0?"Grand gardien":"Gardien"):"Étage"}</span><span class="twg ${r.k}" title="${r.t}">${cl?"✓":r.i}</span>${cu?`<i class="twme">▶</i>`:""}</div>`)}
     return `<section class="twwrap">
-      <div class="twtower"><div class="twspire"><i></i></div>${fl.join("")}<div class="twbase">Base · ${a.twBest||0} étage${(a.twBest||0)>1?"s":""} franchi${(a.twBest||0)>1?"s":""}</div></div>
+      <div class="twtower"><div class="twspire"><i></i></div>${fl.join("")}<div class="twbase">Base · ${a.twDay||0} étage${(a.twDay||0)>1?"s":""} franchi${(a.twDay||0)>1?"s":""} aujourd'hui</div></div>
       <div class="twmain">
-        <div class="twhead"><small>La Tour</small><h3>Étage ${f}</h3>${isBoss(f)?`<span class="twboss">${f%10===0?"Grand gardien":"Gardien"}</span>`:""}<span class="twdiff" style="--dc:${D[1]}">● ${D[0]}</span></div>
-        <div class="twkpis"><div><b>${a.twBest||0}</b><small>Record</small></div><div><b>${to5===5&&f%5===0?0:to5}</b><small>avant un Coffret</small></div><div><b>${to10}</b><small>avant un Prestige</small></div></div>
+        <div class="twhead"><small>La Tour</small><h3>Étage ${f}</h3>${isBoss(f)?`<span class="twboss">${f%10===0?"Grand gardien":"Gardien"}</span>`:""}<span class="twdiff" style="--dc:${D[1]}">● ${D[0]}</span><span class="twreset">↻ Retour à l'étage 1 dans ${dur(msToMidnight())}</span></div>
+        <div class="twkpis"><div><b>${a.twBest||0}</b><small>Record (tous les jours)</small></div><div><b>${to5===5&&f%5===0?0:to5}</b><small>avant un Coffret</small></div><div><b>${to10}</b><small>avant un Prestige</small></div></div>
         <div class="twrewbig ${rw.k}"><span>${rw.i}</span><div><small>Récompense de l'étage ${f}</small><b>${rw.t}</b><em>+ ${10+f*2} ◆</em></div></div>
         <div class="twenemy"><div class="twenh"><small>Équipe adverse</small><span class="mono">Puissance ${es}${bo?` · bonus +${bo}/manche`:""}</span></div>
           <div class="twdeck">${td.map(id=>cardHTML(BY[id],{noWish:true})).join("")}</div></div>
